@@ -104,10 +104,6 @@ EXTENSIONS=(
 
 Once you've updated the list of extensions, rerun the `setup.sh` to install the new extensions.
 
-### Customizing VSCode Settings
-
-To modify VSCode's settings, update the `vscode_settings.json` file. Changes will automatically be applied when you run the `setup.sh` script.
-
 ---
 
 ## 🛠 Contributing
