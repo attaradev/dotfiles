@@ -1,0 +1,19 @@
+# macOS system files
+.DS_Store
+
+# NVM and Node-related
+.nvm/
+node_modules/
+
+# Brew-related
+*.log
+*.bak
+
+# IDE/Editor-specific files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Temporary files
+*.swp
+*.bak
