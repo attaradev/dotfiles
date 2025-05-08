@@ -1,0 +1,28 @@
+# Ignore non-markdown files from markdown linting
+
+# This file itself
+.markdownlintignore
+.markdownlint.json
+.gitattributes
+
+# SSH configuration files (not markdown)
+ssh/
+**/ssh/**
+**/.ssh/**
+ssh/.ssh/config
+
+# Configuration files
+*.toml
+*.json
+*.sh
+*.conf
+.gitignore
+.stow-local-ignore
+Brewfile
+Makefile
+
+# Script files
+install_*.sh
+setup_*.sh
+stow_*.sh
+vscode_*.sh

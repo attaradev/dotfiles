@@ -1,0 +1,14 @@
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+instructions_file = "~/.codex/AGENTS.md"
+
+notify = [
+  "/bin/sh",
+  "-c",
+  '"$HOME/.dotfiles/scripts/claude-obsidian-hook.py" codex-notify "$1"',
+  "codex-notify",
+]
+
+[notice.model_migrations]
+"gpt-5.1-codex-mini" = "gpt-5.1-codex-max"

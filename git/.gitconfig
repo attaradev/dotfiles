@@ -1,0 +1,63 @@
+[credential]
+	helper = osxkeychain
+
+[core]
+	editor = vim
+	autocrlf = input
+	pager = less
+	whitespace = trailing-space,space-before-tab
+
+[init]
+	defaultBranch = develop
+
+[commit]
+	verbose = true
+
+[color]
+	ui = auto
+
+[gpg]
+	program = gpg
+	format = openpgp
+
+
+[fetch]
+	prune = true
+	pruneTags = true
+
+[pull]
+	ff = only
+
+[push]
+	default = current
+	followTags = true
+	useForceIfIncludes = true
+
+[merge]
+	verifySignatures = false
+	conflictStyle = zdiff3
+
+[transfer]
+	fsckObjects = true
+
+[receive]
+	fsckObjects = true
+
+[protocol]
+	version = 2
+
+[protocol "file"]
+	allow = user
+
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+[url "https://github.com/"]
+	insteadOf = git://github.com/
+
+[url "https://"]
+	insteadOf = git://
+
+# Keep local machine-specific overrides last so they take precedence.
+[include]
+	path = ~/.gitconfig.local

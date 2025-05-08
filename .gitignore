@@ -1,0 +1,136 @@
+# ============================================
+# macOS System Files
+# ============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ============================================
+# Version Managers & Language Runtimes
+# ============================================
+
+# mise - unified version manager
+.mise.toml.local
+.mise.lock
+
+# Legacy version managers (kept for compatibility)
+.nvm/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+venv/
+env/
+*.egg-info/
+
+# Ruby
+.ruby-version
+.bundle/
+vendor/bundle/
+
+# ============================================
+# Homebrew
+# ============================================
+*.log
+Brewfile.lock.json
+
+# ============================================
+# IDE & Editor Files
+# ============================================
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+.nova/
+.ruby-lsp/
+
+# ============================================
+# Temporary & Backup Files
+# ============================================
+*.swp
+*.swo
+*.bak
+*.backup
+*~
+\#*\#
+.#*
+.gitconfig.local
+
+# Obsidian vault: track only public scaffolding; keep personal notes local.
+obsidian/.knowledge/**
+!obsidian/.knowledge/
+!obsidian/.knowledge/hub.md
+!obsidian/.knowledge/setup/
+obsidian/.knowledge/setup/**
+!obsidian/.knowledge/setup/obsidian-plugins.md
+!obsidian/.knowledge/_templates/
+!obsidian/.knowledge/_templates/*.md
+
+# ============================================
+# Shell History & Local Configs
+# ============================================
+.zsh_history
+.zshrc.local
+.bashrc.local
+.env.local
+
+# ============================================
+# Security-Sensitive Files (NEVER COMMIT!)
+# ============================================
+# NPM tokens and credentials
+.npmrc.local
+**/npm/.npmrc.local
+**/*_authToken*
+
+# SSH keys and config
+/.ssh/
+ssh/.ssh/id_*
+ssh/.ssh/*_rsa*
+ssh/.ssh/*_ed25519*
+ssh/.ssh/known_hosts
+
+# GPG keys (private keys and keyrings only - config files are managed)
+/.gnupg/
+gpg/.gnupg/private-keys-v1.d/
+gpg/.gnupg/*.gpg
+gpg/.gnupg/*.kbx
+gpg/.gnupg/pubring.kbx
+gpg/.gnupg/trustdb.gpg
+gpg/.gnupg/random_seed
+gpg/.gnupg/*.key
+gpg/.gnupg/openpgp-revocs.d/
+
+# AWS credentials
+.aws/credentials
+.aws/config
+
+# Docker credentials
+.docker/config.json
+
+# Git credentials
+.git-credentials
+
+# Environment files with secrets
+.env
+.env.*
+!.env.example
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+
+# ============================================
+# Stow
+# ============================================
+# Don't ignore .stow-local-ignore as it's part of config

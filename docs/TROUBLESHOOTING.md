@@ -1,0 +1,148 @@
+# Troubleshooting
+
+## `make: *** No rule to make target ...`
+
+This usually means you ran `make` outside `~/.dotfiles`.
+
+Fix:
+
+```bash
+cd ~/.dotfiles
+make brew-check
+
+# Or run from anywhere:
+(cd ~/.dotfiles && make brew-check)
+```
+
+## `setup.sh` prompt errors in automation
+
+Use non-interactive mode:
+
+```bash
+DOTFILES_NONINTERACTIVE=1 ./setup.sh
+```
+
+This disables prompt flows and sudo refresh prompting.
+
+## `brew bundle` lock or fetch conflict
+
+If Homebrew reports a lock conflict (another fetch/install in progress):
+
+1. Wait for the other process to finish.
+2. Re-run:
+
+```bash
+make brew
+```
+
+## VSCode extensions skipped
+
+If `code` CLI is missing, setup skips extension install.
+
+Fix:
+
+1. In VSCode run: `Shell Command: Install 'code' command in PATH`
+2. Re-run:
+
+```bash
+make vscode
+```
+
+## Stow conflict with existing dotfiles
+
+If local files already exist, stow may refuse to link.
+
+Fix:
+
+```bash
+make backup
+make stow
+```
+
+## GPG signing/pinentry issues
+
+Validate `pinentry-mac` is installed and restart agent:
+
+```bash
+brew install pinentry-mac
+gpgconf --kill gpg-agent
+make gnupg
+```
+
+## Runtime or tooling command not found
+
+Refresh shell + reinstall managed runtimes:
+
+```bash
+source ~/.zshrc
+make mise
+mise list
+```
+
+If still missing, verify `mise/.mise.toml` includes the expected runtime and tooling entries:
+
+- `node`, `python`, `go`, `ruby`, `java`, `rust`
+- `npm`, `pnpm`, `uv`
+
+Java and Rust are optional by default. Enable them explicitly:
+
+```bash
+DOTFILES_INSTALL_JAVA=1 make mise
+DOTFILES_INSTALL_RUST=1 make mise
+```
+
+## Wrong runtime version is active
+
+Run from the tracked config directory:
+
+```bash
+cd ~/.dotfiles/mise
+mise install
+mise list
+```
+
+Then verify specific tools:
+
+```bash
+node -v
+npm -v
+pnpm -v
+python --version
+uv --version
+go version
+ruby -v
+# Optional runtimes (if enabled):
+java -version
+rustc --version
+cargo --version
+```
+
+If you still see an unexpected version, reload your shell:
+
+```bash
+source ~/.zshrc
+rehash
+```
+
+## `make lint-docs` fails with `No version is set for shim: markdownlint`
+
+This usually means your current shell is not activated with a Node version for shims.
+
+Fix:
+
+```bash
+source ~/.zshrc
+make mise
+```
+
+If needed, set a global Node default for shim-based CLIs:
+
+```bash
+mise use -g node@25
+```
+
+## Icons look broken in terminal
+
+Use `JetBrainsMono Nerd Font` in your terminal profile.
+
+The font is installed via `Brewfile` as `font-jetbrains-mono-nerd-font`.

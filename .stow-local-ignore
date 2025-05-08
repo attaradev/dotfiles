@@ -1,0 +1,37 @@
+# Stow local ignore file
+# Files and directories matching these patterns won't be stowed
+
+# Git files
+\.git
+\.gitignore
+\.gitmodules
+
+# Documentation
+^/README.*
+^/LICENSE.*
+^/CHANGELOG.*
+
+# Scripts
+^/setup\.sh
+^/install_.*\.sh
+^/brew\.sh
+^/vscode_setup\.sh
+^/stow_setup\.sh
+^/setup_gnupg\.sh
+^/Brewfile
+^/Makefile
+
+# Backup files
+.*~
+\#.*\#
+\.#.*
+
+# OS files
+\.DS_Store
+Thumbs\.db
+
+# Editor files
+\.vscode
+\.idea
+\.swp$
+\.swo$
