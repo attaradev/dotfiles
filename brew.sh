@@ -23,6 +23,7 @@ brew install \
   libgcrypt
   libgpg-error
   libidn2
+  libpq
   libksba
   libnghttp2
   libtasn1
