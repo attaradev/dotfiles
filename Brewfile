@@ -132,6 +132,7 @@ brew "stow"                         # Symlink farm manager for organizing dotfil
 
 # --- Development Tools ---
 cask "visual-studio-code"           # Powerful, extensible code editor
+cask "claude-code"                  # AI-powered coding assistant with CLI integration
 cask "postman"                      # API development and testing platform
 cask "postgres-unofficial"          # PostgreSQL database (Postgres.app) - supports multiple versions
 
