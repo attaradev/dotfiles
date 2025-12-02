@@ -111,6 +111,15 @@ if command -v bat &> /dev/null; then
   alias cat='bat'
 fi
 
+if command -v fd &> /dev/null; then
+  alias f='fd'
+fi
+
+# Starship
+if command -v starship &> /dev/null; then
+  alias ss='starship'
+fi
+
 # Git aliases
 alias g='git'
 alias gs='git status'

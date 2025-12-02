@@ -194,12 +194,14 @@ Enhanced, faster, and more user-friendly alternatives to standard Unix tools. Al
 | `cat` | **bat** | File viewer with syntax highlighting, line numbers, and Git integration |
 | `tree` | **eza** | Tree view with icons |
 | `z` | **zoxide** | Smart directory jumper that learns your habits |
-| `find` | **fd** | Intuitive alternative with smart case-sensitivity and `.gitignore` awareness |
-| `grep` | **ripgrep** | Blazing-fast recursive search, respects `.gitignore` by default |
+| `f` | **fd** | Fast, user-friendly 'find' alternative with `.gitignore` awareness |
+| `rg` | **ripgrep** | Blazing-fast recursive search, respects `.gitignore` by default |
+| `ss` | **starship** | Shortcut for starship commands (config, prompt, etc.) |
 | - | **fzf** | Interactive fuzzy finder for files, history, and more (Ctrl+R, Ctrl+T) |
-| - | **starship** | Minimal, fast cross-shell prompt with Git, languages, and execution time |
 | - | **tldr** | Simplified, practical command examples (better than man pages) |
 | - | **jq** | Command-line JSON processor for parsing and manipulating JSON data |
+
+**Note:** We use shortcuts (`f`, `rg`, `ss`) instead of overriding system commands (`find`, `grep`) to avoid conflicts with scripts and system utilities.
 
 ### Shell Configuration
 
@@ -285,10 +287,13 @@ l                   # Quick eza listing with icons
 ll                  # Long list with git status
 tree                # Tree view with icons
 z dotfiles          # Jump to directory
+f pattern           # Fast file search with fd
+rg pattern          # Fast content search with ripgrep
+ss config           # Starship commands (config, prompt, etc.)
 Ctrl+R              # Search history (fzf)
 ```
 
-**Aliases:** `l`, `ll`, `la`, `g`, `gs`, `ga`, `gc`, `gp`, `gl`, `brewup`, `brewdump`, `..`, `reload`, `c`
+**Aliases:** `l`, `ll`, `la`, `f`, `rg`, `ss`, `g`, `gs`, `ga`, `gc`, `gp`, `gl`, `brewup`, `brewdump`, `..`, `reload`, `c`
 
 **mise:**
 
