@@ -54,6 +54,12 @@ zstyle ':completion:*' menu select
 # ============================================
 if command -v mise &> /dev/null; then
   eval "$(mise activate zsh)"
+
+  # Setup pnpm path if installed via mise
+  export PNPM_HOME="$HOME/.local/share/mise/installs/pnpm/latest/bin"
+  if [[ -d "$PNPM_HOME" ]]; then
+    export PATH="$PNPM_HOME:$PATH"
+  fi
 fi
 
 # ============================================
@@ -152,6 +158,19 @@ alias dotfiles='cd ~/.dotfiles'
 alias brewup='brew update && brew upgrade && brew cleanup'
 alias brewdump='brew bundle dump --force --describe --file=~/.dotfiles/Brewfile'
 
+# pnpm (preferred over npm)
+alias pn='pnpm'
+alias pni='pnpm install'
+alias pna='pnpm add'
+alias pnd='pnpm add -D'
+alias pnr='pnpm remove'
+alias pnx='pnpm dlx'
+alias pnu='pnpm update'
+alias pnb='pnpm build'
+alias pndev='pnpm dev'
+alias pnstart='pnpm start'
+alias pntest='pnpm test'
+
 # Docker
 alias dps='docker ps'
 alias dpsa='docker ps -a'
@@ -183,6 +202,36 @@ export LSCOLORS=GxFxCxDxBxegedabagaced
 
 # GPG TTY (for signing commits)
 export GPG_TTY=$(tty)
+
+# ============================================
+# Security Enhancements
+# ============================================
+
+# Prevent accidental file overwrites
+setopt NO_CLOBBER
+
+# Warn about background jobs on exit
+setopt CHECK_JOBS
+
+# Don't save commands that start with space to history (for sensitive commands)
+setopt HIST_IGNORE_SPACE
+
+# Security: Strict umask (files: 644, dirs: 755)
+umask 022
+
+# Security: Limit core dump size to 0
+ulimit -c 0
+
+# Security: Clear sensitive environment variables on exit
+trap 'unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY NPM_TOKEN' EXIT
+
+# Security: SSH agent socket permissions
+if [ -S "$SSH_AUTH_SOCK" ]; then
+  chmod 600 "$SSH_AUTH_SOCK" 2>/dev/null || true
+fi
+
+# Security: Verify SSH host keys
+export SSH_ASKPASS_REQUIRE=prefer
 
 # ============================================
 # Starship Prompt (must be at the end)

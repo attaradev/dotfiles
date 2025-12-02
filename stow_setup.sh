@@ -40,6 +40,9 @@ backup_if_exists() {
 
 # Backup existing configs before symlinking
 backup_if_exists "$HOME/.zshrc"
+backup_if_exists "$HOME/.gitconfig"
+backup_if_exists "$HOME/.npmrc"
+backup_if_exists "$HOME/.mise.toml"
 
 # ============================================
 # Stow packages
@@ -51,6 +54,12 @@ echo "📂 Stowing configuration packages..."
 # Array of packages to stow
 PACKAGES=(
   "zsh"
+  "git"
+  "npm"
+  "mise"
+  "starship"
+  "ssh"
+  "gpg"
 )
 
 # Stow each package
@@ -68,6 +77,25 @@ echo "✅ Stow setup complete!"
 echo ""
 echo "Symlinks created:"
 echo "  ~/.zshrc -> $DOTFILES_DIR/zsh/.zshrc"
+echo "  ~/.gitconfig -> $DOTFILES_DIR/git/.gitconfig"
+echo "  ~/.npmrc -> $DOTFILES_DIR/npm/.npmrc"
+echo "  ~/.mise.toml -> $DOTFILES_DIR/mise/.mise.toml"
+echo "  ~/.config/starship.toml -> $DOTFILES_DIR/starship/.config/starship.toml"
+echo "  ~/.ssh/config -> $DOTFILES_DIR/ssh/.ssh/config"
+echo "  ~/.gnupg/gpg.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg.conf"
+echo "  ~/.gnupg/gpg-agent.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg-agent.conf"
+
+echo ""
+echo "⚠️  Security Note:"
+echo "  Private keys are NOT stowed for security reasons."
+echo "  SSH: ssh-keygen -t ed25519 -C 'your_email@example.com'"
+echo "  GPG: gpg --full-generate-key"
+echo "  Create directories: mkdir -p ~/.ssh/sockets ~/.gnupg && chmod 700 ~/.ssh ~/.gnupg"
+echo ""
+echo "🔐 Keychain Integration:"
+echo "  Git credentials: Stored securely in macOS Keychain (osxkeychain)"
+echo "  GPG passphrases: Managed by pinentry-mac with Keychain"
+echo "  Restart GPG agent: gpgconf --kill gpg-agent"
 echo ""
 echo "To add more configurations:"
 echo "  1. Create a directory in $DOTFILES_DIR (e.g., 'git')"

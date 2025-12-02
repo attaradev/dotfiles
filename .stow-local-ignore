@@ -16,7 +16,10 @@
 ^/install_.*\.sh
 ^/brew\.sh
 ^/vscode_setup\.sh
+^/stow_setup\.sh
+^/setup_gnupg\.sh
 ^/Brewfile
+^/Makefile
 
 # Backup files
 .*~

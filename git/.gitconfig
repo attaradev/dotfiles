@@ -1,0 +1,62 @@
+[user]
+	name = Mike Attara
+	email = mpyebattara@gmail.com
+	signingkey = 38385800BDE2498F
+
+[credential]
+	helper = osxkeychain
+
+[core]
+	editor = vim
+	autocrlf = input
+	pager = less
+	whitespace = trailing-space,space-before-tab
+
+[init]
+	defaultBranch = develop
+
+[commit]
+	gpgsign = true
+	verbose = true
+
+[color]
+	ui = auto
+
+[gpg]
+	program = gpg
+	format = openpgp
+
+[tag]
+	gpgSign = true
+	forceSignAnnotated = true
+
+[fetch]
+	prune = true
+	pruneTags = true
+
+[pull]
+	ff = only
+
+[push]
+	default = current
+	followTags = true
+	useForceIfIncludes = true
+
+[merge]
+	verifySignatures = true
+	conflictStyle = zdiff3
+
+[transfer]
+	fsckObjects = true
+
+[receive]
+	fsckObjects = true
+
+[protocol]
+	file.allow = user
+
+[url "https://github.com/"]
+	insteadOf = git://github.com/
+
+[url "https://"]
+	insteadOf = git://

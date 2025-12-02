@@ -1,15 +1,15 @@
 # 🛠 Dotfiles Setup for macOS
 
-> My personal macOS development environment setup with performance-optimized configurations, modern CLI tools, and streamlined workflows. Feel free to fork and customize to your preferences!
+> My personal macOS development environment setup with **security-first design**, performance-optimized configurations, modern CLI tools, and streamlined workflows. Built for developers who value both security and productivity.
 
-This is my preferred setup for macOS development environments. You can use it as-is or as a starting point to build your own. The setup includes:
+## ✨ Highlights
 
-- **Homebrew Bundle** - Declarative package management through a single Brewfile for consistent installs
-- **mise** - Fast, unified version manager supporting 300+ tools (Node.js, Python, Ruby, Go, etc.)
-- **GNU Stow** - Elegant symlink management keeping your dotfiles organized and portable
-- **Starship** - Minimal, blazing-fast cross-shell prompt with smart context awareness
-- **Modern CLI tools** - Enhanced replacements: eza (ls), bat (cat), fd (find), ripgrep (grep), fzf, zoxide
-- **VSCode** - Curated extension collection for Python, Go, TypeScript, Docker, Terraform, and AI tools
+- **🔐 Security First** - Keychain integration, GPG signing, hardened SSH, credential protection
+- **📦 Declarative Package Management** - Single Brewfile for reproducible installs
+- **⚡ Fast Version Management** - mise for Node.js, Python, Go, Ruby (20-100x faster than nvm/pyenv)
+- **🔗 Smart Symlinks** - GNU Stow for organized, portable dotfile management
+- **🎨 Modern CLI Tools** - eza, bat, fd, ripgrep, fzf, zoxide, starship
+- **🛡️ Security Tools** - gitleaks, trivy, lynis, ssh-audit, git-crypt
 
 ## ⚙️ Quick Start
 
@@ -35,30 +35,13 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-The setup script will:
+The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates symlinks via GNU Stow, and configures GPG with Keychain integration.
 
-1. ✅ Install Homebrew (macOS package manager, skipped if already present)
-2. 📦 Install all packages, tools, and applications from the Brewfile
-3. 🔧 Setup mise and install Node.js LTS by default
-4. 🔗 Create symlinks for dotfiles using GNU Stow (backs up existing files)
-5. 🔐 Configure GnuPG with pinentry-mac for Git commit signing
-6. 🎨 Install VSCode extensions (optional, prompts before installing)
-
-### 3. Restart your terminal
+### 3. Verify installation
 
 ```bash
-# Reload your shell configuration
-source ~/.zshrc
-
-# Or simply restart your terminal
-```
-
-### 4. Verify installation
-
-```bash
-brew doctor          # Check Homebrew health
-mise doctor          # Check mise health
-mise list            # Show installed versions
+source ~/.zshrc      # Or restart terminal
+mise list            # Show installed tools
 ```
 
 ---
@@ -67,176 +50,88 @@ mise list            # Show installed versions
 
 ```text
 dotfiles/
-├── Makefile              # Convenient shortcuts for common tasks
-├── Brewfile              # Declarative Homebrew package list
+├── Makefile              # Task shortcuts (install, update, backup)
+├── Brewfile              # Declarative package list
 ├── setup.sh              # Main orchestration script
-├── install_mise.sh       # mise version manager setup
-├── stow_setup.sh         # GNU Stow symlink manager setup
-├── setup_gnupg.sh        # GnuPG (GPG) configuration
-├── vscode_setup.sh       # VSCode extensions installer
-├── .stow-local-ignore    # Stow ignore patterns
-├── .gitignore            # Git ignore patterns
-└── zsh/
-    └── .zshrc            # ZSH configuration with Starship prompt
+├── install_mise.sh       # Version manager setup
+├── stow_setup.sh         # Symlink manager
+├── setup_gnupg.sh        # GPG configuration
+├── zsh/.zshrc            # Shell config + security
+├── git/.gitconfig        # Git + Keychain + signing
+├── npm/.npmrc            # npm config (tokens in .npmrc.local)
+├── mise/.mise.toml       # Tool versions (Node, Python, Go, Ruby, pnpm)
+├── starship/.config/starship.toml  # Prompt styling
+├── ssh/.ssh/config       # SSH hardening
+└── gpg/.gnupg/           # GPG + Keychain integration
 ```
 
 ## 🚀 What's Included
 
 ### Makefile Commands
 
-**Convenient shortcuts** for managing your dotfiles. Run `make help` to see all available commands:
-
 ```bash
-# Setup & Installation
 make install          # Full setup (first time)
-make brew             # Install packages from Brewfile
-make mise             # Setup mise and language runtimes
-make stow             # Create dotfile symlinks
-
-# Updates & Maintenance
 make update           # Update all packages and tools
 make doctor           # Run health checks
-make status           # Show system status
-
-# Brewfile Management
 make dump             # Generate Brewfile from system
-make cleanup          # Remove unlisted packages
-
-# Backup & Testing
 make backup           # Backup current dotfiles
-make test             # Test idempotency
+make help             # See all commands
 ```
-
-**Benefits:**
-
-- Single command for common operations
-- No need to remember script names
-- Built-in help documentation
-- Safer operations with validation
 
 ### Package Management
 
-**Brewfile** provides declarative, version-controlled package management. Instead of manually installing packages one by one, define everything in a single file:
+**Brewfile** = declarative, version-controlled package management. One file, all packages.
 
 ```bash
-# Install all packages defined in Brewfile
-brew bundle install
-
-# Generate Brewfile from currently installed packages
-brew bundle dump --force --describe
-
-# Remove packages not listed in Brewfile (cleanup unused packages)
-brew bundle cleanup --force
+brew bundle install              # Install all
+brew bundle dump --force         # Generate from system
+brew bundle cleanup --force      # Remove unlisted
 ```
-
-**Benefits:**
-
-- Reproducible setups across multiple machines
-- Version-controlled package list in Git
-- Easy to share and collaborate
-- One command to install everything
 
 ### Version Management with mise
 
-**mise** replaces nvm, pyenv, rbenv, and similar tools with a single, blazing-fast version manager written in Rust. It automatically detects and switches language versions based on your project directory.
+**mise** = single tool replacing nvm/pyenv/rbenv. Rust-based, 20-100x faster, auto-switches versions per directory.
 
-**Default installations** (via [install_mise.sh](install_mise.sh)):
-
-- Node.js LTS + npm
-- Python latest
-- Go latest
-- Ruby latest
-- pnpm (fast Node.js package manager)
+**Installed**: Node.js LTS, Python, Go, Ruby, pnpm
 
 ```bash
-# Install and use Node.js LTS globally
-mise use --global node@lts
-
-# Install Python 3.12 for current project
-mise use python@3.12
-
-# Install specific Go version
-mise use go@1.21
-
-# Install Ruby 3.2
-mise use ruby@3.2
-
-# List all available versions for a tool
-mise ls-remote node
-mise ls-remote python
-
-# Show currently installed versions
-mise list
-
-# Upgrade tools to latest versions
-mise upgrade
+mise use --global node@lts       # Set global default
+mise use python@3.12             # Project-specific version
+mise ls-remote node              # List available versions
+mise list                        # Show installed
+mise upgrade                     # Update all
 ```
-
-**Key Features:**
-
-- ⚡ **Blazing fast** - Written in Rust, 20-100x faster than nvm/pyenv
-- 🔄 **Auto-switching** - Automatically changes versions when you cd into project directories
-- 🌍 **Universal support** - Manages 300+ tools: Node, Python, Ruby, Go, Java, PHP, Terraform, etc.
-- 🔙 **Drop-in compatible** - Reads `.nvmrc`, `.node-version`, `.ruby-version`, `.python-version` files
-- 🎯 **Environment variables** - Built-in support for per-project environment variables
-- 📦 **Single binary** - One tool to replace nvm, pyenv, rbenv, goenv, and more
-- 💾 **Project-local configs** - Each project can specify its own tool versions in `.mise.toml`
 
 ### Modern CLI Tools
 
-Enhanced, faster, and more user-friendly alternatives to standard Unix tools. All are automatically aliased in [zsh/.zshrc](zsh/.zshrc):
+Fast, user-friendly alternatives with smart defaults. Aliased in [zsh/.zshrc](zsh/.zshrc):
 
-| Command | Tool | Description |
-|---------|------|-------------|
-| `l` | **eza** | Quick listing with icons |
-| `ll` | **eza** | Long format with Git status, icons, and file details |
-| `la` | **eza** | Long format including hidden files |
-| `cat` | **bat** | File viewer with syntax highlighting, line numbers, and Git integration |
-| `tree` | **eza** | Tree view with icons |
-| `z` | **zoxide** | Smart directory jumper that learns your habits |
-| `f` | **fd** | Fast, user-friendly 'find' alternative with `.gitignore` awareness |
-| `rg` | **ripgrep** | Blazing-fast recursive search, respects `.gitignore` by default |
-| `ss` | **starship** | Shortcut for starship commands (config, prompt, etc.) |
-| - | **fzf** | Interactive fuzzy finder for files, history, and more (Ctrl+R, Ctrl+T) |
-| - | **tldr** | Simplified, practical command examples (better than man pages) |
-| - | **jq** | Command-line JSON processor for parsing and manipulating JSON data |
+| Shortcut | Tool | Replaces |
+|----------|------|----------|
+| `l`, `ll`, `la` | **eza** | ls (with icons, Git status) |
+| `cat` | **bat** | cat (syntax highlighting) |
+| `tree` | **eza** | tree (with icons) |
+| `z` | **zoxide** | cd (learns habits) |
+| `f` | **fd** | find (gitignore-aware) |
+| `rg` | **ripgrep** | grep (fast, smart) |
+| `fzf` | **fzf** | Fuzzy finder (Ctrl+R, Ctrl+T) |
 
-**Note:** I use custom shortcuts rather than replacing system commands. This avoids conflicts with scripts or system tools that rely on the original commands.
+**Note:** Custom shortcuts avoid overriding system commands to prevent script conflicts.
 
 ### Shell Configuration
 
-A carefully tuned ZSH setup optimized for speed and developer productivity, using **Starship**.
+**Starship prompt** (<1ms rendering, Rust-based) + ZSH plugins for speed and productivity.
 
-**Why Starship over Oh My Zsh?**
-
-- ⚡ **Performance** - <1ms rendering vs 50-200ms for Powerlevel10k
-- 🦀 **Rust binary** - ~2MB vs OMZ's ~200MB with themes/plugins
-- 🎯 **Focused** - Single TOML config file, no complex wizard
-- 🌍 **Universal** - Same config for ZSH, Bash, Fish, PowerShell
-- 📦 **Modular** - Use only needed plugins via Homebrew
-
-**Features:**
-
-- 🎨 Minimal prompt showing Git status, language versions, execution time
-- 🔋 Smart context detection (Node, Python, Go, Ruby, AWS, Docker)
-- 📊 Branch status, stash count, ahead/behind commits
-
-*Note: Oh My Zsh is excellent if you prefer an all-in-one framework!*
-
-**ZSH Plugins:**
-
-- **zsh-autosuggestions** - Fish-style suggestions (async, accept with →)
-- **zsh-syntax-highlighting** - Real-time highlighting (green=valid, red=invalid)
-- **zsh-completions** - 200+ definitions for Docker, Git, npm, etc.
-
-**Performance:** <100ms startup, async plugin loading, lazy initialization
+**Plugins**: autosuggestions, syntax-highlighting, completions
+**Startup**: <100ms with async loading
 
 ### Dotfile Management with GNU Stow
 
-Manages symlinks from `~/.dotfiles` to your home directory. Version-controlled, portable, automatically backs up existing files.
+Symlink manager: `~/.dotfiles` → home directory. Auto-backs up existing files.
+
+**Packages**: zsh, git, npm, mise, starship, ssh, gpg
 
 ```bash
-cd ~/.dotfiles
 stow zsh              # Create symlinks
 stow -D zsh           # Remove symlinks
 stow --restow zsh     # Re-apply symlinks
@@ -244,123 +139,84 @@ stow --restow zsh     # Re-apply symlinks
 
 ### GnuPG (GPG) Setup
 
-Secure encryption and Git commit signing with macOS-native integration.
+Encryption + Git signing with **Keychain integration** (Touch ID compatible).
 
-**Features:** pinentry-mac, AES256/SHA512 encryption, Git commit signing, clipboard integration
+**Config**: AES256/SHA512, 2h/8h cache, pinentry-mac
 
 ```bash
-gpg --full-generate-key                        # Create key
+gpg --full-generate-key                        # Generate RSA 4096
 gpg --list-secret-keys --keyid-format LONG     # List keys
-git config --global user.signingkey <KEY_ID>   # Configure Git
-git config --global commit.gpgsign true
-gpg --armor --export <KEY_ID> | pbcopy         # Export to clipboard
+gpg --armor --export <KEY_ID> | pbcopy         # Copy to GitHub
+git commit --allow-empty -m "test" --gpg-sign  # Test signing
 ```
 
 ---
 
 ## 🎨 Customization
 
-Fork and customize to match your needs!
+**Packages**: Edit [Brewfile](Brewfile) → `brew bundle install`
 
-**Packages:** Edit [Brewfile](Brewfile), then run `brew bundle install`
+**Private settings**: Create `~/.zshrc.local` (never committed)
 
-**VSCode Extensions:** Edit [vscode_setup.sh](vscode_setup.sh) or use Settings Sync
+**Tool versions**: Edit [mise/.mise.toml](mise/.mise.toml)
 
-**Shell Config:** Edit [zsh/.zshrc](zsh/.zshrc) or create `~/.zshrc.local` for private settings
-
-```bash
-# ~/.zshrc.local - Never committed to Git
-export API_KEY="secret"
-alias work="cd $HOME/Projects"
-```
-
-**More Dotfiles:** `mkdir ~/.dotfiles/git && stow git`
+**Add dotfiles**: Create dir → `stow <name>`
 
 ---
 
 ## 💡 Tips & Tricks
 
-**CLI Usage:**
-
 ```bash
-l                   # Quick eza listing with icons
-ll                  # Long list with git status
-tree                # Tree view with icons
-z dotfiles          # Jump to directory
-f pattern           # Fast file search with fd
-rg pattern          # Fast content search with ripgrep
-ss config           # Starship commands (config, prompt, etc.)
-Ctrl+R              # Search history (fzf)
-```
-
-**Aliases:** `l`, `ll`, `la`, `f`, `rg`, `ss`, `g`, `gs`, `ga`, `gc`, `gp`, `gl`, `brewup`, `brewdump`, `..`, `reload`, `c`
-
-**mise:**
-
-```bash
-mise use node@20                 # Specific version
-mise use --global node@lts       # Global default
-echo 'VAR=value' >> .mise.toml   # Per-project env vars
+l / ll / la         # eza listing
+z <dir>             # zoxide jump
+f / rg <pattern>    # fd / ripgrep search
+Ctrl+R              # fzf history
+mise use node@20    # Set version
 ```
 
 ---
 
 ## 🔧 Maintenance
 
-**Using Makefile (recommended):**
-
 ```bash
-make update                      # Update all packages and tools
-make doctor                      # Run health checks
-make dump                        # Regenerate Brewfile
-make status                      # Show system status
+make update         # Update all
+make doctor         # Health checks
+make dump           # Regenerate Brewfile
 ```
 
-**Using shell aliases:**
+---
+
+## 🔒 Security
+
+**Built-in**: GPG signing, SSH hardening (Ed25519, ChaCha20), Keychain integration, no hardcoded tokens
+
+**Tools**: gitleaks, trivy, lynis, ssh-audit, git-crypt
+
+**⚠️ Never commit**: SSH keys, GPG keys, tokens, `.env` files. Use `~/.npmrc.local` and `~/.zshrc.local` instead.
+
+**Quick setup**:
 
 ```bash
-brewup                           # Update Homebrew packages
-mise upgrade                     # Update mise-managed tools
-brewdump                         # Regenerate Brewfile
+ssh-keygen -t ed25519              # Generate key
+chmod 600 ~/.ssh/id_ed25519        # Set permissions
+gitleaks detect --source . -v      # Scan for secrets
 ```
+
+**See [SECURITY.md](SECURITY.md) for complete documentation**
 
 ---
 
 ## 💡 Troubleshooting
 
-**mise not found:** `source ~/.zshrc` or restart terminal
-
-**VSCode CLI:** In VSCode: `Cmd+Shift+P` → "Shell Command: Install 'code' command in PATH"
-
-**Stow conflicts:** `mv ~/.zshrc ~/.zshrc.backup` then re-run `stow zsh`
-
-**Homebrew issues:** `brew doctor` and `brew update`
-
-**Permissions:** `chmod +x *.sh`
+- **mise not found**: `source ~/.zshrc` or restart terminal
+- **Stow conflicts**: Backup existing file → re-run stow
+- **Homebrew issues**: `brew doctor && brew update`
 
 ---
 
 ## 🤝 Sharing & Contributing
 
-I'm always learning! Share your workflows, tools, and productivity tips.
-
-**Use This Setup:**
-
-- Fork and customize to your needs
-- Share what works for you!
-
-**Share With Me:**
-
-- Tools that transformed your workflow
-- Time-saving aliases, scripts, configs
-- Better alternatives to tools listed here
-
-**Contribute:**
-
-- Found bugs? Submit PRs!
-- Fork for major customizations
-
-Open an [issue](https://github.com/attaradev/dotfiles/issues) or discussion—I value your input!
+Fork, customize, and share what works! Found bugs or improvements? Submit PRs or open an [issue](https://github.com/attaradev/dotfiles/issues).
 
 ---
 
@@ -372,4 +228,4 @@ Open an [issue](https://github.com/attaradev/dotfiles/issues) or discussion—I 
 
 *This setup reflects my personal preferences built over years of development on macOS. Your ideal setup may differ—use this as inspiration and make it your own!*
 
-Made with ❤️ for the developer community
+Made with ❤️ by Mike Attara &mdash; [🌐 attara.dev](https://attara.dev)

@@ -1,0 +1,13 @@
+[tools]
+node = "lts"
+python = "latest"
+go = "latest"
+ruby = "latest"
+pnpm = "latest"
+
+[env]
+NODE_ENV = "development"
+npm_config_user_agent = "pnpm"
+
+[settings]
+experimental = true

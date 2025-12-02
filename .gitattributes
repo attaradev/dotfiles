@@ -1,0 +1,19 @@
+# Git attributes file
+# Helps git and editors identify file types correctly
+
+# SSH config files
+ssh/.ssh/config linguist-language=SSH-Config
+**/ssh/config linguist-language=SSH-Config
+
+# Shell scripts
+*.sh linguist-language=Shell
+
+# Configuration files
+*.toml linguist-language=TOML
+Brewfile linguist-language=Ruby
+Makefile linguist-language=Makefile
+.gitignore linguist-language=gitignore
+.stow-local-ignore linguist-language=Text
+
+# Markdown files
+*.md linguist-language=Markdown

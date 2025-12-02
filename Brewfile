@@ -36,6 +36,12 @@ brew "git-flow"                     # Git extensions for Vincent Driessen's bran
 brew "gnupg"                        # GNU Privacy Guard - Encryption and signing tool
 brew "pinentry-mac"                 # Native macOS passphrase entry dialog for GnuPG
 brew "mkcert"                       # Simple zero-config tool for locally-trusted development certificates
+brew "git-crypt"                    # Transparent file encryption in git repositories
+brew "age"                          # Simple, modern, and secure file encryption tool
+brew "ssh-audit"                    # SSH server & client security auditing
+brew "lynis"                        # Security auditing tool for Unix-based systems
+brew "trivy"                        # Vulnerability scanner for containers and IaC
+brew "gitleaks"                     # Scan git repos for secrets and credentials
 
 # ============================================
 # Version Management
