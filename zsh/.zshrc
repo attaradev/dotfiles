@@ -101,7 +101,7 @@ fi
 
 # Modern CLI replacements
 if command -v eza &> /dev/null; then
-  alias ls='eza --icons'
+  alias l='eza --icons'
   alias ll='eza -lh --icons --git'
   alias la='eza -lah --icons --git'
   alias tree='eza --tree --icons'

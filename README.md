@@ -99,12 +99,23 @@ brew bundle cleanup --force
 
 **mise** replaces nvm, pyenv, rbenv, and similar tools with a single, blazing-fast version manager written in Rust. It automatically detects and switches language versions based on your project directory.
 
+**Default installations** (via [install_mise.sh](install_mise.sh)):
+
+- Node.js LTS + npm
+- Python latest
+- Go latest
+- Ruby latest
+- pnpm (fast Node.js package manager)
+
 ```bash
 # Install and use Node.js LTS globally
-mise use node@lts
+mise use --global node@lts
 
 # Install Python 3.12 for current project
 mise use python@3.12
+
+# Install specific Go version
+mise use go@1.21
 
 # Install Ruby 3.2
 mise use ruby@3.2
@@ -117,7 +128,7 @@ mise ls-remote python
 mise list
 
 # Upgrade tools to latest versions
-mise upgrade node@lts
+mise upgrade
 ```
 
 **Key Features:**
@@ -136,11 +147,14 @@ Enhanced, faster, and more user-friendly alternatives to standard Unix tools. Al
 
 | Command | Tool | Description |
 |---------|------|-------------|
-| `ls` | **eza** | Modern replacement with Git status, icons, tree views, and colors |
+| `l` | **eza** | Quick listing with icons |
+| `ll` | **eza** | Long format with Git status, icons, and file details |
+| `la` | **eza** | Long format including hidden files |
 | `cat` | **bat** | File viewer with syntax highlighting, line numbers, and Git integration |
+| `tree` | **eza** | Tree view with icons |
+| `z` | **zoxide** | Smart directory jumper that learns your habits |
 | `find` | **fd** | Intuitive alternative with smart case-sensitivity and `.gitignore` awareness |
 | `grep` | **ripgrep** | Blazing-fast recursive search, respects `.gitignore` by default |
-| `cd` | **zoxide** | Smart directory jumper that learns your habits (use `z` to jump) |
 | - | **fzf** | Interactive fuzzy finder for files, history, and more (Ctrl+R, Ctrl+T) |
 | - | **starship** | Minimal, fast cross-shell prompt with Git, languages, and execution time |
 | - | **tldr** | Simplified, practical command examples (better than man pages) |
@@ -226,13 +240,14 @@ alias work="cd $HOME/Projects"
 **CLI Usage:**
 
 ```bash
+l                   # Quick eza listing with icons
 ll                  # Long list with git status
 tree                # Tree view with icons
 z dotfiles          # Jump to directory
 Ctrl+R              # Search history (fzf)
 ```
 
-**Aliases:** `g`, `gs`, `ga`, `gc`, `gp`, `gl`, `brewup`, `brewdump`, `..`, `reload`, `c`
+**Aliases:** `l`, `ll`, `la`, `g`, `gs`, `ga`, `gc`, `gp`, `gl`, `brewup`, `brewdump`, `..`, `reload`, `c`
 
 **mise:**
 
