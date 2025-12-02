@@ -201,11 +201,11 @@ Enhanced, faster, and more user-friendly alternatives to standard Unix tools. Al
 | - | **tldr** | Simplified, practical command examples (better than man pages) |
 | - | **jq** | Command-line JSON processor for parsing and manipulating JSON data |
 
-**Note:** We use shortcuts (`f`, `rg`, `ss`) instead of overriding system commands (`find`, `grep`) to avoid conflicts with scripts and system utilities.
+**Note:** I use custom shortcuts rather than replacing system commands. This avoids conflicts with scripts or system tools that rely on the original commands.
 
 ### Shell Configuration
 
-A carefully tuned ZSH setup optimized for speed and developer productivity, using **Starship** instead of Oh My Zsh.
+A carefully tuned ZSH setup optimized for speed and developer productivity, using **Starship**.
 
 **Why Starship over Oh My Zsh?**
 
