@@ -1,46 +1,191 @@
 #!/bin/bash
 
-echo "🔧 Starting system setup..."
+# ============================================
+# Main Setup Script for macOS Development Environment
+# ============================================
+# This script orchestrates the setup of:
+# - Homebrew packages and applications (via Brewfile)
+# - mise for version management (Node, Python, Ruby, etc.)
+# - GNU Stow for dotfile symlink management
+# - GnuPG (GPG) for secure communications and commit signing
+# - VSCode extensions
+# ============================================
 
-# Run Homebrew setup
-if [ -x ./brew.sh ]; then
-  echo "📦 Running brew.sh..."
-  ./brew.sh
+set -e  # Exit on error
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Helper functions
+print_header() {
+  echo ""
+  echo -e "${BLUE}============================================${NC}"
+  echo -e "${BLUE}$1${NC}"
+  echo -e "${BLUE}============================================${NC}"
+  echo ""
+}
+
+print_success() {
+  echo -e "${GREEN}✓${NC} $1"
+}
+
+print_error() {
+  echo -e "${RED}✗${NC} $1"
+}
+
+print_warning() {
+  echo -e "${YELLOW}⚠${NC} $1"
+}
+
+print_info() {
+  echo -e "${BLUE}ℹ${NC} $1"
+}
+
+# ============================================
+# Pre-flight checks
+# ============================================
+
+print_header "Pre-flight Checks"
+
+# Check if running on macOS
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  print_error "This script is designed for macOS only."
+  exit 1
+fi
+
+print_success "Running on macOS"
+
+# Get the directory where this script is located
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+print_info "Dotfiles directory: $DOTFILES_DIR"
+
+cd "$DOTFILES_DIR"
+
+# ============================================
+# Step 1: Install Homebrew
+# ============================================
+
+print_header "Step 1: Homebrew Installation"
+
+if command -v brew &> /dev/null; then
+  print_success "Homebrew is already installed ($(brew --version | head -n 1))"
 else
-  echo "❌ brew.sh not found or not executable."
+  print_info "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Add Homebrew to PATH for Apple Silicon Macs
+  if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+
+  print_success "Homebrew installed successfully"
 fi
 
-# Run NVM setup
-if [ -x ./install_nvm.sh ]; then
-  echo "📦 Running install_nvm.sh..."
-  ./install_nvm.sh
+# ============================================
+# Step 2: Install packages from Brewfile
+# ============================================
+
+print_header "Step 2: Installing Packages from Brewfile"
+
+if [[ -f "$DOTFILES_DIR/Brewfile" ]]; then
+  print_info "Running brew bundle install..."
+  brew bundle install --file="$DOTFILES_DIR/Brewfile" --verbose
+  print_success "All packages installed from Brewfile"
 else
-  echo "❌ install_nvm.sh not found or not executable."
+  print_error "Brewfile not found at $DOTFILES_DIR/Brewfile"
+  exit 1
 fi
 
-# Run VSCode setup
-if [ -x ./vscode_setup.sh ]; then
-  echo "📦 Running vscode_setup.sh..."
-  ./vscode_setup.sh
+# ============================================
+# Step 3: Setup mise (version manager)
+# ============================================
+
+print_header "Step 3: Setting up mise"
+
+if [[ -x "$DOTFILES_DIR/install_mise.sh" ]]; then
+  "$DOTFILES_DIR/install_mise.sh"
 else
-  echo "❌ vscode_setup.sh not found or not executable."
+  print_warning "install_mise.sh not found or not executable, skipping..."
 fi
 
-# Autoload the shell profile
-echo "🔄 Sourcing shell profile to apply changes..."
+# ============================================
+# Step 4: Setup dotfiles with GNU Stow
+# ============================================
 
-# Detect the shell (zsh or bash)
-SHELL_PROFILE="$HOME/.zshrc"
-if [ -n "$BASH_VERSION" ]; then
-  SHELL_PROFILE="$HOME/.bashrc"
-fi
+print_header "Step 4: Setting up Dotfiles with GNU Stow"
 
-# Check if profile exists before sourcing
-if [ -f "$SHELL_PROFILE" ]; then
-  source "$SHELL_PROFILE"
-  echo "✔️ Sourced $SHELL_PROFILE successfully."
+if [[ -x "$DOTFILES_DIR/stow_setup.sh" ]]; then
+  "$DOTFILES_DIR/stow_setup.sh"
 else
-  echo "❌ $SHELL_PROFILE not found. Please source manually."
+  print_warning "stow_setup.sh not found or not executable, skipping..."
 fi
 
-echo "✅ Setup complete!"
+# ============================================
+# Step 5: Setup GnuPG (GPG)
+# ============================================
+
+print_header "Step 5: Setting up GnuPG"
+
+if [[ -x "$DOTFILES_DIR/setup_gnupg.sh" ]]; then
+  "$DOTFILES_DIR/setup_gnupg.sh"
+else
+  print_warning "setup_gnupg.sh not found or not executable, skipping..."
+fi
+
+# ============================================
+# Step 6: Setup VSCode extensions
+# ============================================
+
+print_header "Step 6: Setting up VSCode Extensions"
+
+# Ask user if they want to install VSCode extensions
+read -p "Do you want to install VSCode extensions? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  if [[ -x "$DOTFILES_DIR/vscode_setup.sh" ]]; then
+    "$DOTFILES_DIR/vscode_setup.sh"
+  else
+    print_warning "vscode_setup.sh not found or not executable, skipping..."
+  fi
+else
+  print_info "Skipping VSCode extensions setup"
+fi
+
+# ============================================
+# Final Steps
+# ============================================
+
+print_header "Setup Complete!"
+
+echo "Your development environment has been set up successfully!"
+echo ""
+echo "📋 Next Steps:"
+echo ""
+echo "1. Restart your terminal or run:"
+echo "   ${GREEN}source ~/.zshrc${NC}"
+echo ""
+echo "2. Verify installations:"
+echo "   ${GREEN}brew doctor${NC}        # Check Homebrew health"
+echo "   ${GREEN}mise doctor${NC}        # Check mise health"
+echo "   ${GREEN}mise list${NC}          # Show installed versions"
+echo ""
+echo "3. Install additional language versions with mise:"
+echo "   ${GREEN}mise use node@20${NC}   # Install Node.js 20"
+echo "   ${GREEN}mise use python@3.12${NC} # Install Python 3.12"
+echo ""
+echo "4. Explore modern CLI tools:"
+echo "   ${GREEN}ls${NC}                 # Now uses 'eza' with icons"
+echo "   ${GREEN}cat file.txt${NC}       # Now uses 'bat' with syntax highlighting"
+echo "   ${GREEN}cd${NC}                 # Now uses 'zoxide' for smart navigation"
+echo ""
+echo "💡 Tips:"
+echo "   - Use 'z <dir>' for smart directory jumping"
+echo "   - Use 'fzf' with Ctrl+R for command history search"
+echo "   - Use 'brewup' alias to update all Homebrew packages"
+echo ""
+echo "📖 For more information, check the README.md"
+echo ""

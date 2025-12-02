@@ -1,19 +1,79 @@
-# macOS system files
+# ============================================
+# macOS System Files
+# ============================================
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
 
-# NVM and Node-related
+# ============================================
+# Version Managers & Language Runtimes
+# ============================================
+
+# mise - unified version manager
+.mise.toml.local
+.mise.lock
+
+# Legacy version managers (kept for compatibility)
 .nvm/
+
+# Node.js
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Brew-related
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+venv/
+env/
+*.egg-info/
+
+# Ruby
+.ruby-version
+.bundle/
+vendor/bundle/
+
+# ============================================
+# Homebrew
+# ============================================
 *.log
-*.bak
+Brewfile.lock.json
 
-# IDE/Editor-specific files
+# ============================================
+# IDE & Editor Files
+# ============================================
 .vscode/
 .idea/
 *.sublime-workspace
+*.sublime-project
+.nova/
+.ruby-lsp/
 
-# Temporary files
+# ============================================
+# Temporary & Backup Files
+# ============================================
 *.swp
+*.swo
 *.bak
+*.backup
+*~
+\#*\#
+.#*
+
+# ============================================
+# Shell History & Local Configs
+# ============================================
+.zsh_history
+.zshrc.local
+.bashrc.local
+.env.local
+
+# ============================================
+# Stow
+# ============================================
+# Don't ignore .stow-local-ignore as it's part of config
