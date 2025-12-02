@@ -20,7 +20,15 @@ git clone https://github.com/attaradev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ```
 
-### 2. Run the setup script
+### 2. Run the setup
+
+#### Option A: Using Makefile (recommended)
+
+```bash
+make install
+```
+
+#### Option B: Using setup script directly
 
 ```bash
 chmod +x setup.sh
@@ -59,6 +67,7 @@ mise list            # Show installed versions
 
 ```text
 dotfiles/
+├── Makefile              # Convenient shortcuts for common tasks
 ├── Brewfile              # Declarative Homebrew package list
 ├── setup.sh              # Main orchestration script
 ├── install_mise.sh       # mise version manager setup
@@ -72,6 +81,38 @@ dotfiles/
 ```
 
 ## 🚀 What's Included
+
+### Makefile Commands
+
+**Convenient shortcuts** for managing your dotfiles. Run `make help` to see all available commands:
+
+```bash
+# Setup & Installation
+make install          # Full setup (first time)
+make brew             # Install packages from Brewfile
+make mise             # Setup mise and language runtimes
+make stow             # Create dotfile symlinks
+
+# Updates & Maintenance
+make update           # Update all packages and tools
+make doctor           # Run health checks
+make status           # Show system status
+
+# Brewfile Management
+make dump             # Generate Brewfile from system
+make cleanup          # Remove unlisted packages
+
+# Backup & Testing
+make backup           # Backup current dotfiles
+make test             # Test idempotency
+```
+
+**Benefits:**
+
+- Single command for common operations
+- No need to remember script names
+- Built-in help documentation
+- Safer operations with validation
 
 ### Package Management
 
@@ -261,10 +302,20 @@ echo 'VAR=value' >> .mise.toml   # Per-project env vars
 
 ## 🔧 Maintenance
 
+**Using Makefile (recommended):**
+
+```bash
+make update                      # Update all packages and tools
+make doctor                      # Run health checks
+make dump                        # Regenerate Brewfile
+make status                      # Show system status
+```
+
+**Using shell aliases:**
+
 ```bash
 brewup                           # Update Homebrew packages
-brew upgrade mise                # Update mise
-mise upgrade node@lts            # Update mise tools
+mise upgrade                     # Update mise-managed tools
 brewdump                         # Regenerate Brewfile
 ```
 

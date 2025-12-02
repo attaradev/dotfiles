@@ -1,181 +1,171 @@
-# Brewfile - Declarative package management for Homebrew
+# ============================================
+# Brewfile - Declarative Package Management
+# ============================================
 #
-# This Brewfile defines my essential development tools and applications for macOS.
+# My essential development tools and applications for macOS.
+# Organized by category for easy maintenance and understanding.
 #
 # Usage:
 #   brew bundle install              # Install all packages
 #   brew bundle check                # Verify all packages are installed
 #   brew bundle cleanup              # Remove packages not in Brewfile
 #   brew bundle dump --force         # Regenerate from current system (use with caution)
+#
+# Note: Language runtimes (Node.js, Python, Go, Ruby, pnpm) are managed via mise,
+#       not Homebrew. See install_mise.sh for runtime management.
 
-# Taps
+# ============================================
+# Homebrew Taps
+# ============================================
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "hashicorp/tap"
+tap "hookdeck/hookdeck"
 
 # ============================================
-# Core Development Tools
+# Version Control & Collaboration
 # ============================================
 
-# GitHub CLI - Official GitHub command-line tool
-brew "gh"
-
-# GNU Privacy Guard - Encryption and signing tool
-brew "gnupg"
-
-# Pinentry for macOS - Native passphrase entry dialog for GnuPG
-brew "pinentry-mac"
-
-# Version management (unified tool for all languages)
-# Note: Use mise to manage Node.js, Python, Go, Ruby, and their package managers
-brew "mise"
-
-# Infrastructure as Code
-brew "hashicorp/tap/terraform"
-
-# AWS Command Line Interface
-brew "awscli"
-
-# Kubernetes command-line tool
-brew "kubectl"
-
-# Simple command-line tool for creating Kubernetes clusters on AWS
-brew "eksctl"
-
-# Kubernetes package manager
-brew "helm"
-
-# Run local Kubernetes clusters
-brew "minikube"
-
-# Kubernetes IN Docker - local clusters for testing
-brew "kind"
-
-# PostgreSQL C API library
-brew "libpq"
+brew "gh"                           # GitHub CLI - Official GitHub command-line tool
+brew "git-flow"                     # Git extensions for Vincent Driessen's branching model
 
 # ============================================
-# Modern CLI Replacements
+# Security & Encryption
 # ============================================
 
-# Modern replacement for 'ls' with colors and icons
-brew "eza"
+brew "gnupg"                        # GNU Privacy Guard - Encryption and signing tool
+brew "pinentry-mac"                 # Native macOS passphrase entry dialog for GnuPG
+brew "mkcert"                       # Simple zero-config tool for locally-trusted development certificates
 
-# Clone of cat with syntax highlighting
-brew "bat"
+# ============================================
+# Version Management
+# ============================================
 
-# Simple, fast alternative to 'find'
-brew "fd"
+brew "mise"                         # Unified version manager for Node.js, Python, Go, Ruby, etc.
+                                    # Replaces nvm, pyenv, rbenv, goenv with a single fast tool
+                                    # Configure via: install_mise.sh
 
-# Search tool like grep and The Silver Searcher
-brew "ripgrep"
+# ============================================
+# Cloud & Infrastructure
+# ============================================
 
-# Command-line fuzzy finder
-brew "fzf"
+# AWS
+brew "awscli"                       # AWS Command Line Interface
 
-# Smarter cd command inspired by z and autojump
-brew "zoxide"
+# Terraform
+brew "hashicorp/tap/terraform"      # Infrastructure as Code tool
 
-# Simplified and community-driven man pages
-brew "tldr"
+# Kubernetes
+brew "kubectl"                      # Kubernetes command-line tool
+brew "helm"                         # Kubernetes package manager
+brew "eksctl"                       # CLI for creating Kubernetes clusters on AWS
+brew "minikube"                     # Run Kubernetes clusters locally
+brew "kind"                         # Kubernetes IN Docker - local clusters for testing
 
-# Lightweight and flexible command-line JSON processor
-brew "jq"
+# ============================================
+# Databases & Data Tools
+# ============================================
 
-# Terminal-based presentations using Markdown
-brew "slides"
+brew "libpq"                        # PostgreSQL C API library (for psql CLI)
+
+# ============================================
+# Modern CLI Tools
+# ============================================
+# Enhanced replacements for standard Unix tools with better UX
+
+# File & Directory Navigation
+brew "eza"                          # Modern 'ls' with colors, icons, and Git integration
+brew "fd"                           # Fast, user-friendly 'find' alternative
+brew "zoxide"                       # Smarter 'cd' that learns your habits
+
+# File Viewing & Search
+brew "bat"                          # 'cat' clone with syntax highlighting and Git integration
+brew "ripgrep"                      # Ultra-fast 'grep' alternative, respects .gitignore
+brew "fzf"                          # Command-line fuzzy finder (Ctrl+R for history)
+
+# Data Processing & Documentation
+brew "jq"                           # Lightweight JSON processor
+brew "tldr"                         # Simplified, community-driven man pages
+
+# Presentation
+brew "slides"                       # Terminal-based presentations using Markdown
 
 # ============================================
 # Shell & Terminal
 # ============================================
 
-# Cross-shell prompt written in Rust
-brew "starship"
-
-# Terminal multiplexer
-brew "tmux"
-
-# Fish-like autosuggestions for zsh
-brew "zsh-autosuggestions"
-
-# Fish shell-like syntax highlighting for zsh
-brew "zsh-syntax-highlighting"
-
-# ============================================
-# System Libraries & Dependencies
-# ============================================
-# Note: Most system libraries are installed automatically as dependencies.
-# Only list libraries you explicitly need for development.
-
-# OpenSSL for secure communications
-brew "openssl@3"
-
-# Readline for interactive command line editing
-brew "readline"
-
-# ============================================
-# GNU Stow - Symlink farm manager for dotfiles
-# ============================================
-brew "stow"
+brew "starship"                     # Minimal, fast, customizable cross-shell prompt
+brew "tmux"                         # Terminal multiplexer
+brew "zsh-autosuggestions"          # Fish-like autosuggestions for zsh
+brew "zsh-syntax-highlighting"      # Real-time syntax highlighting for zsh
 
 # ============================================
 # Development Utilities
 # ============================================
 
-# Extensions to git for managing releases
-brew "git-flow"
+brew "hookdeck/hookdeck/hookdeck"   # Webhook testing and localhost tunneling (ngrok alternative for webhooks)
 
-# Simple zero-config tool for making locally-trusted development certificates
-brew "mkcert"
+# ============================================
+# System Libraries
+# ============================================
+# Note: Most system libraries are installed automatically as dependencies.
+# Only list libraries you explicitly need for development.
+
+brew "openssl@3"                    # Cryptography and SSL/TLS toolkit
+brew "readline"                     # Library for command-line editing
+
+# ============================================
+# Dotfile Management
+# ============================================
+
+brew "stow"                         # Symlink farm manager for organizing dotfiles
 
 # ============================================
 # GUI Applications
 # ============================================
 
 # --- Development Tools ---
-
-# Visual Studio Code - Code editor
-cask "visual-studio-code"
-
-# API development and testing tool
-cask "postman"
-
-# PostgreSQL database (postgres.app)
-cask "postgres-unofficial"
+cask "visual-studio-code"           # Powerful, extensible code editor
+cask "postman"                      # API development and testing platform
+cask "postgres-unofficial"          # PostgreSQL database (Postgres.app) - supports multiple versions
 
 # --- Containers & Virtualization ---
-
-# Docker Desktop - Containerization platform
-cask "docker-desktop"
-
-# VirtualBox - Virtual machine hypervisor
-cask "virtualbox"
+cask "docker-desktop"               # Containerization platform (includes Docker CLI and daemon)
+cask "virtualbox"                   # Full VM hypervisor for running multiple OS environments
 
 # --- Development Utilities ---
-
-# ngrok - Secure tunnels to localhost
-cask "ngrok"
+cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
 
 # --- Web Browsers ---
-
-# Brave Browser - Privacy-focused web browser
-cask "brave-browser"
-
-# Google Chrome web browser
-cask "google-chrome"
+cask "brave-browser"                # Privacy-focused browser with built-in ad blocking
+cask "google-chrome"                # Popular web browser with extensive DevTools
 
 # --- Communication & Productivity ---
-
-# Team communication and collaboration
-cask "slack"
-
-# Video conferencing
-cask "zoom"
+cask "slack"                        # Team communication and collaboration
+cask "zoom"                         # Video conferencing and virtual meetings
 
 # --- Media & Entertainment ---
+cask "spotify"                      # Music streaming service
+cask "vlc"                          # Versatile media player supporting all formats
 
-# Music streaming service
-cask "spotify"
-
-# Media player
-cask "vlc"
+# ============================================
+# Installation Notes
+# ============================================
+#
+# After running 'brew bundle install':
+#
+# 1. Configure mise:
+#    ./install_mise.sh
+#
+# 2. Setup dotfiles with GNU Stow:
+#    ./stow_setup.sh
+#
+# 3. Configure GnuPG:
+#    ./setup_gnupg.sh
+#
+# 4. Install VSCode extensions (optional):
+#    ./vscode_setup.sh
+#
+# Or run everything at once:
+#    make install
+#
