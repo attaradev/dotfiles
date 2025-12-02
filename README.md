@@ -13,26 +13,36 @@
 
 ## ⚙️ Quick Start
 
-### 1. Clone the repository
+### One-Line Install (Recommended)
 
 ```bash
-git clone https://github.com/attaradev/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+curl -fsSL https://raw.githubusercontent.com/attaradev/dotfiles/main/bootstrap.sh | sh
 ```
 
-### 2. Run the setup
+This will clone the repository to `~/.dotfiles` and run the setup automatically.
 
-#### Option A: Using Makefile (recommended)
+### Manual Installation
+
+#### 1. Clone the repository
+
+```bash
+git clone https://github.com/attaradev/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+```
+
+#### 2. Run the setup
+
+##### Option A: Using Makefile (recommended)
 
 ```bash
 make install
 ```
 
-#### Option B: Using setup script directly
+##### Option B: Using setup script directly
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+chmod +x stow_setup.sh
+./stow_setup.sh
 ```
 
 The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates symlinks via GNU Stow, and configures GPG with Keychain integration.
@@ -228,4 +238,8 @@ Fork, customize, and share what works! Found bugs or improvements? Submit PRs or
 
 *This setup reflects my personal preferences built over years of development on macOS. Your ideal setup may differ—use this as inspiration and make it your own!*
 
-Made with ❤️ by Mike Attara &mdash; [🌐 attara.dev](https://attara.dev)
+Made with ❤️ by Mike Attara
+
+[![Website](https://img.shields.io/badge/Website-attara.dev-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://attara.dev)
+[![GitHub](https://img.shields.io/badge/GitHub-attaradev-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/attaradev)
+[![Twitter](https://img.shields.io/badge/Twitter-@attaradev-1DA1F2?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/attaradev)
