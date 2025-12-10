@@ -65,7 +65,7 @@ EXTENSIONS=(
   GitHub.copilot
   GitHub.copilot-chat
   anthropic.claude-code
-  Codex.codex
+  openai.chatgpt
   VisualStudioExptTeam.vscodeintellicode
   VisualStudioExptTeam.intellicode-api-usage-examples
   VisualStudioExptTeam.vscodeintellicode-completions
