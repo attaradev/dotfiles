@@ -59,6 +59,32 @@ fi
 
 print_success "Running on macOS"
 
+# Ensure Xcode Command Line Tools are available for git/Homebrew
+if ! xcode-select -p >/dev/null 2>&1; then
+  print_info "Installing Xcode Command Line Tools..."
+  xcode-select --install || true
+  print_warning "Command Line Tools install has been initiated. Re-run setup after it completes."
+  exit 1
+fi
+
+print_success "Xcode Command Line Tools detected"
+
+# Keep sudo alive so Homebrew/cask installs only prompt once
+if command -v sudo >/dev/null 2>&1; then
+  print_info "Refreshing sudo credentials to avoid repeated prompts..."
+  if sudo -v; then
+    # Background keepalive until this script exits
+    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    SUDO_KEEPALIVE_PID=$!
+    trap '[[ -n "$SUDO_KEEPALIVE_PID" ]] && kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
+    print_success "Sudo session refreshed"
+  else
+    print_warning "Could not refresh sudo credentials. You may be prompted during installs."
+  fi
+else
+  print_warning "sudo not available. Continuing without elevated privileges."
+fi
+
 # Get the directory where this script is located
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 print_info "Dotfiles directory: $DOTFILES_DIR"

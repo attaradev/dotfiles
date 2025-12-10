@@ -34,6 +34,18 @@ else
   echo "✓ GPG directory already exists"
 fi
 
+# Backup helper to preserve user configs
+backup_file() {
+  local file="$1"
+  if [[ -e "$file" && ! -L "$file" ]]; then
+    local ts
+    ts=$(date +%Y%m%d%H%M%S)
+    local backup="${file}.bak.${ts}"
+    cp "$file" "$backup"
+    echo "📦 Backed up existing $(basename "$file") to $(basename "$backup")"
+  fi
+}
+
 # ============================================
 # Configure GPG Agent
 # ============================================
@@ -42,7 +54,11 @@ GPG_AGENT_CONF="$GPG_DIR/gpg-agent.conf"
 
 echo "📝 Configuring GPG agent..."
 
-cat > "$GPG_AGENT_CONF" << 'EOF'
+if [[ -L "$GPG_AGENT_CONF" ]]; then
+  echo "ℹ️  $GPG_AGENT_CONF is a symlink; leaving existing configuration in place."
+else
+  backup_file "$GPG_AGENT_CONF"
+  cat > "$GPG_AGENT_CONF" << 'EOF'
 # GPG Agent Configuration
 # Timeout settings (in seconds)
 default-cache-ttl 3600
@@ -55,8 +71,9 @@ pinentry-program /opt/homebrew/bin/pinentry-mac
 # enable-ssh-support
 EOF
 
-chmod 600 "$GPG_AGENT_CONF"
-echo "✓ GPG agent configured at $GPG_AGENT_CONF"
+  chmod 600 "$GPG_AGENT_CONF"
+  echo "✓ GPG agent configured at $GPG_AGENT_CONF"
+fi
 
 # ============================================
 # Configure GPG
@@ -66,7 +83,11 @@ GPG_CONF="$GPG_DIR/gpg.conf"
 
 echo "📝 Configuring GPG..."
 
-cat > "$GPG_CONF" << 'EOF'
+if [[ -L "$GPG_CONF" ]]; then
+  echo "ℹ️  $GPG_CONF is a symlink; leaving existing configuration in place."
+else
+  backup_file "$GPG_CONF"
+  cat > "$GPG_CONF" << 'EOF'
 # GPG Configuration
 
 # Use AES256 for symmetric encryption
@@ -100,8 +121,9 @@ no-comments
 use-agent
 EOF
 
-chmod 600 "$GPG_CONF"
-echo "✓ GPG configured at $GPG_CONF"
+  chmod 600 "$GPG_CONF"
+  echo "✓ GPG configured at $GPG_CONF"
+fi
 
 # ============================================
 # Restart GPG Agent

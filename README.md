@@ -13,6 +13,14 @@
 
 ## ⚙️ Quick Start
 
+**Prerequisite:** Xcode Command Line Tools (once per machine)
+
+```bash
+xcode-select --install
+```
+
+**Tip:** Run `sudo -v` first (or let the installer do it) so you only enter your password once; the setup keeps the sudo session alive while installing Homebrew/casks.
+
 ### One-Line Install (Recommended)
 
 ```bash
@@ -90,7 +98,7 @@ make help             # See all commands
 
 ### Package Management
 
-**Brewfile** = declarative, version-controlled package management. One file, all packages.
+**Brewfile** = declarative, version-controlled package management. One file, all packages. Core/cask taps are implicit—no manual tap commands required.
 
 ```bash
 brew bundle install              # Install all
@@ -98,11 +106,14 @@ brew bundle dump --force         # Generate from system
 brew bundle cleanup --force      # Remove unlisted
 ```
 
+**TLDR pages** are provided via the maintained `tlrc` client; use the familiar `tldr <command>` syntax.
+
 ### Version Management with mise
 
 **mise** = single tool replacing nvm/pyenv/rbenv. Rust-based, 20-100x faster, auto-switches versions per directory.
 
 **Installed**: Node.js LTS, Python, Go, Ruby, pnpm
+**Prereqs**: Xcode Command Line Tools + Homebrew `libyaml`/`openssl@3` (included in Brewfile) for Ruby builds
 
 ```bash
 mise use --global node@lts       # Set global default

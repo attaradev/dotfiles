@@ -17,8 +17,6 @@
 # ============================================
 # Homebrew Taps
 # ============================================
-tap "homebrew/bundle"
-tap "homebrew/cask"
 tap "hashicorp/tap"
 tap "hookdeck/hookdeck"
 
@@ -91,7 +89,7 @@ brew "fzf"                          # Command-line fuzzy finder (Ctrl+R for hist
 
 # Data Processing & Documentation
 brew "jq"                           # Lightweight JSON processor
-brew "tldr"                         # Simplified, community-driven man pages
+brew "tlrc"                         # Maintained TLDR client (tldr deprecated upstream)
 
 # Presentation
 brew "slides"                       # Terminal-based presentations using Markdown
@@ -119,6 +117,7 @@ brew "hookdeck/hookdeck/hookdeck"   # Webhook testing and localhost tunneling (n
 
 brew "openssl@3"                    # Cryptography and SSL/TLS toolkit
 brew "readline"                     # Library for command-line editing
+brew "libyaml"                     # YAML parser/headers required for Ruby psych extension
 
 # ============================================
 # Dotfile Management

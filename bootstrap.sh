@@ -9,6 +9,14 @@ REPO_URL="https://github.com/attaradev/dotfiles.git"
 
 echo "🚀 Bootstrapping dotfiles setup..."
 
+# Ensure Xcode Command Line Tools are present before proceeding
+if ! xcode-select -p >/dev/null 2>&1; then
+    echo "⚙️  Installing Xcode Command Line Tools (required for git/Homebrew)..."
+    xcode-select --install || true
+    echo "➡️  Re-run this bootstrap after the tools finish installing."
+    exit 1
+fi
+
 # Check if git is installed
 if ! command -v git &> /dev/null; then
     echo "❌ Error: git is not installed. Please install git first."
@@ -29,12 +37,12 @@ else
     cd "$DOTFILES_DIR"
 fi
 
-# Make setup script executable
-chmod +x stow_setup.sh
+# Make scripts executable
+chmod +x *.sh
 
-# Run the setup script
-echo "⚙️  Running setup script..."
-./stow_setup.sh
+# Run full setup (Homebrew, Brewfile, mise, stow, GPG, VSCode)
+echo "⚙️  Running full setup..."
+./setup.sh
 
 echo ""
 echo "✅ Bootstrap complete!"

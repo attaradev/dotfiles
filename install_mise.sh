@@ -94,6 +94,14 @@ echo "📥 Installing Ruby latest..."
 if mise list ruby 2>/dev/null | grep -q "ruby"; then
   echo "✓ Ruby already installed"
 else
+  # Ensure ruby-build picks up Homebrew libyaml/openssl paths for psych/openssl
+  LIBYAML_PREFIX="$(brew --prefix libyaml 2>/dev/null || true)"
+  OPENSSL_PREFIX="$(brew --prefix openssl@3 2>/dev/null || true)"
+  RUBY_CONFIGURE_OPTS_EXTRA=""
+  [[ -n "$LIBYAML_PREFIX" ]] && RUBY_CONFIGURE_OPTS_EXTRA+=" --with-libyaml-dir=${LIBYAML_PREFIX}"
+  [[ -n "$OPENSSL_PREFIX" ]] && RUBY_CONFIGURE_OPTS_EXTRA+=" --with-openssl-dir=${OPENSSL_PREFIX}"
+  export RUBY_CONFIGURE_OPTS="${RUBY_CONFIGURE_OPTS}${RUBY_CONFIGURE_OPTS_EXTRA}"
+
   mise use --global ruby@latest
   echo "✓ Ruby latest installed and set as global default"
 fi
