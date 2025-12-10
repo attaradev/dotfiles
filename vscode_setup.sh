@@ -35,6 +35,7 @@ EXTENSIONS=(
 
   # Git
   eamodio.gitlens
+  donjayamanne.githistory
   GitHub.vscode-pull-request-github
   github.vscode-github-actions
 
