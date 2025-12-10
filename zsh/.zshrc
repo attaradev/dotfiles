@@ -61,6 +61,12 @@ zstyle ':completion:*' menu select
 if command -v mise &> /dev/null; then
   eval "$(mise activate zsh)"
 
+  # Ensure mise shims are on PATH so `mise doctor` stays happy
+  MISE_SHIMS_DIR="$HOME/.local/share/mise/shims"
+  if [[ -d "$MISE_SHIMS_DIR" && ":$PATH:" != *":$MISE_SHIMS_DIR:"* ]]; then
+    export PATH="$MISE_SHIMS_DIR:$PATH"
+  fi
+
   # Setup pnpm path if installed via mise
   export PNPM_HOME="$HOME/.local/share/mise/installs/pnpm/latest/bin"
   if [[ -d "$PNPM_HOME" ]]; then
@@ -113,10 +119,11 @@ fi
 
 # Modern CLI replacements
 if command -v eza &> /dev/null; then
-  alias l='eza --icons'
-  alias ll='eza -lh --icons --git'
-  alias la='eza -lah --icons --git'
-  alias tree='eza --tree --icons'
+  # eza now expects --icons=<when>; default to always so Nerd Font glyphs show up
+  alias l='eza --icons=always'
+  alias ll='eza -lh --icons=always --git'
+  alias la='eza -lah --icons=always --git'
+  alias tree='eza --tree --icons=always'
 fi
 
 if command -v bat &> /dev/null; then
@@ -161,7 +168,7 @@ alias zshconfig='code ~/.zshrc'
 alias dotfiles='cd ~/.dotfiles'
 
 # Homebrew
-alias brewup='brew update && brew upgrade && brew cleanup'
+alias brewup='brew upgrade --greedy && brew cleanup'
 alias brewdump='brew bundle dump --force --describe --file=~/.dotfiles/Brewfile'
 
 # pnpm (preferred over npm)
