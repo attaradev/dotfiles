@@ -25,16 +25,21 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 autoload -Uz history-beginning-search-backward-end history-beginning-search-forward-end \
-  history-beginning-search-backward history-beginning-search-forward
-# Up/Down arrow searches history filtered by current prefix (OMZ-style), with fallbacks for older zsh
-zle -N history-beginning-search-backward-end 2>/dev/null \
-  || zle -N history-beginning-search-backward-end history-beginning-search-backward
-zle -N history-beginning-search-forward-end 2>/dev/null \
-  || zle -N history-beginning-search-forward-end history-beginning-search-forward
-bindkey '^[[A' history-beginning-search-backward-end  # up arrow
-bindkey '^[[B' history-beginning-search-forward-end   # down arrow
-bindkey '^[OA' history-beginning-search-backward-end  # up arrow (alternate)
-bindkey '^[OB' history-beginning-search-forward-end   # down arrow (alternate)
+  history-beginning-search-backward history-beginning-search-forward 2>/dev/null
+# Up/Down arrow searches history filtered by current prefix (OMZ-style) with fallbacks
+if zle -l | grep -q '^history-beginning-search-backward-end$'; then
+  _hist_up_widget=history-beginning-search-backward-end
+  _hist_down_widget=history-beginning-search-forward-end
+else
+  zle -N history-beginning-search-backward
+  zle -N history-beginning-search-forward
+  _hist_up_widget=history-beginning-search-backward
+  _hist_down_widget=history-beginning-search-forward
+fi
+bindkey '^[[A' $_hist_up_widget   # up arrow
+bindkey '^[[B' $_hist_down_widget # down arrow
+bindkey '^[OA' $_hist_up_widget   # up arrow (alternate)
+bindkey '^[OB' $_hist_down_widget # down arrow (alternate)
 
 # ============================================
 # ZSH Options
