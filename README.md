@@ -62,6 +62,13 @@ source ~/.zshrc      # Or restart terminal
 mise list            # Show installed tools
 ```
 
+### Terminal font (for icons)
+
+The Brewfile installs `JetBrainsMono Nerd Font`. Set your terminal to use it so Starship/eza icons render correctly.
+
+- iTerm2: Preferences → Profiles → Text → Font → JetBrainsMono Nerd Font
+- macOS Terminal: Settings → Profiles → Text → Font → JetBrainsMono Nerd Font
+
 ### VSCode Extensions
 
 - The installer now auto-runs VSCode extensions if the `code` CLI is on your PATH; set `SKIP_VSCODE_EXTENSIONS=1` to skip.
