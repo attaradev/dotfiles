@@ -53,7 +53,10 @@
 	fsckObjects = true
 
 [protocol]
-	file.allow = user
+	version = 2
+
+[protocol "file"]
+	allow = user
 
 [url "https://github.com/"]
 	insteadOf = git://github.com/
