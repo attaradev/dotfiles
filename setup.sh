@@ -15,13 +15,13 @@ set -e  # Exit on error
 
 # Colors for output (auto-disable if not a TTY or NO_COLOR set)
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
-  RED='\033[38;5;203m'
-  GREEN='\033[38;5;76m'
-  YELLOW='\033[38;5;220m'
-  BLUE='\033[38;5;69m'
-  MAGENTA='\033[38;5;171m'
-  CYAN='\033[38;5;45m'
-  NC='\033[0m' # No Color
+  RED=$'\033[38;5;203m'
+  GREEN=$'\033[38;5;76m'
+  YELLOW=$'\033[38;5;220m'
+  BLUE=$'\033[38;5;69m'
+  MAGENTA=$'\033[38;5;171m'
+  CYAN=$'\033[38;5;45m'
+  NC=$'\033[0m' # No Color
 else
   RED=""
   GREEN=""
