@@ -24,25 +24,12 @@ setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
-# Robust OMZ-style history prefix search on arrows with fallbacks; avoid autosuggest wrapping errors
-autoload -Uz history-beginning-search-backward-end history-beginning-search-forward-end \
-  history-beginning-search-backward history-beginning-search-forward 2>/dev/null
-if zle -l | grep -q '^history-beginning-search-backward-end$'; then
-  zle -N history-beginning-search-backward-end
-  zle -N history-beginning-search-forward-end
-  _hist_up_widget=history-beginning-search-backward-end
-  _hist_down_widget=history-beginning-search-forward-end
-else
-  autoload -Uz history-beginning-search-backward history-beginning-search-forward
-  zle -N history-beginning-search-backward
-  zle -N history-beginning-search-forward
-  _hist_up_widget=history-beginning-search-backward
-  _hist_down_widget=history-beginning-search-forward
-fi
-bindkey '^[[A' $_hist_up_widget   # up arrow
-bindkey '^[[B' $_hist_down_widget # down arrow
-bindkey '^[OA' $_hist_up_widget   # up arrow (alternate)
-bindkey '^[OB' $_hist_down_widget # down arrow (alternate)
+# Arrow keys filter history by current prefix (portable, avoids missing widgets)
+autoload -Uz up-line-or-search down-line-or-search
+bindkey '^[[A' up-line-or-search   # up arrow
+bindkey '^[[B' down-line-or-search # down arrow
+bindkey '^[OA' up-line-or-search   # up arrow (alternate)
+bindkey '^[OB' down-line-or-search # down arrow (alternate)
 
 # ============================================
 # ZSH Options
