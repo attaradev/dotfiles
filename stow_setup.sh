@@ -15,13 +15,13 @@ if ! command -v stow &> /dev/null; then
   exit 1
 fi
 
-# Navigate to dotfiles directory
-DOTFILES_DIR="$HOME/.dotfiles"
+# Navigate to dotfiles directory (script location)
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET_DIR="$HOME/.dotfiles"
 
-if [[ ! -d "$DOTFILES_DIR" ]]; then
-  echo "❌ Dotfiles directory not found at $DOTFILES_DIR"
-  echo "Creating symbolic link from $(pwd) to $DOTFILES_DIR..."
-  ln -s "$(pwd)" "$DOTFILES_DIR"
+if [[ ! -d "$TARGET_DIR" ]]; then
+  echo "🔗 Creating symlink $TARGET_DIR -> $DOTFILES_DIR"
+  ln -s "$DOTFILES_DIR" "$TARGET_DIR"
 fi
 
 cd "$DOTFILES_DIR"

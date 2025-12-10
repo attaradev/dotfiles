@@ -141,9 +141,11 @@ echo "✓ GPG agent restarted"
 echo ""
 echo "🔑 Checking for existing GPG keys..."
 
-KEY_COUNT=$(gpg --list-secret-keys --keyid-format LONG 2>/dev/null | grep -c "sec" || echo "0")
+KEY_COUNT=$(gpg --list-secret-keys --keyid-format LONG 2>/dev/null | grep -c "^sec" || true)
+KEY_COUNT=${KEY_COUNT:-0}
+KEY_COUNT=${KEY_COUNT//$'\n'/}
 
-if [[ "$KEY_COUNT" -gt 0 ]]; then
+if (( KEY_COUNT > 0 )); then
   echo "✓ Found $KEY_COUNT existing GPG key(s):"
   gpg --list-secret-keys --keyid-format LONG
 else
