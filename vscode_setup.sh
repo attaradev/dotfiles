@@ -19,6 +19,9 @@ fi
 
 echo "✓ VSCode CLI found: $(code --version | head -n 1)"
 
+# Cache installed extensions once to avoid repeated CLI calls (prevents Electron/V8 flakiness)
+INSTALLED_EXTS="$(code --list-extensions 2>/dev/null || true)"
+
 # List of recommended extensions
 EXTENSIONS=(
   # Python
@@ -81,7 +84,7 @@ echo ""
 # Install each extension using VSCode CLI
 for EXT in "${EXTENSIONS[@]}"; do
   # Check if extension is already installed
-  if code --list-extensions | grep -qi "^${EXT}$"; then
+  if printf '%s\n' "$INSTALLED_EXTS" | grep -Fqi "^${EXT}$"; then
     echo "  ⏭️  $EXT (already installed)"
     ((SKIPPED_COUNT++))
   else
