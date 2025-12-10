@@ -66,7 +66,6 @@ EXTENSIONS=(
   GitHub.copilot-chat
   anthropic.claude-code
   openai.chatgpt
-  VisualStudioExptTeam.vscodeintellicode
 )
 
 # Track statistics
