@@ -141,6 +141,7 @@ cask "virtualbox"                   # Full VM hypervisor for running multiple OS
 
 # --- Development Utilities ---
 cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
+cask "jetbrains-toolbox"            # JetBrains Toolbox to manage JetBrains IDEs
 
 # --- Web Browsers ---
 cask "brave-browser"                # Privacy-focused browser with built-in ad blocking
