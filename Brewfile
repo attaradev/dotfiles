@@ -18,7 +18,6 @@
 # Homebrew Taps
 # ============================================
 tap "hashicorp/tap"
-tap "hookdeck/hookdeck"
 
 # ============================================
 # Version Control & Collaboration
@@ -102,12 +101,6 @@ brew "starship"                     # Minimal, fast, customizable cross-shell pr
 brew "tmux"                         # Terminal multiplexer
 brew "zsh-autosuggestions"          # Fish-like autosuggestions for zsh
 brew "zsh-syntax-highlighting"      # Real-time syntax highlighting for zsh
-
-# ============================================
-# Development Utilities
-# ============================================
-
-brew "hookdeck/hookdeck/hookdeck"   # Webhook testing and localhost tunneling (ngrok alternative for webhooks)
 
 # ============================================
 # System Libraries
