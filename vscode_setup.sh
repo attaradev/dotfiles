@@ -71,18 +71,11 @@ EXTENSIONS=(
   VisualStudioExptTeam.vscodeintellicode-completions
 )
 
-# Optional extensions (best effort; do not fail if missing from marketplace)
-OPTIONAL_EXTENSIONS=(
-  Codex.codex
-)
-
 # Track statistics
 INSTALLED_COUNT=0
 SKIPPED_COUNT=0
 FAILED_COUNT=0
-OPTIONAL_FAILED_COUNT=0
 FAILED_EXTENSIONS=()
-OPTIONAL_FAILED_EXTENSIONS=()
 
 echo ""
 echo "📦 Installing ${#EXTENSIONS[@]} extensions..."
@@ -100,15 +93,9 @@ for EXT in "${EXTENSIONS[@]}"; do
       echo "  ✓ $EXT installed successfully"
       ((INSTALLED_COUNT++))
     else
-      if printf '%s\n' "${OPTIONAL_EXTENSIONS[@]}" | grep -qx "$EXT"; then
-        echo "  ⚠️  Failed to install optional $EXT (skipping)"
-        ((OPTIONAL_FAILED_COUNT++))
-        OPTIONAL_FAILED_EXTENSIONS+=("$EXT")
-      else
-        echo "  ❌ Failed to install $EXT"
-        ((FAILED_COUNT++))
-        FAILED_EXTENSIONS+=("$EXT")
-      fi
+      echo "  ❌ Failed to install $EXT"
+      ((FAILED_COUNT++))
+      FAILED_EXTENSIONS+=("$EXT")
     fi
   fi
 done
@@ -118,7 +105,6 @@ echo "📊 Installation Summary:"
 echo "  ✓ Newly installed: $INSTALLED_COUNT"
 echo "  ⏭️  Already installed: $SKIPPED_COUNT"
 echo "  ❌ Failed: $FAILED_COUNT"
-echo "  ⚠️  Optional failed: $OPTIONAL_FAILED_COUNT"
 
 if [ $FAILED_COUNT -gt 0 ]; then
   echo ""
@@ -129,14 +115,6 @@ if [ $FAILED_COUNT -gt 0 ]; then
   echo ""
   echo "You can manually install failed extensions with:"
   echo "  code --install-extension <extension-id>"
-fi
-
-if [ $OPTIONAL_FAILED_COUNT -gt 0 ]; then
-  echo ""
-  echo "Optional extensions not installed (not fatal):"
-  for EXT in "${OPTIONAL_FAILED_EXTENSIONS[@]}"; do
-    echo "  - $EXT"
-  done
 fi
 
 echo ""
