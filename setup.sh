@@ -14,18 +14,20 @@
 set -e  # Exit on error
 
 # Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
+RED='\033[38;5;203m'
+GREEN='\033[38;5;76m'
+YELLOW='\033[38;5;220m'
+BLUE='\033[38;5;69m'
+MAGENTA='\033[38;5;171m'
+CYAN='\033[38;5;45m'
 NC='\033[0m' # No Color
 
 # Helper functions
 print_header() {
   echo ""
-  echo -e "${BLUE}============================================${NC}"
-  echo -e "${BLUE}$1${NC}"
-  echo -e "${BLUE}============================================${NC}"
+  echo -e "${MAGENTA}============================================${NC}"
+  echo -e "${MAGENTA}$1${NC}"
+  echo -e "${MAGENTA}============================================${NC}"
   echo ""
 }
 
@@ -43,6 +45,10 @@ print_warning() {
 
 print_info() {
   echo -e "${BLUE}ℹ${NC} $1"
+}
+
+print_note() {
+  echo -e "${CYAN}ℹ${NC} $1"
 }
 
 # ============================================
