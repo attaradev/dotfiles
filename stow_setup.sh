@@ -62,28 +62,42 @@ PACKAGES=(
   "gpg"
 )
 
+STOWED=()
+SKIPPED=()
+
 # Stow each package
 for package in "${PACKAGES[@]}"; do
-  if [[ -d "$package" ]]; then
+  if [[ -d "$DOTFILES_DIR/$package" ]]; then
     echo "  ✓ Stowing $package..."
     stow -v "$package" --target="$HOME" --restow
+    STOWED+=("$package")
   else
-    echo "  ⚠️  Package directory '$package' not found, skipping..."
+    echo "  ⚠️  Package directory '$package' not found in $DOTFILES_DIR, skipping..."
+    SKIPPED+=("$package")
   fi
 done
 
 echo ""
 echo "✅ Stow setup complete!"
-echo ""
-echo "Symlinks created:"
-echo "  ~/.zshrc -> $DOTFILES_DIR/zsh/.zshrc"
-echo "  ~/.gitconfig -> $DOTFILES_DIR/git/.gitconfig"
-echo "  ~/.npmrc -> $DOTFILES_DIR/npm/.npmrc"
-echo "  ~/.mise.toml -> $DOTFILES_DIR/mise/.mise.toml"
-echo "  ~/.config/starship.toml -> $DOTFILES_DIR/starship/.config/starship.toml"
-echo "  ~/.ssh/config -> $DOTFILES_DIR/ssh/.ssh/config"
-echo "  ~/.gnupg/gpg.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg.conf"
-echo "  ~/.gnupg/gpg-agent.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg-agent.conf"
+if [[ ${#STOWED[@]} -gt 0 ]]; then
+  echo ""
+  echo "Symlinks created:"
+  for package in "${STOWED[@]}"; do
+    case "$package" in
+      zsh)      echo "  ~/.zshrc -> $DOTFILES_DIR/zsh/.zshrc" ;;
+      git)      echo "  ~/.gitconfig -> $DOTFILES_DIR/git/.gitconfig" ;;
+      npm)      echo "  ~/.npmrc -> $DOTFILES_DIR/npm/.npmrc" ;;
+      mise)     echo "  ~/.mise.toml -> $DOTFILES_DIR/mise/.mise.toml" ;;
+      starship) echo "  ~/.config/starship.toml -> $DOTFILES_DIR/starship/.config/starship.toml" ;;
+      ssh)      echo "  ~/.ssh/config -> $DOTFILES_DIR/ssh/.ssh/config" ;;
+      gpg)      echo "  ~/.gnupg/gpg.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg.conf"; echo "  ~/.gnupg/gpg-agent.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg-agent.conf" ;;
+    esac
+  done
+fi
+if [[ ${#SKIPPED[@]} -gt 0 ]]; then
+  echo ""
+  echo "Skipped (not found in $DOTFILES_DIR): ${SKIPPED[*]}"
+fi
 
 echo ""
 echo "⚠️  Security Note:"
