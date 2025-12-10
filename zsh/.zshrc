@@ -24,6 +24,12 @@ setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
+autoload -Uz history-beginning-search-backward-end history-beginning-search-forward-end
+# Up/Down arrow searches history filtered by current prefix (OMZ-style)
+bindkey '^[[A' history-beginning-search-backward-end  # up arrow
+bindkey '^[[B' history-beginning-search-forward-end   # down arrow
+bindkey '^[OA' history-beginning-search-backward-end  # up arrow (alternate)
+bindkey '^[OB' history-beginning-search-forward-end   # down arrow (alternate)
 
 # ============================================
 # ZSH Options
