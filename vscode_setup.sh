@@ -35,7 +35,6 @@ EXTENSIONS=(
 
   # Git
   eamodio.gitlens
-  donjayamanne.githistory
   GitHub.vscode-pull-request-github
   github.vscode-github-actions
 
@@ -67,8 +66,6 @@ EXTENSIONS=(
   anthropic.claude-code
   openai.chatgpt
   VisualStudioExptTeam.vscodeintellicode
-  VisualStudioExptTeam.intellicode-api-usage-examples
-  VisualStudioExptTeam.vscodeintellicode-completions
 )
 
 # Track statistics
