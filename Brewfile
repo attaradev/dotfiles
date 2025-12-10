@@ -17,7 +17,6 @@
 # ============================================
 # Homebrew Taps
 # ============================================
-tap "homebrew/cask-fonts"          # Patched fonts (Nerd Fonts, etc.) for icon support
 tap "hashicorp/tap"
 
 # ============================================
