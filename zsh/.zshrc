@@ -24,13 +24,16 @@ setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
+# Robust OMZ-style history prefix search on arrows with fallbacks; avoid autosuggest wrapping errors
 autoload -Uz history-beginning-search-backward-end history-beginning-search-forward-end \
   history-beginning-search-backward history-beginning-search-forward 2>/dev/null
-# Up/Down arrow searches history filtered by current prefix (OMZ-style) with fallbacks
 if zle -l | grep -q '^history-beginning-search-backward-end$'; then
+  zle -N history-beginning-search-backward-end
+  zle -N history-beginning-search-forward-end
   _hist_up_widget=history-beginning-search-backward-end
   _hist_down_widget=history-beginning-search-forward-end
 else
+  autoload -Uz history-beginning-search-backward history-beginning-search-forward
   zle -N history-beginning-search-backward
   zle -N history-beginning-search-forward
   _hist_up_widget=history-beginning-search-backward
