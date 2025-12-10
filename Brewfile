@@ -17,6 +17,7 @@
 # ============================================
 # Homebrew Taps
 # ============================================
+tap "homebrew/cask-fonts"          # Patched fonts (Nerd Fonts, etc.) for icon support
 tap "hashicorp/tap"
 
 # ============================================
@@ -136,6 +137,9 @@ cask "virtualbox"                   # Full VM hypervisor for running multiple OS
 cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
 cask "jetbrains-toolbox"            # JetBrains Toolbox to manage JetBrains IDEs
 cask "termius"                      # Cross-platform SSH client and terminal manager
+
+# --- Fonts ---
+cask "font-jetbrains-mono-nerd-font" # Patched Nerd Font so terminal icons render correctly
 
 # --- Web Browsers ---
 cask "brave-browser"                # Privacy-focused browser with built-in ad blocking
