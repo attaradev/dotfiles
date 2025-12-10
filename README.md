@@ -49,8 +49,8 @@ make install
 ##### Option B: Using setup script directly
 
 ```bash
-chmod +x stow_setup.sh
-./stow_setup.sh
+chmod +x setup.sh
+./setup.sh
 ```
 
 The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates symlinks via GNU Stow, and configures GPG with Keychain integration.
@@ -61,6 +61,11 @@ The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates 
 source ~/.zshrc      # Or restart terminal
 mise list            # Show installed tools
 ```
+
+### VSCode Extensions
+
+- The installer now auto-runs VSCode extensions if the `code` CLI is on your PATH; set `SKIP_VSCODE_EXTENSIONS=1` to skip.
+- If `code` isn’t available yet, install VSCode and then run `make vscode` (or `./vscode_setup.sh`) after enabling “Shell Command: Install code command in PATH”.
 
 ---
 

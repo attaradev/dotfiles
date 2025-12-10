@@ -168,17 +168,15 @@ fi
 
 print_header "Step 6: Setting up VSCode Extensions"
 
-# Ask user if they want to install VSCode extensions
-read -p "Do you want to install VSCode extensions? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  if [[ -x "$DOTFILES_DIR/vscode_setup.sh" ]]; then
-    "$DOTFILES_DIR/vscode_setup.sh"
-  else
-    print_warning "vscode_setup.sh not found or not executable, skipping..."
-  fi
+# Allow skipping via env; otherwise auto-run if VSCode CLI is available
+if [[ "${SKIP_VSCODE_EXTENSIONS:-0}" == "1" ]]; then
+  print_info "Skipping VSCode extensions setup (SKIP_VSCODE_EXTENSIONS=1)"
+elif ! command -v code >/dev/null 2>&1; then
+  print_warning "VSCode CLI 'code' not found. Install VSCode and run: make vscode"
+elif [[ -x "$DOTFILES_DIR/vscode_setup.sh" ]]; then
+  "$DOTFILES_DIR/vscode_setup.sh"
 else
-  print_info "Skipping VSCode extensions setup"
+  print_warning "vscode_setup.sh not found or not executable, skipping..."
 fi
 
 # ============================================
