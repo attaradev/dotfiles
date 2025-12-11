@@ -304,43 +304,88 @@ fi
 print_header "Step 5: Configuring Git Identity"
 
 configure_git_identity() {
+  git_history_identity() {
+    if ! command -v git >/dev/null 2>&1; then
+      echo "|"
+      return
+    fi
+    declare -A counts
+    local best_pair=""
+    local best_count=0
+    while IFS='|' read -r name email; do
+      [[ -z "$name" || -z "$email" ]] && continue
+      local key="$name|$email"
+      counts["$key"]=$((counts["$key"] + 1))
+      if (( counts["$key"] > best_count )); then
+        best_count=${counts["$key"]}
+        best_pair="$key"
+      fi
+    done < <(git -C "$DOTFILES_DIR" log -5 --format='%an|%ae' 2>/dev/null)
+    [[ -n "$best_pair" ]] && echo "$best_pair" || echo "|"
+  }
+
   local existing_name existing_email existing_signing
   existing_name="$(git config --global --get user.name 2>/dev/null || true)"
   existing_email="$(git config --global --get user.email 2>/dev/null || true)"
   existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
 
-  local default_name="${GIT_USER_NAME:-$existing_name}"
-  local default_email="${GIT_USER_EMAIL:-$existing_email}"
-  local default_signing="${GIT_USER_SIGNINGKEY:-$existing_signing}"
+  local history_name history_email
+  IFS='|' read -r history_name history_email <<<"$(git_history_identity)"
 
-  if [[ "${DOTFILES_SKIP_GIT_PROMPTS:-0}" == "1" || -n "${CI:-}" ]]; then
+  local default_name="${GIT_USER_NAME:-${existing_name:-${history_name:-$DEFAULT_GIT_NAME}}}"
+  local default_email="${GIT_USER_EMAIL:-${existing_email:-${history_email:-$DEFAULT_GIT_EMAIL}}}"
+  local default_signing="${GIT_USER_SIGNINGKEY:-${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}}"
+
+  if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
+    print_info "Git identity defaults:"
+    [[ -n "$default_name" ]] && print_info "  user.name:  $default_name"
+    [[ -n "$default_email" ]] && print_info "  user.email: $default_email"
+    [[ -n "$default_signing" ]] && print_info "  signingkey: $default_signing"
+  fi
+
+  local final_name="$default_name"
+  local final_email="$default_email"
+  local final_signing="$default_signing"
+
+  if [[ "${DOTFILES_SKIP_GIT_PROMPTS:-0}" == "1" ]]; then
     if [[ -z "$default_name" && -z "$default_email" ]]; then
-      print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1/CI) with no defaults; leaving existing config untouched."
+      print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1) with no defaults; leaving existing config untouched."
       return
     fi
-    print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1/CI); using provided defaults."
+    print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1); using provided defaults."
   elif ! has_tty; then
     if [[ -z "$default_name" && -z "$default_email" ]]; then
       print_info "No TTY and no defaults available; skipping Git identity configuration."
       return
     fi
   else
-    default_name="$(prompt_with_default "Git user.name" "$default_name")"
-    while has_tty && [[ -z "$default_name" ]]; do
-      print_warning "Git user.name is required."
-      default_name="$(prompt_with_default "Git user.name" "$default_name")"
-    done
+    local use_defaults="y"
+    if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
+      if prompt_yes_no "Use the default Git identity above?" "y"; then
+        use_defaults="y"
+      else
+        use_defaults="n"
+      fi
+    fi
 
-    default_email="$(prompt_with_default "Git user.email" "$default_email")"
-    while has_tty && [[ -z "$default_email" ]]; do
-      print_warning "Git user.email is required."
-      default_email="$(prompt_with_default "Git user.email" "$default_email")"
-    done
+    if [[ "$use_defaults" != "y" ]]; then
+      final_name="$(prompt_with_default "Git user.name" "$default_name")"
+      while has_tty && [[ -z "$final_name" ]]; do
+        print_warning "Git user.name is required."
+        final_name="$(prompt_with_default "Git user.name" "$final_name")"
+      done
 
-    default_signing="$(prompt_with_default "Git signingkey (optional)" "$default_signing")"
+      final_email="$(prompt_with_default "Git user.email" "$default_email")"
+      while has_tty && [[ -z "$final_email" ]]; do
+        print_warning "Git user.email is required."
+        final_email="$(prompt_with_default "Git user.email" "$final_email")"
+      done
+
+      final_signing="$(prompt_with_default "Git signingkey (optional)" "$default_signing")"
+    fi
   fi
 
-  if [[ -z "$default_name" || -z "$default_email" ]]; then
+  if [[ -z "$final_name" || -z "$final_email" ]]; then
     print_warning "Git identity not updated (missing name/email)."
     return
   fi
@@ -348,18 +393,18 @@ configure_git_identity() {
   mkdir -p "$(dirname "$GIT_LOCAL_CONFIG_FILE")"
   {
     echo "[user]"
-    echo "    name = $default_name"
-    echo "    email = $default_email"
-    if [[ -n "$default_signing" ]]; then
-      echo "    signingkey = $default_signing"
+    echo "    name = $final_name"
+    echo "    email = $final_email"
+    if [[ -n "$final_signing" ]]; then
+      echo "    signingkey = $final_signing"
     fi
   } > "$GIT_LOCAL_CONFIG_FILE"
 
   print_success "Git identity configured in $GIT_LOCAL_CONFIG_FILE"
-  print_info "Git user.name: $default_name"
-  print_info "Git user.email: $default_email"
-  if [[ -n "$default_signing" ]]; then
-    print_info "Git signingkey: $default_signing"
+  print_info "Git user.name: $final_name"
+  print_info "Git user.email: $final_email"
+  if [[ -n "$final_signing" ]]; then
+    print_info "Git signingkey: $final_signing"
   fi
 }
 
