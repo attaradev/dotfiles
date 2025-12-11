@@ -163,6 +163,7 @@ Fast, user-friendly alternatives with smart defaults. Aliased in [zsh/.zshrc](zs
 Symlink manager: `~/.dotfiles` → home directory. Auto-backs up existing files.
 
 **Packages**: zsh, git, npm, mise, starship, ssh, gpg
+**Note**: `~/.ssh/known_hosts` stays machine-local; add hosts manually (e.g., `ssh-keyscan github.com >> ~/.ssh/known_hosts`).
 
 ```bash
 stow zsh              # Create symlinks
@@ -225,7 +226,7 @@ make dump           # Regenerate Brewfile
 
 ## 🔒 Security
 
-**Built-in**: GPG signing, SSH hardening (Ed25519, hashed hosts, no agent forwarding), Keychain integration, no hardcoded tokens
+**Built-in**: GPG signing, SSH hardening (Ed25519, hashed hosts, no agent forwarding; `known_hosts` kept local), Keychain integration, gpg-agent only for signing (SSH uses native agent), no hardcoded tokens
 **Git note**: Merge signature verification is off by default to keep `git pull` unblocked; enable with `git config --global merge.verifySignatures true` if your workflow needs it.
 
 **Tools**: gitleaks, trivy, lynis, ssh-audit, git-crypt
@@ -237,6 +238,7 @@ make dump           # Regenerate Brewfile
 ```bash
 ssh-keygen -t ed25519              # Generate key
 chmod 600 ~/.ssh/id_ed25519        # Set permissions
+ssh-keyscan github.com >> ~/.ssh/known_hosts  # Add GitHub host key (per-machine)
 gitleaks detect --source . -v      # Scan for secrets
 ```
 

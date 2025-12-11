@@ -1,7 +1,7 @@
 [user]
 	name = Mike Attara
 	email = mpyebattara@gmail.com
-	signingkey = F2AE44A658860EF7
+	signingkey = 0x8C47F9FE2344DB2C
 
 [credential]
 	helper = osxkeychain

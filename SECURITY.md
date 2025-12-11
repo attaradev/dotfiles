@@ -255,6 +255,7 @@ If you use 1Password, you can use it for SSH and Git signing:
 
 - [ ] Generate Ed25519 SSH key
 - [ ] Add SSH key to GitHub/GitLab
+- [ ] Add trusted hosts to `~/.ssh/known_hosts` (e.g., `ssh-keyscan github.com >> ~/.ssh/known_hosts`)
 - [ ] Generate GPG key (RSA 4096)
 - [ ] Configure Git to use GPG signing
 - [ ] Upload GPG public key to GitHub/GitLab
