@@ -39,6 +39,7 @@ brew "ssh-audit"                    # SSH server & client security auditing
 brew "lynis"                        # Security auditing tool for Unix-based systems
 brew "trivy"                        # Vulnerability scanner for containers and IaC
 brew "gitleaks"                     # Scan git repos for secrets and credentials
+brew "ykman"                        # YubiKey Manager CLI for configuring hardware keys
 
 # ============================================
 # Version Management
