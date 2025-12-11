@@ -1,7 +1,5 @@
-[user]
-	name = Mike Attara
-	email = mpyebattara@gmail.com
-	signingkey = 0x8C47F9FE2344DB2C
+[include]
+	path = ~/.gitconfig.local
 
 [credential]
 	helper = osxkeychain

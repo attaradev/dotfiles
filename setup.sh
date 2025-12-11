@@ -86,6 +86,26 @@ prompt_yes_no() {
   [[ "$answer" =~ ^[Yy]$ ]]
 }
 
+prompt_with_default() {
+  local prompt="$1"
+  local default_value="${2:-}"
+  local suffix=""
+  local answer="$default_value"
+
+  if [[ -n "$default_value" ]]; then
+    suffix=" [$default_value]"
+  fi
+
+  if has_tty && [[ -r /dev/tty ]]; then
+    read -r -p "$(printf "%s%s: " "$prompt" "$suffix")" input </dev/tty || input=""
+    if [[ -n "$input" ]]; then
+      answer="$input"
+    fi
+  fi
+
+  echo "$answer"
+}
+
 normalize_bool() {
   local raw
   raw="$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')"
@@ -98,6 +118,7 @@ normalize_bool() {
 
 # Persisted optional cask preferences live outside the repo to avoid dirty git state
 OPTIONAL_CASK_ENV_FILE="${OPTIONAL_CASK_ENV_FILE:-$HOME/.config/dotfiles/brew-optional.env}"
+GIT_LOCAL_CONFIG_FILE="${GIT_LOCAL_CONFIG_FILE:-$HOME/.gitconfig.local}"
 
 load_optional_cask_env() {
   if [[ -f "$OPTIONAL_CASK_ENV_FILE" ]]; then
@@ -270,10 +291,73 @@ else
 fi
 
 # ============================================
-# Step 5: Setup GnuPG (GPG)
+# Step 5: Configure Git identity
 # ============================================
 
-print_header "Step 5: Setting up GnuPG"
+print_header "Step 5: Configuring Git Identity"
+
+configure_git_identity() {
+  local existing_name existing_email existing_signing
+  existing_name="$(git config --global --get user.name 2>/dev/null || true)"
+  existing_email="$(git config --global --get user.email 2>/dev/null || true)"
+  existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
+
+  local default_name="${GIT_USER_NAME:-$existing_name}"
+  local default_email="${GIT_USER_EMAIL:-$existing_email}"
+  local default_signing="${GIT_USER_SIGNINGKEY:-$existing_signing}"
+
+  if [[ "${DOTFILES_SKIP_GIT_PROMPTS:-0}" == "1" || -n "${CI:-}" ]]; then
+    if [[ -z "$default_name" && -z "$default_email" ]]; then
+      print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1/CI) with no defaults; leaving existing config untouched."
+      return
+    fi
+    print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1/CI); using provided defaults."
+  elif ! has_tty; then
+    if [[ -z "$default_name" && -z "$default_email" ]]; then
+      print_info "No TTY and no defaults available; skipping Git identity configuration."
+      return
+    fi
+  else
+    default_name="$(prompt_with_default "Git user.name" "$default_name")"
+    while has_tty && [[ -z "$default_name" ]]; do
+      print_warning "Git user.name is required."
+      default_name="$(prompt_with_default "Git user.name" "$default_name")"
+    done
+
+    default_email="$(prompt_with_default "Git user.email" "$default_email")"
+    while has_tty && [[ -z "$default_email" ]]; do
+      print_warning "Git user.email is required."
+      default_email="$(prompt_with_default "Git user.email" "$default_email")"
+    done
+
+    default_signing="$(prompt_with_default "Git signingkey (optional)" "$default_signing")"
+  fi
+
+  if [[ -z "$default_name" || -z "$default_email" ]]; then
+    print_warning "Git identity not updated (missing name/email)."
+    return
+  fi
+
+  mkdir -p "$(dirname "$GIT_LOCAL_CONFIG_FILE")"
+  {
+    echo "[user]"
+    echo "    name = $default_name"
+    echo "    email = $default_email"
+    if [[ -n "$default_signing" ]]; then
+      echo "    signingkey = $default_signing"
+    fi
+  } > "$GIT_LOCAL_CONFIG_FILE"
+
+  print_success "Git identity configured in $GIT_LOCAL_CONFIG_FILE"
+}
+
+configure_git_identity
+
+# ============================================
+# Step 6: Setup GnuPG (GPG)
+# ============================================
+
+print_header "Step 6: Setting up GnuPG"
 
 if [[ -x "$DOTFILES_DIR/setup_gnupg.sh" ]]; then
   "$DOTFILES_DIR/setup_gnupg.sh"
@@ -282,10 +366,10 @@ else
 fi
 
 # ============================================
-# Step 6: Setup VSCode extensions
+# Step 7: Setup VSCode extensions
 # ============================================
 
-print_header "Step 6: Setting up VSCode Extensions"
+print_header "Step 7: Setting up VSCode Extensions"
 
 # Allow skipping via env; otherwise auto-run if VSCode CLI is available
 if [[ "${SKIP_VSCODE_EXTENSIONS:-0}" == "1" ]]; then

@@ -64,6 +64,7 @@ Brewfile.lock.json
 *~
 \#*\#
 .#*
+.gitconfig.local
 
 # ============================================
 # Shell History & Local Configs

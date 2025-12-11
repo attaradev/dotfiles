@@ -211,6 +211,8 @@ git commit --allow-empty -m "test" --gpg-sign  # Test signing
 
 **Add dotfiles**: Create dir → `stow <name>`
 
+**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). To preseed or run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
+
 **Shell hooks**: Setup scripts append environment hooks to `~/.zshrc.local`/`~/.bashrc.local` when your rc files are stowed, so tracked configs stay clean.
 
 ---
