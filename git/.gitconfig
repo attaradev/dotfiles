@@ -58,6 +58,9 @@
 [protocol "file"]
 	allow = user
 
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
 [url "https://github.com/"]
 	insteadOf = git://github.com/
 
