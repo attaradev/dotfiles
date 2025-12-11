@@ -11,6 +11,8 @@
 .DEFAULT_GOAL := help
 .PHONY: help install update brew mise stow vscode clean doctor status dump backup test
 
+BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
+
 # ============================================
 # Setup & Installation
 # ============================================
@@ -24,12 +26,14 @@ install:
 ## brew: Install/update packages from Brewfile
 brew:
 	@echo "📦 Installing packages from Brewfile..."
-	@brew bundle install --verbose
+	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
+	 brew bundle install --verbose
 
 ## brew-check: Verify all Brewfile packages are installed
 brew-check:
 	@echo "✓ Checking Brewfile packages..."
-	@brew bundle check || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
+	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
+	 brew bundle check || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
 
 ## mise: Setup mise and install language runtimes
 mise:
