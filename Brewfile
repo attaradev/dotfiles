@@ -172,7 +172,7 @@ cask "vlc" if ENV["BREW_INSTALL_VLC"]                     # Versatile media play
 # 4. Install VSCode extensions (optional):
 #    ./vscode_setup.sh
 #
-# Optional casks (skipped by default, set env var to install):
+# Optional casks (skipped by default; setup.sh will prompt, or set env var to install):
 #   BREW_INSTALL_VIRTUALBOX=1 brew bundle install
 #   BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
 #   BREW_INSTALL_VLC=1 brew bundle install

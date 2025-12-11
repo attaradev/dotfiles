@@ -118,7 +118,7 @@ brew bundle dump --force         # Generate from system
 brew bundle cleanup --force      # Remove unlisted
 ```
 
-Optional casks are skipped by default (VirtualBox, Brave Browser, VLC, Spotify). Enable the ones you want when running bundle:
+The setup script will prompt you for optional casks (VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle`. When running `brew bundle` manually, enable the ones you want with env vars:
 
 ```bash
 BREW_INSTALL_VIRTUALBOX=1 BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
