@@ -295,10 +295,11 @@ fi
 print_header "Step 4: Configuring Git Identity"
 
 configure_git_identity() {
-  local env_name env_email env_signing
+  local env_name env_email env_signing env_signing_set
   env_name="${GIT_USER_NAME:-}"
   env_email="${GIT_USER_EMAIL:-}"
   env_signing="${GIT_USER_SIGNINGKEY:-}"
+  env_signing_set="${GIT_USER_SIGNINGKEY+set}"
 
   local file_name file_email file_signing
   if [[ -f "$GIT_LOCAL_CONFIG_FILE" ]]; then
@@ -337,10 +338,10 @@ configure_git_identity() {
   fi
 
   local default_signing
-  if [[ -n "${file_signing:-}" ]]; then
+  if [[ "$env_signing_set" == "set" ]]; then
+    default_signing="$env_signing" # allow explicit empty to disable signing
+  elif [[ -n "${file_signing:-}" ]]; then
     default_signing="$file_signing"
-  elif [[ -n "${env_signing:-}" ]]; then
-    default_signing="$env_signing"
   elif [[ -n "${existing_signing:-}" ]]; then
     default_signing="$existing_signing"
   else
