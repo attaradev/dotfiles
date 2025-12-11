@@ -23,14 +23,19 @@ if ! command -v git &> /dev/null; then
     exit 1
 fi
 
-# Clone repository if it doesn't exist
+# Clone repository if it doesn't exist; otherwise update it
 if [ -d "$DOTFILES_DIR" ]; then
     echo "📁 Dotfiles directory already exists at $DOTFILES_DIR"
-    cd "$DOTFILES_DIR"
-    echo "🔄 Pulling latest changes..."
-    git pull origin main || {
-        echo "⚠️  Warning: Could not pull latest changes. Continuing with existing files..."
-    }
+    if [ -d "$DOTFILES_DIR/.git" ]; then
+        echo "🔄 Pulling latest changes..."
+        git -C "$DOTFILES_DIR" pull --ff-only origin main || {
+            echo "⚠️  Warning: Could not pull latest changes. Continuing with existing files..."
+        }
+        cd "$DOTFILES_DIR"
+    else
+        echo "⚠️  $DOTFILES_DIR exists but is not a git repository. Remove or rename it, then rerun."
+        exit 1
+    fi
 else
     echo "📦 Cloning dotfiles repository..."
     git clone "$REPO_URL" "$DOTFILES_DIR"
