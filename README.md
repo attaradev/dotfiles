@@ -56,6 +56,7 @@ chmod +x setup.sh
 The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates symlinks via GNU Stow, and configures GPG with Keychain integration.
 
 During setup you’ll be prompted for:
+
 - Optional casks (VirtualBox, Brave, VLC, Spotify) — stored in `~/.config/dotfiles/brew-optional.env`
 - Git identity (`user.name`, `user.email`, optional `signingkey`) — stored in `~/.gitconfig.local` (ignored by Git)
 
@@ -135,7 +136,7 @@ source ~/.config/dotfiles/brew-optional.env
 brew bundle install
 ```
 
-**Prompts & automation flags**
+#### Prompts & automation flags
 
 | Purpose | Env var(s) | Default | Notes |
 | --- | --- | --- | --- |

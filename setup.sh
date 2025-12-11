@@ -179,6 +179,13 @@ configure_optional_cask() {
   local current="${!var_name:-}"
   local normalized_current
   normalized_current="$(normalize_bool "$current")"
+  local default_label=$([[ "$normalized_current" == "1" ]] && echo "enabled" || echo "disabled")
+
+  if [[ -n "$current" ]]; then
+    print_info "$label default: $default_label (current setting)"
+  else
+    print_info "$label default: $default_label"
+  fi
 
   # Skip prompting when explicitly requested or when no TTY is available
   if [[ "${DOTFILES_SKIP_OPTIONAL_PROMPTS:-0}" == "1" || -n "${CI:-}" || ! has_tty ]]; then
@@ -192,7 +199,7 @@ configure_optional_cask() {
     prompt_default=$([[ "$normalized_current" == "1" ]] && echo "y" || echo "n")
   fi
 
-  local prompt="${label}: ${description} Install?"
+  local prompt="Install ${label}? (${description})"
   if prompt_yes_no "$prompt" "$prompt_default"; then
     export "$var_name"=1
     print_success "$label enabled ($var_name=1)"
@@ -349,6 +356,11 @@ configure_git_identity() {
   } > "$GIT_LOCAL_CONFIG_FILE"
 
   print_success "Git identity configured in $GIT_LOCAL_CONFIG_FILE"
+  print_info "Git user.name: $default_name"
+  print_info "Git user.email: $default_email"
+  if [[ -n "$default_signing" ]]; then
+    print_info "Git signingkey: $default_signing"
+  fi
 }
 
 configure_git_identity
