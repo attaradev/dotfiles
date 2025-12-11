@@ -142,7 +142,7 @@ brew bundle install
 | --- | --- | --- | --- |
 | Optional casks | `BREW_INSTALL_VIRTUALBOX`, `BREW_INSTALL_BRAVE_BROWSER`, `BREW_INSTALL_VLC`, `BREW_INSTALL_SPOTIFY` | 0 | Setup prompts when a TTY is available; values are saved to `~/.config/dotfiles/brew-optional.env`. |
 | Skip optional prompts | `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` | prompt | Reuse saved/env values without prompting. |
-| Git identity | `GIT_USER_NAME`, `GIT_USER_EMAIL`, `GIT_USER_SIGNINGKEY` | env → existing git config → fallback | If env is set, prompts are skipped; otherwise prompts populate `~/.gitconfig.local` when a TTY is available. |
+| Git identity | `GIT_USER_NAME`, `GIT_USER_EMAIL`, `GIT_USER_SIGNINGKEY` | env → existing git config → fallback | If env is set, prompts are skipped; set `DOTFILES_FORCE_GIT_PROMPTS=1` to review/override even when env is provided. |
 | Skip Git prompts | `DOTFILES_SKIP_GIT_PROMPTS=1` | prompt | Leaves Git config as-is unless env defaults are provided. |
 | VSCode extensions | `SKIP_VSCODE_EXTENSIONS=1` | install if `code` exists | Skip installing extensions. |
 
@@ -226,7 +226,7 @@ git commit --allow-empty -m "test" --gpg-sign  # Test signing
 
 **Add dotfiles**: Create dir → `stow <name>`
 
-**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). Defaults resolve in order: `GIT_USER_*` env vars → existing Git config → fallback `Mike Attara / mpyebattara@gmail.com` with signing key `0x8C47F9FE2344DB2C`. If `GIT_USER_*` is set, prompts are skipped; otherwise you can accept or edit the suggested values. To run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
+**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). Defaults resolve in order: `GIT_USER_*` env vars → existing Git config → fallback `Mike Attara / mpyebattara@gmail.com` with signing key `0x8C47F9FE2344DB2C`. If `GIT_USER_*` is set, prompts are skipped unless `DOTFILES_FORCE_GIT_PROMPTS=1`; otherwise you can accept or edit the suggested values. To run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
 
 **Shell hooks**: Setup scripts append environment hooks to `~/.zshrc.local`/`~/.bashrc.local` when your rc files are stowed, so tracked configs stay clean.
 
