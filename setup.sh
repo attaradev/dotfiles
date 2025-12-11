@@ -286,22 +286,10 @@ else
 fi
 
 # ============================================
-# Step 4: Setup dotfiles with GNU Stow
+# Step 4: Configure Git identity
 # ============================================
 
-print_header "Step 4: Setting up Dotfiles with GNU Stow"
-
-if [[ -x "$DOTFILES_DIR/stow_setup.sh" ]]; then
-  "$DOTFILES_DIR/stow_setup.sh"
-else
-  print_warning "stow_setup.sh not found or not executable, skipping..."
-fi
-
-# ============================================
-# Step 5: Configure Git identity
-# ============================================
-
-print_header "Step 5: Configuring Git Identity"
+print_header "Step 4: Configuring Git Identity"
 
 configure_git_identity() {
   local env_name env_email env_signing
@@ -394,6 +382,18 @@ configure_git_identity() {
 }
 
 configure_git_identity
+
+# ============================================
+# Step 5: Setup dotfiles with GNU Stow
+# ============================================
+
+print_header "Step 5: Setting up Dotfiles with GNU Stow"
+
+if [[ -x "$DOTFILES_DIR/stow_setup.sh" ]]; then
+  "$DOTFILES_DIR/stow_setup.sh"
+else
+  print_warning "stow_setup.sh not found or not executable, skipping..."
+fi
 
 # ============================================
 # Step 6: Setup GnuPG (GPG)
