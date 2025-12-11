@@ -119,6 +119,9 @@ normalize_bool() {
 # Persisted optional cask preferences live outside the repo to avoid dirty git state
 OPTIONAL_CASK_ENV_FILE="${OPTIONAL_CASK_ENV_FILE:-$HOME/.config/dotfiles/brew-optional.env}"
 GIT_LOCAL_CONFIG_FILE="${GIT_LOCAL_CONFIG_FILE:-$HOME/.gitconfig.local}"
+DEFAULT_GIT_NAME="${DEFAULT_GIT_NAME:-Mike Attara}"
+DEFAULT_GIT_EMAIL="${DEFAULT_GIT_EMAIL:-mpyebattara@gmail.com}"
+DEFAULT_GIT_SIGNINGKEY="${DEFAULT_GIT_SIGNINGKEY:-0x8C47F9FE2344DB2C}"
 
 load_optional_cask_env() {
   if [[ -f "$OPTIONAL_CASK_ENV_FILE" ]]; then
