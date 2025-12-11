@@ -118,7 +118,7 @@ brew bundle dump --force         # Generate from system
 brew bundle cleanup --force      # Remove unlisted
 ```
 
-The setup script will prompt you for optional casks (VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle` and saves your choices to `~/.config/dotfiles/brew-optional.env` (reused by `setup.sh` and `make brew`). When running `brew bundle` manually, enable the ones you want with env vars:
+The setup script will prompt you for optional casks (VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle` and saves your choices to `~/.config/dotfiles/brew-optional.env` (reused by `setup.sh` and `make brew`). Prompts always run when a TTY is available; set `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` (or `CI=1`) to accept existing values. When running `brew bundle` manually, enable the ones you want with env vars:
 
 ```bash
 BREW_INSTALL_VIRTUALBOX=1 BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install

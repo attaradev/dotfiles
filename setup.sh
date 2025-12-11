@@ -119,12 +119,6 @@ EOF
   print_success "Saved optional cask preferences to $OPTIONAL_CASK_ENV_FILE"
 }
 
-# Track whether the user set these env vars before we source defaults
-USER_SET_BREW_INSTALL_VIRTUALBOX="${BREW_INSTALL_VIRTUALBOX+1}"
-USER_SET_BREW_INSTALL_BRAVE_BROWSER="${BREW_INSTALL_BRAVE_BROWSER+1}"
-USER_SET_BREW_INSTALL_VLC="${BREW_INSTALL_VLC+1}"
-USER_SET_BREW_INSTALL_SPOTIFY="${BREW_INSTALL_SPOTIFY+1}"
-
 # ============================================
 # Pre-flight checks
 # ============================================
@@ -162,22 +156,13 @@ configure_optional_cask() {
   local label="$2"
   local description="$3"
   local current="${!var_name:-}"
-  local user_set_var="USER_SET_${var_name}"
-  local user_set="${!user_set_var:-}"
   local normalized_current
   normalized_current="$(normalize_bool "$current")"
 
-  # Respect pre-set environment variables (for CI/automation)
-  if [[ -n "$user_set" ]]; then
+  # Skip prompting when explicitly requested or when no TTY is available
+  if [[ "${DOTFILES_SKIP_OPTIONAL_PROMPTS:-0}" == "1" || -n "${CI:-}" || ! has_tty ]]; then
     export "$var_name"="$normalized_current"
-    print_info "$label preference already set via $var_name=${!var_name}"
-    return
-  fi
-
-  # Skip prompting only when no TTY is available; default to existing value or disabled
-  if ! has_tty; then
-    export "$var_name"="$normalized_current"
-    print_info "No TTY detected; using $label value $var_name=${!var_name} (set $var_name=1 to enable)."
+    print_info "Skipping prompt for $label; using $var_name=${!var_name} (set $var_name=1 to enable)."
     return
   fi
 
