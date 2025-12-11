@@ -102,6 +102,44 @@ fi
 
 print_success "Xcode Command Line Tools detected"
 
+# ============================================
+# Optional cask selection (VirtualBox, Brave, VLC, Spotify)
+# ============================================
+
+print_header "Optional Casks"
+
+configure_optional_cask() {
+  local var_name="$1"
+  local label="$2"
+  local description="$3"
+
+  # Respect pre-set environment variables (for CI/automation)
+  if [[ -n "${!var_name:-}" ]]; then
+    print_info "$label preference already set via $var_name=${!var_name}"
+    return
+  fi
+
+  # Skip prompting in non-interactive shells
+  if [[ ! -t 0 ]]; then
+    print_info "Non-interactive shell detected; leaving $label disabled (set $var_name=1 to enable)."
+    return
+  fi
+
+  local prompt="${label}: ${description} Install?"
+  if prompt_yes_no "$prompt" "n"; then
+    export "$var_name"=1
+    print_success "$label enabled ($var_name=1)"
+  else
+    unset "$var_name"
+    print_info "$label skipped"
+  fi
+}
+
+configure_optional_cask "BREW_INSTALL_VIRTUALBOX" "VirtualBox" "Full VM hypervisor"
+configure_optional_cask "BREW_INSTALL_BRAVE_BROWSER" "Brave Browser" "Privacy-focused browser"
+configure_optional_cask "BREW_INSTALL_VLC" "VLC" "Versatile media player"
+configure_optional_cask "BREW_INSTALL_SPOTIFY" "Spotify" "Music streaming client"
+
 # Keep sudo alive so Homebrew/cask installs only prompt once
 if command -v sudo >/dev/null 2>&1; then
   print_info "Refreshing sudo credentials to avoid repeated prompts..."
@@ -143,44 +181,6 @@ else
 
   print_success "Homebrew installed successfully"
 fi
-
-# ============================================
-# Optional cask selection (VirtualBox, Brave, VLC, Spotify)
-# ============================================
-
-print_header "Optional Casks"
-
-configure_optional_cask() {
-  local var_name="$1"
-  local label="$2"
-  local description="$3"
-
-  # Respect pre-set environment variables (for CI/automation)
-  if [[ -n "${!var_name:-}" ]]; then
-    print_info "$label preference already set via $var_name=${!var_name}"
-    return
-  fi
-
-  # Skip prompting in non-interactive shells
-  if [[ ! -t 0 ]]; then
-    print_info "Non-interactive shell detected; leaving $label disabled (set $var_name=1 to enable)."
-    return
-  fi
-
-  local prompt="${label}: ${description} Install?"
-  if prompt_yes_no "$prompt" "n"; then
-    export "$var_name"=1
-    print_success "$label enabled ($var_name=1)"
-  else
-    unset "$var_name"
-    print_info "$label skipped"
-  fi
-}
-
-configure_optional_cask "BREW_INSTALL_VIRTUALBOX" "VirtualBox" "Full VM hypervisor"
-configure_optional_cask "BREW_INSTALL_BRAVE_BROWSER" "Brave Browser" "Privacy-focused browser"
-configure_optional_cask "BREW_INSTALL_VLC" "VLC" "Versatile media player"
-configure_optional_cask "BREW_INSTALL_SPOTIFY" "Spotify" "Music streaming client"
 
 # ============================================
 # Step 2: Install packages from Brewfile
