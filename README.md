@@ -170,11 +170,13 @@ stow -D zsh           # Remove symlinks
 stow --restow zsh     # Re-apply symlinks
 ```
 
+Backups: existing `~/.zshrc`, `~/.gitconfig`, `~/.npmrc`, `~/.mise.toml`, `~/.ssh/config`, and `~/.gnupg/gpg*.conf` are moved to `*.backup` before linking.
+
 ### GnuPG (GPG) Setup
 
 Encryption + Git signing with **Keychain integration** (Touch ID compatible).
 
-**Config**: AES256/SHA512, 2h/8h cache, pinentry-mac
+**Config**: Minimal defaults + auto-key-retrieve + pinentry-mac (auto-detected from Homebrew; default path `/opt/homebrew/bin/pinentry-mac`)
 
 ```bash
 gpg --full-generate-key                        # Generate RSA 4096
@@ -194,6 +196,8 @@ git commit --allow-empty -m "test" --gpg-sign  # Test signing
 **Tool versions**: Edit [mise/.mise.toml](mise/.mise.toml)
 
 **Add dotfiles**: Create dir → `stow <name>`
+
+**Shell hooks**: Setup scripts append environment hooks to `~/.zshrc.local`/`~/.bashrc.local` when your rc files are stowed, so tracked configs stay clean.
 
 ---
 
@@ -221,7 +225,8 @@ make dump           # Regenerate Brewfile
 
 ## 🔒 Security
 
-**Built-in**: GPG signing, SSH hardening (Ed25519, ChaCha20), Keychain integration, no hardcoded tokens
+**Built-in**: GPG signing, SSH hardening (Ed25519, hashed hosts, no agent forwarding), Keychain integration, no hardcoded tokens
+**Git note**: Merge signature verification is off by default to keep `git pull` unblocked; enable with `git config --global merge.verifySignatures true` if your workflow needs it.
 
 **Tools**: gitleaks, trivy, lynis, ssh-audit, git-crypt
 

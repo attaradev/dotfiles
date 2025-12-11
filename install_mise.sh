@@ -7,6 +7,8 @@
 
 set -e  # Exit on error
 
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🔧 Setting up mise (unified version manager)..."
 
 # Check if mise is already installed
@@ -24,27 +26,46 @@ fi
 ZSHRC="$HOME/.zshrc"
 BASHRC="$HOME/.bashrc"
 
-# Add mise to .zshrc if not already present
-if [[ -f "$ZSHRC" ]]; then
-  if ! grep -q 'mise activate' "$ZSHRC"; then
-    echo "" >> "$ZSHRC"
-    echo "# mise (unified version manager)" >> "$ZSHRC"
-    echo 'eval "$(mise activate zsh)"' >> "$ZSHRC"
-    echo "✓ Added mise to ~/.zshrc"
+resolve_mutable_target() {
+  local primary="$1"
+  local fallback="$2"
+
+  if [[ -L "$primary" ]] || [[ "$primary" == "$DOTFILES_DIR"* ]]; then
+    echo "$fallback"
   else
-    echo "✓ mise already configured in ~/.zshrc"
+    echo "$primary"
+  fi
+}
+
+# Add mise to .zshrc if not already present
+ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local")
+if [[ -f "$ZSHRC_TARGET" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc.local" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc" ]]; then
+  touch "$ZSHRC_TARGET"
+  if ! grep -q 'mise activate zsh' "$ZSHRC_TARGET"; then
+    {
+      echo ""
+      echo "# mise (unified version manager)"
+      echo 'eval "$(mise activate zsh)"'
+    } >> "$ZSHRC_TARGET"
+    echo "✓ Added mise to ${ZSHRC_TARGET/#$HOME/~}"
+  else
+    echo "✓ mise already configured in ${ZSHRC_TARGET/#$HOME/~}"
   fi
 fi
 
 # Add mise to .bashrc if not already present
-if [[ -f "$BASHRC" ]]; then
-  if ! grep -q 'mise activate' "$BASHRC"; then
-    echo "" >> "$BASHRC"
-    echo "# mise (unified version manager)" >> "$BASHRC"
-    echo 'eval "$(mise activate bash)"' >> "$BASHRC"
-    echo "✓ Added mise to ~/.bashrc"
+BASHRC_TARGET=$(resolve_mutable_target "$BASHRC" "$HOME/.bashrc.local")
+if [[ -f "$BASHRC_TARGET" ]] || [[ "$BASHRC_TARGET" == "$HOME/.bashrc.local" ]] || [[ "$BASHRC_TARGET" == "$HOME/.bashrc" ]]; then
+  touch "$BASHRC_TARGET"
+  if ! grep -q 'mise activate bash' "$BASHRC_TARGET"; then
+    {
+      echo ""
+      echo "# mise (unified version manager)"
+      echo 'eval "$(mise activate bash)"'
+    } >> "$BASHRC_TARGET"
+    echo "✓ Added mise to ${BASHRC_TARGET/#$HOME/~}"
   else
-    echo "✓ mise already configured in ~/.bashrc"
+    echo "✓ mise already configured in ${BASHRC_TARGET/#$HOME/~}"
   fi
 fi
 

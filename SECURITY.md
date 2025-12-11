@@ -49,21 +49,21 @@ If you accidentally commit sensitive data:
 - ✅ **Commit signing**: All commits are GPG-signed to verify authorship
 - ✅ **Tag signing**: All tags are GPG-signed
 - ✅ **HTTPS enforcement**: Always use HTTPS instead of git:// protocol
-- ✅ **Merge signature verification**: Verify signatures on merge commits
+- ✅ **Merge signature verification**: Disabled by default to keep `git pull` unblocked; enable with `merge.verifySignatures=true` if required
 - ✅ **Object validation**: Check objects during transfer/receive
 - ✅ **Fast-forward only pulls**: Prevent accidental merge commits
 - ✅ **Safer force push**: Use `--force-with-lease` instead of `--force`
+- ✅ **macOS Keychain**: Uses `osxkeychain` credential helper
 
 ### SSH Security ([ssh/.ssh/config](ssh/.ssh/config))
 
-- ✅ **Strong key exchange**: curve25519-sha256, DH group exchange
-- ✅ **Strong ciphers**: ChaCha20-Poly1305, AES-GCM
-- ✅ **Strong MACs**: HMAC-SHA2-512/256-ETM
 - ✅ **Ed25519 keys**: Prefer Ed25519 over RSA
-- ✅ **No password auth**: Key-based authentication only
 - ✅ **Hash known hosts**: Protect against host enumeration
 - ✅ **No agent forwarding**: Disabled by default
-- ✅ **Connection reuse**: Improve performance without compromising security
+- ✅ **Keychain + agent**: Add keys to agent and macOS Keychain
+- ✅ **Connection reuse**: ControlMaster with per-host sockets under `~/.ssh/sockets`
+- ✅ **Keepalive**: Server-alive pings to drop dead sessions
+- ✅ **Local overrides**: Place host-specific settings in `~/.ssh/config.local`
 
 ### npm Security ([npm/.npmrc](npm/.npmrc))
 
@@ -163,6 +163,8 @@ pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
 ## 🔐 GPG Key Management
+
+`pinentry-mac` is resolved via PATH, covering both Apple Silicon (`/opt/homebrew`) and Intel (`/usr/local`) Homebrew installs.
 
 ### Generate GPG Keys
 

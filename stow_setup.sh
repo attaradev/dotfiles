@@ -43,6 +43,41 @@ backup_if_exists "$HOME/.zshrc"
 backup_if_exists "$HOME/.gitconfig"
 backup_if_exists "$HOME/.npmrc"
 backup_if_exists "$HOME/.mise.toml"
+backup_if_exists "$HOME/.ssh/config"
+
+# Ensure secure directories exist before stowing SSH/GPG configs
+ensure_secure_dir() {
+  local dir=$1
+  local mode=$2
+
+  if [[ -L "$dir" && ! -d "$dir" ]]; then
+    echo "⚠️  $dir exists as a symlink that is not a directory; skipping."
+    return
+  fi
+
+  if [[ -e "$dir" && ! -d "$dir" ]]; then
+    echo "⚠️  $dir exists but is not a directory; skipping."
+    return
+  fi
+
+  if [[ ! -d "$dir" ]]; then
+    echo "📁 Creating $dir"
+    mkdir -p "$dir"
+  fi
+
+  chmod "$mode" "$dir"
+}
+
+if [[ -d "$DOTFILES_DIR/ssh" ]]; then
+  ensure_secure_dir "$HOME/.ssh" 700
+  ensure_secure_dir "$HOME/.ssh/sockets" 700
+fi
+
+if [[ -d "$DOTFILES_DIR/gpg" ]]; then
+  ensure_secure_dir "$HOME/.gnupg" 700
+  backup_if_exists "$HOME/.gnupg/gpg-agent.conf"
+  backup_if_exists "$HOME/.gnupg/gpg.conf"
+fi
 
 # ============================================
 # Stow packages
@@ -79,6 +114,7 @@ done
 
 echo ""
 echo "✅ Stow setup complete!"
+echo "  (Existing dotfiles are backed up to <file>.backup when replaced.)"
 if [[ ${#STOWED[@]} -gt 0 ]]; then
   echo ""
   echo "Symlinks created:"
@@ -104,11 +140,11 @@ echo "⚠️  Security Note:"
 echo "  Private keys are NOT stowed for security reasons."
 echo "  SSH: ssh-keygen -t ed25519 -C 'your_email@example.com'"
 echo "  GPG: gpg --full-generate-key"
-echo "  Create directories: mkdir -p ~/.ssh/sockets ~/.gnupg && chmod 700 ~/.ssh ~/.gnupg"
+echo "  Directories secured: ~/.ssh, ~/.ssh/sockets, ~/.gnupg (chmod 700)"
 echo ""
 echo "🔐 Keychain Integration:"
-echo "  Git credentials: Stored securely in macOS Keychain (osxkeychain)"
-echo "  GPG passphrases: Managed by pinentry-mac with Keychain"
+echo "  Git credentials: Stored in macOS Keychain (osxkeychain)"
+echo "  GPG passphrases: pinentry-mac (resolved via PATH for /opt/homebrew and /usr/local)"
 echo "  Restart GPG agent: gpgconf --kill gpg-agent"
 echo ""
 echo "To add more configurations:"

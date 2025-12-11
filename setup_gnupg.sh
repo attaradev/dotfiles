@@ -7,6 +7,8 @@
 
 set -e  # Exit on error
 
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🔐 Setting up GnuPG (GPG)..."
 
 # ============================================
@@ -46,6 +48,32 @@ backup_file() {
   fi
 }
 
+resolve_mutable_target() {
+  local primary="$1"
+  local fallback="$2"
+
+  if [[ -L "$primary" ]] || [[ "$primary" == "$DOTFILES_DIR"* ]]; then
+    echo "$fallback"
+  else
+    echo "$primary"
+  fi
+}
+
+find_pinentry_mac() {
+  local candidates=(
+    "$(command -v pinentry-mac 2>/dev/null || true)"
+    "/opt/homebrew/bin/pinentry-mac"
+    "/usr/local/bin/pinentry-mac"
+  )
+
+  for candidate in "${candidates[@]}"; do
+    if [[ -n "$candidate" && -x "$candidate" ]]; then
+      echo "$candidate"
+      return
+    fi
+  done
+}
+
 # ============================================
 # Configure GPG Agent
 # ============================================
@@ -54,26 +82,26 @@ GPG_AGENT_CONF="$GPG_DIR/gpg-agent.conf"
 
 echo "📝 Configuring GPG agent..."
 
-if [[ -L "$GPG_AGENT_CONF" ]]; then
-  echo "ℹ️  $GPG_AGENT_CONF is a symlink; leaving existing configuration in place."
-else
-  backup_file "$GPG_AGENT_CONF"
-  cat > "$GPG_AGENT_CONF" << 'EOF'
+PINENTRY_BIN="$(find_pinentry_mac)"
+
+if [[ -z "$PINENTRY_BIN" ]]; then
+  echo "❌ pinentry-mac not found. Install with: brew install pinentry-mac"
+  exit 1
+fi
+
+echo "✓ Using pinentry: $PINENTRY_BIN"
+
+backup_file "$GPG_AGENT_CONF"
+cat > "$GPG_AGENT_CONF" << EOF
 # GPG Agent Configuration
 # Timeout settings (in seconds)
 default-cache-ttl 3600
 max-cache-ttl 86400
-
-# Use pinentry-mac for passphrase entry on macOS
-pinentry-program /opt/homebrew/bin/pinentry-mac
-
-# Enable SSH support (optional)
-# enable-ssh-support
+pinentry-program $PINENTRY_BIN
 EOF
 
-  chmod 600 "$GPG_AGENT_CONF"
-  echo "✓ GPG agent configured at $GPG_AGENT_CONF"
-fi
+chmod 600 "$GPG_AGENT_CONF"
+echo "✓ GPG agent configured at $GPG_AGENT_CONF"
 
 # ============================================
 # Configure GPG
@@ -83,47 +111,17 @@ GPG_CONF="$GPG_DIR/gpg.conf"
 
 echo "📝 Configuring GPG..."
 
-if [[ -L "$GPG_CONF" ]]; then
-  echo "ℹ️  $GPG_CONF is a symlink; leaving existing configuration in place."
-else
-  backup_file "$GPG_CONF"
-  cat > "$GPG_CONF" << 'EOF'
-# GPG Configuration
-
-# Use AES256 for symmetric encryption
-cipher-algo AES256
-
-# Use SHA512 for hashing
-digest-algo SHA512
-
-# Use ZLIB for compression
-compress-algo ZLIB
-
-# Preferences for new keys
-default-preference-list SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed
-
-# Show long key IDs
+backup_file "$GPG_CONF"
+cat > "$GPG_CONF" << 'EOF'
+# GPG Configuration (minimal defaults)
 keyid-format 0xlong
-
-# Display the fingerprint of keys
 with-fingerprint
-
-# Use UTF-8
-charset utf-8
-
-# Don't include version in output
-no-emit-version
-
-# Don't include comments in output
-no-comments
-
-# Use gpg-agent for passphrase management
+auto-key-retrieve
 use-agent
 EOF
 
-  chmod 600 "$GPG_CONF"
-  echo "✓ GPG configured at $GPG_CONF"
-fi
+chmod 600 "$GPG_CONF"
+echo "✓ GPG configured at $GPG_CONF"
 
 # ============================================
 # Restart GPG Agent
@@ -201,17 +199,22 @@ echo ""
 
 ZSHRC="$HOME/.zshrc"
 
-if [[ -f "$ZSHRC" ]]; then
-  if ! grep -q "GPG_TTY" "$ZSHRC"; then
-    echo "" >> "$ZSHRC"
-    echo "# GPG TTY configuration for commit signing" >> "$ZSHRC"
-    echo 'export GPG_TTY=$(tty)' >> "$ZSHRC"
-    echo "✓ Added GPG_TTY export to ~/.zshrc"
+ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local")
+
+if [[ -f "$ZSHRC_TARGET" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc.local" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc" ]]; then
+  touch "$ZSHRC_TARGET"
+  if ! grep -q "GPG_TTY" "$ZSHRC_TARGET"; then
+    {
+      echo ""
+      echo "# GPG TTY configuration for commit signing"
+      echo 'export GPG_TTY=$(tty)'
+    } >> "$ZSHRC_TARGET"
+    echo "✓ Added GPG_TTY export to ${ZSHRC_TARGET/#$HOME/~}"
   else
-    echo "✓ GPG_TTY already configured in ~/.zshrc"
+    echo "✓ GPG_TTY already configured in ${ZSHRC_TARGET/#$HOME/~}"
   fi
 else
-  echo "⚠️  ~/.zshrc not found. You may need to add manually:"
+  echo "⚠️  ${ZSHRC/#$HOME/~} not found. You may need to add manually:"
   echo "     export GPG_TTY=\$(tty)"
 fi
 

@@ -82,14 +82,14 @@ Brewfile.lock.json
 **/*_authToken*
 
 # SSH keys and config
-.ssh/
+/.ssh/
 ssh/.ssh/id_*
 ssh/.ssh/*_rsa*
 ssh/.ssh/*_ed25519*
 ssh/.ssh/known_hosts
 
 # GPG keys (private keys and keyrings only - config files are managed)
-.gnupg/
+/.gnupg/
 gpg/.gnupg/private-keys-v1.d/
 gpg/.gnupg/*.gpg
 gpg/.gnupg/*.kbx

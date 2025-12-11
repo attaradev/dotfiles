@@ -1,7 +1,7 @@
 [user]
 	name = Mike Attara
 	email = mpyebattara@gmail.com
-	signingkey = 38385800BDE2498F
+	signingkey = F2AE44A658860EF7
 
 [credential]
 	helper = osxkeychain
@@ -43,7 +43,7 @@
 	useForceIfIncludes = true
 
 [merge]
-	verifySignatures = true
+	verifySignatures = false
 	conflictStyle = zdiff3
 
 [transfer]
