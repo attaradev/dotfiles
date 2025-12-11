@@ -55,6 +55,10 @@ chmod +x setup.sh
 
 The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates symlinks via GNU Stow, and configures GPG with Keychain integration.
 
+During setup you’ll be prompted for:
+- Optional casks (VirtualBox, Brave, VLC, Spotify) — stored in `~/.config/dotfiles/brew-optional.env`
+- Git identity (`user.name`, `user.email`, optional `signingkey`) — stored in `~/.gitconfig.local` (ignored by Git)
+
 ### 3. Verify installation
 
 ```bash
@@ -130,6 +134,16 @@ Or source your saved preferences:
 source ~/.config/dotfiles/brew-optional.env
 brew bundle install
 ```
+
+**Prompts & automation flags**
+
+| Purpose | Env var(s) | Default | Notes |
+| --- | --- | --- | --- |
+| Optional casks | `BREW_INSTALL_VIRTUALBOX`, `BREW_INSTALL_BRAVE_BROWSER`, `BREW_INSTALL_VLC`, `BREW_INSTALL_SPOTIFY` | 0 | Setup prompts when a TTY is available; values are saved to `~/.config/dotfiles/brew-optional.env`. |
+| Skip optional prompts | `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` or `CI=1` | prompt | Reuse saved/env values without prompting. |
+| Git identity | `GIT_USER_NAME`, `GIT_USER_EMAIL`, `GIT_USER_SIGNINGKEY` | existing git config | Prompts populate `~/.gitconfig.local` when a TTY is available. |
+| Skip Git prompts | `DOTFILES_SKIP_GIT_PROMPTS=1` or `CI=1` | prompt | Leaves Git config as-is unless env defaults are provided. |
+| VSCode extensions | `SKIP_VSCODE_EXTENSIONS=1` | install if `code` exists | Skip installing extensions. |
 
 **TLDR pages** are provided via the maintained `tlrc` client; use the familiar `tldr <command>` syntax.
 
