@@ -306,12 +306,7 @@ configure_git_identity() {
   local default_email="${existing_email:-$DEFAULT_GIT_EMAIL}"
   local default_signing="${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}"
 
-  if [[ -n "$env_name" || -n "$env_email" || -n "$env_signing" ]] && [[ "${DOTFILES_FORCE_GIT_PROMPTS:-0}" != "1" ]]; then
-    print_info "Git identity provided via environment variables; skipping prompts."
-    final_name="${env_name:-$default_name}"
-    final_email="${env_email:-$default_email}"
-    final_signing="${env_signing:-$default_signing}"
-  elif [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
+  if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
     print_info "Git identity defaults:"
     [[ -n "$default_name" ]] && print_info "  user.name:  $default_name"
     [[ -n "$default_email" ]] && print_info "  user.email: $default_email"
@@ -334,7 +329,7 @@ configure_git_identity() {
       return
     fi
   else
-    if [[ -z "$env_name" || -z "$env_email" || "${DOTFILES_FORCE_GIT_PROMPTS:-0}" == "1" ]]; then
+    if [[ -z "$env_name" || -z "$env_email" ]]; then
       local name_prompt="Git user.name"
       [[ -n "$final_name" ]] && name_prompt+=" (default: $final_name)"
       final_name="$(prompt_with_default "$name_prompt" "$final_name")"
