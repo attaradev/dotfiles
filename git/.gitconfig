@@ -14,7 +14,6 @@
 	defaultBranch = develop
 
 [commit]
-	gpgsign = false
 	verbose = true
 
 [color]
@@ -24,9 +23,6 @@
 	program = gpg
 	format = openpgp
 
-[tag]
-	gpgSign = false
-	forceSignAnnotated = false
 
 [fetch]
 	prune = true
