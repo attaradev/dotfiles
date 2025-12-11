@@ -300,14 +300,21 @@ configure_git_identity() {
   env_email="${GIT_USER_EMAIL:-}"
   env_signing="${GIT_USER_SIGNINGKEY:-}"
 
+  local file_name file_email file_signing
+  if [[ -f "$GIT_LOCAL_CONFIG_FILE" ]]; then
+    file_name="$(git config --file "$GIT_LOCAL_CONFIG_FILE" --get user.name 2>/dev/null || true)"
+    file_email="$(git config --file "$GIT_LOCAL_CONFIG_FILE" --get user.email 2>/dev/null || true)"
+    file_signing="$(git config --file "$GIT_LOCAL_CONFIG_FILE" --get user.signingkey 2>/dev/null || true)"
+  fi
+
   local existing_name existing_email existing_signing
   existing_name="$(git config --global --get user.name 2>/dev/null || true)"
   existing_email="$(git config --global --get user.email 2>/dev/null || true)"
   existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
 
-  local default_name="${existing_name:-$DEFAULT_GIT_NAME}"
-  local default_email="${existing_email:-$DEFAULT_GIT_EMAIL}"
-  local default_signing="${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}"
+  local default_name="${env_name:-${file_name:-${existing_name:-$DEFAULT_GIT_NAME}}}"
+  local default_email="${env_email:-${file_email:-${existing_email:-$DEFAULT_GIT_EMAIL}}}"
+  local default_signing="${env_signing:-${file_signing:-${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}}}"
 
   if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
     print_info "Git identity defaults:"
