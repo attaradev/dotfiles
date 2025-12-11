@@ -312,10 +312,40 @@ configure_git_identity() {
   existing_email="$(git config --global --get user.email 2>/dev/null || true)"
   existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
 
-  # Prefer saved local config, then env overrides, then global git, then hardcoded fallback
-  local default_name="${file_name:-${env_name:-${existing_name:-$DEFAULT_GIT_NAME}}}"
-  local default_email="${file_email:-${env_email:-${existing_email:-$DEFAULT_GIT_EMAIL}}}"
-  local default_signing="${file_signing:-${env_signing:-${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}}}"
+  # Prefer saved local config, then env overrides, then global git, then hardcoded fallback.
+  # Treat empty strings as unset.
+  local default_name
+  if [[ -n "${file_name:-}" ]]; then
+    default_name="$file_name"
+  elif [[ -n "${env_name:-}" ]]; then
+    default_name="$env_name"
+  elif [[ -n "${existing_name:-}" ]]; then
+    default_name="$existing_name"
+  else
+    default_name="$DEFAULT_GIT_NAME"
+  fi
+
+  local default_email
+  if [[ -n "${file_email:-}" ]]; then
+    default_email="$file_email"
+  elif [[ -n "${env_email:-}" ]]; then
+    default_email="$env_email"
+  elif [[ -n "${existing_email:-}" ]]; then
+    default_email="$existing_email"
+  else
+    default_email="$DEFAULT_GIT_EMAIL"
+  fi
+
+  local default_signing
+  if [[ -n "${file_signing:-}" ]]; then
+    default_signing="$file_signing"
+  elif [[ -n "${env_signing:-}" ]]; then
+    default_signing="$env_signing"
+  elif [[ -n "${existing_signing:-}" ]]; then
+    default_signing="$existing_signing"
+  else
+    default_signing="$DEFAULT_GIT_SIGNINGKEY"
+  fi
 
   local final_name="${env_name:-$default_name}"
   local final_email="${env_email:-$default_email}"
