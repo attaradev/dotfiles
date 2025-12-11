@@ -13,6 +13,7 @@
 #
 # Note: Language runtimes (Node.js, Python, Go, Ruby, pnpm) are managed via mise,
 #       not Homebrew. See install_mise.sh for runtime management.
+# Optional casks are gated by environment variables (see Installation Notes).
 
 # ============================================
 # Homebrew Taps
@@ -131,7 +132,7 @@ cask "postgres-unofficial"          # PostgreSQL database (Postgres.app) - suppo
 
 # --- Containers & Virtualization ---
 cask "docker-desktop"               # Containerization platform (includes Docker CLI and daemon)
-cask "virtualbox"                   # Full VM hypervisor for running multiple OS environments
+cask "virtualbox" if ENV["BREW_INSTALL_VIRTUALBOX"]       # Full VM hypervisor for running multiple OS environments
 
 # --- Development Utilities ---
 cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
@@ -142,7 +143,7 @@ cask "termius"                      # Cross-platform SSH client and terminal man
 cask "font-jetbrains-mono-nerd-font" # Patched Nerd Font so terminal icons render correctly
 
 # --- Web Browsers ---
-cask "brave-browser"                # Privacy-focused browser with built-in ad blocking
+cask "brave-browser" if ENV["BREW_INSTALL_BRAVE_BROWSER"] # Privacy-focused browser with built-in ad blocking
 cask "google-chrome"                # Popular web browser with extensive DevTools
 
 # --- Communication & Productivity ---
@@ -150,8 +151,8 @@ cask "slack"                        # Team communication and collaboration
 cask "zoom"                         # Video conferencing and virtual meetings
 
 # --- Media & Entertainment ---
-cask "spotify"                      # Music streaming service
-cask "vlc"                          # Versatile media player supporting all formats
+cask "spotify" if ENV["BREW_INSTALL_SPOTIFY"]             # Music streaming service
+cask "vlc" if ENV["BREW_INSTALL_VLC"]                     # Versatile media player supporting all formats
 
 # ============================================
 # Installation Notes
@@ -170,6 +171,12 @@ cask "vlc"                          # Versatile media player supporting all form
 #
 # 4. Install VSCode extensions (optional):
 #    ./vscode_setup.sh
+#
+# Optional casks (skipped by default, set env var to install):
+#   BREW_INSTALL_VIRTUALBOX=1 brew bundle install
+#   BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
+#   BREW_INSTALL_VLC=1 brew bundle install
+#   BREW_INSTALL_SPOTIFY=1 brew bundle install
 #
 # Or run everything at once:
 #    make install

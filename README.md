@@ -117,6 +117,11 @@ brew bundle install              # Install all
 brew bundle dump --force         # Generate from system
 brew bundle cleanup --force      # Remove unlisted
 ```
+Optional casks are skipped by default (VirtualBox, Brave Browser, VLC, Spotify). Enable the ones you want when running bundle:
+
+```bash
+BREW_INSTALL_VIRTUALBOX=1 BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
+```
 
 **TLDR pages** are provided via the maintained `tlrc` client; use the familiar `tldr <command>` syntax.
 
