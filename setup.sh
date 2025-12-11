@@ -340,19 +340,25 @@ configure_git_identity() {
     final_signing="${env_signing:-$default_signing}"
 
     if [[ -z "$env_name" || -z "$env_email" || "${DOTFILES_FORCE_GIT_PROMPTS:-0}" == "1" ]]; then
-      final_name="$(prompt_with_default "Git user.name" "$final_name")"
+      local name_prompt="Git user.name"
+      [[ -n "$final_name" ]] && name_prompt+=" (default: $final_name)"
+      final_name="$(prompt_with_default "$name_prompt" "$final_name")"
       while has_tty && [[ -z "$final_name" ]]; do
         print_warning "Git user.name is required."
-        final_name="$(prompt_with_default "Git user.name" "$final_name")"
+        final_name="$(prompt_with_default "$name_prompt" "$final_name")"
       done
 
-      final_email="$(prompt_with_default "Git user.email" "$final_email")"
+      local email_prompt="Git user.email"
+      [[ -n "$final_email" ]] && email_prompt+=" (default: $final_email)"
+      final_email="$(prompt_with_default "$email_prompt" "$final_email")"
       while has_tty && [[ -z "$final_email" ]]; do
         print_warning "Git user.email is required."
-        final_email="$(prompt_with_default "Git user.email" "$final_email")"
+        final_email="$(prompt_with_default "$email_prompt" "$final_email")"
       done
 
-      final_signing="$(prompt_with_default "Git signingkey (optional)" "$final_signing")"
+      local signing_prompt="Git signingkey (optional)"
+      [[ -n "$final_signing" ]] && signing_prompt+=" (default: $final_signing)"
+      final_signing="$(prompt_with_default "$signing_prompt" "$final_signing")"
     else
       print_info "Using Git identity defaults without prompting (env provided)."
     fi
