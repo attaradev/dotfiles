@@ -304,61 +304,69 @@ fi
 print_header "Step 5: Configuring Git Identity"
 
 configure_git_identity() {
+  local env_name env_email env_signing
+  env_name="${GIT_USER_NAME:-}"
+  env_email="${GIT_USER_EMAIL:-}"
+  env_signing="${GIT_USER_SIGNINGKEY:-}"
+
   local existing_name existing_email existing_signing
   existing_name="$(git config --global --get user.name 2>/dev/null || true)"
   existing_email="$(git config --global --get user.email 2>/dev/null || true)"
   existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
 
-  local default_name="${GIT_USER_NAME:-${existing_name:-$DEFAULT_GIT_NAME}}"
-  local default_email="${GIT_USER_EMAIL:-${existing_email:-$DEFAULT_GIT_EMAIL}}"
-  local default_signing="${GIT_USER_SIGNINGKEY:-${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}}"
+  local default_name="${existing_name:-$DEFAULT_GIT_NAME}"
+  local default_email="${existing_email:-$DEFAULT_GIT_EMAIL}"
+  local default_signing="${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}"
 
-  if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
+  if [[ -n "$env_name" || -n "$env_email" || -n "$env_signing" ]]; then
+    print_info "Git identity provided via environment variables; skipping prompts."
+  elif [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
     print_info "Git identity defaults:"
     [[ -n "$default_name" ]] && print_info "  user.name:  $default_name"
     [[ -n "$default_email" ]] && print_info "  user.email: $default_email"
     [[ -n "$default_signing" ]] && print_info "  signingkey: $default_signing"
   fi
 
-  local final_name="$default_name"
-  local final_email="$default_email"
-  local final_signing="$default_signing"
+  local final_name final_email final_signing
 
   if [[ "${DOTFILES_SKIP_GIT_PROMPTS:-0}" == "1" ]]; then
+    final_name="${env_name:-$default_name}"
+    final_email="${env_email:-$default_email}"
+    final_signing="${env_signing:-$default_signing}"
     if [[ -z "$default_name" && -z "$default_email" ]]; then
       print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1) with no defaults; leaving existing config untouched."
       return
     fi
     print_info "Skipping Git identity prompts (DOTFILES_SKIP_GIT_PROMPTS=1); using provided defaults."
   elif ! has_tty; then
+    final_name="${env_name:-$default_name}"
+    final_email="${env_email:-$default_email}"
+    final_signing="${env_signing:-$default_signing}"
     if [[ -z "$default_name" && -z "$default_email" ]]; then
       print_info "No TTY and no defaults available; skipping Git identity configuration."
       return
     fi
   else
-    local use_defaults="y"
-    if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
-      if prompt_yes_no "Use the default Git identity above?" "y"; then
-        use_defaults="y"
-      else
-        use_defaults="n"
-      fi
-    fi
+    final_name="${env_name:-$default_name}"
+    final_email="${env_email:-$default_email}"
+    final_signing="${env_signing:-$default_signing}"
 
-    if [[ "$use_defaults" != "y" ]]; then
-      final_name="$(prompt_with_default "Git user.name" "$default_name")"
+    if [[ -z "$env_name" || -z "$env_email" || "${DOTFILES_FORCE_GIT_PROMPTS:-0}" == "1" ]]; then
+      final_name="$(prompt_with_default "Git user.name" "$final_name")"
       while has_tty && [[ -z "$final_name" ]]; do
         print_warning "Git user.name is required."
         final_name="$(prompt_with_default "Git user.name" "$final_name")"
       done
 
-      final_email="$(prompt_with_default "Git user.email" "$default_email")"
+      final_email="$(prompt_with_default "Git user.email" "$final_email")"
       while has_tty && [[ -z "$final_email" ]]; do
         print_warning "Git user.email is required."
         final_email="$(prompt_with_default "Git user.email" "$final_email")"
       done
 
-      final_signing="$(prompt_with_default "Git signingkey (optional)" "$default_signing")"
+      final_signing="$(prompt_with_default "Git signingkey (optional)" "$final_signing")"
+    else
+      print_info "Using Git identity defaults without prompting (env provided)."
     fi
   fi
 
