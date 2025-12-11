@@ -226,7 +226,7 @@ git commit --allow-empty -m "test" --gpg-sign  # Test signing
 
 **Add dotfiles**: Create dir → `stow <name>`
 
-**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). Defaults resolve in order: existing `~/.gitconfig.local` → `GIT_USER_*` env vars → existing Git config → fallback `Mike Attara / mpyebattara@gmail.com` with signing key `0x8C47F9FE2344DB2C`. Prompts display the defaults so you can accept or edit; to run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
+**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). Defaults resolve in order: existing `~/.gitconfig.local` → `GIT_USER_*` env vars → existing Git config → fallback `Mike Attara / mpyebattara@gmail.com` with signing key `0x8C47F9FE2344DB2C`. Prompts display the defaults so you can accept or edit. The local file also toggles signing: if a signing key is provided, commit/tag signing is enabled there; otherwise signing is left off. To run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
 
 **Shell hooks**: Setup scripts append environment hooks to `~/.zshrc.local`/`~/.bashrc.local` when your rc files are stowed, so tracked configs stay clean.
 

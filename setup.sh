@@ -378,6 +378,13 @@ configure_git_identity() {
     if [[ -n "$final_signing" ]]; then
       echo "    signingkey = $final_signing"
     fi
+    echo ""
+    echo "[commit]"
+    echo "    gpgsign = $([[ -n "$final_signing" ]] && echo true || echo false)"
+    echo ""
+    echo "[tag]"
+    echo "    gpgSign = $([[ -n "$final_signing" ]] && echo true || echo false)"
+    echo "    forceSignAnnotated = $([[ -n "$final_signing" ]] && echo true || echo false)"
   } > "$GIT_LOCAL_CONFIG_FILE"
 
   print_success "Git identity configured in $GIT_LOCAL_CONFIG_FILE"
