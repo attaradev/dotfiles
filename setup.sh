@@ -317,13 +317,6 @@ configure_git_identity() {
   local default_email="${file_email:-${env_email:-${existing_email:-$DEFAULT_GIT_EMAIL}}}"
   local default_signing="${file_signing:-${env_signing:-${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}}}"
 
-  if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
-    print_info "Git identity defaults:"
-    [[ -n "$default_name" ]] && print_info "  user.name:  $default_name"
-    [[ -n "$default_email" ]] && print_info "  user.email: $default_email"
-    [[ -n "$default_signing" ]] && print_info "  signingkey: $default_signing"
-  fi
-
   local final_name="${env_name:-$default_name}"
   local final_email="${env_email:-$default_email}"
   local final_signing="${env_signing:-$default_signing}"
