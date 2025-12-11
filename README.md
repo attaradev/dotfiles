@@ -123,7 +123,7 @@ brew bundle dump --force         # Generate from system
 brew bundle cleanup --force      # Remove unlisted
 ```
 
-The setup script will prompt you for optional casks (VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle` and saves your choices to `~/.config/dotfiles/brew-optional.env` (reused by `setup.sh` and `make brew`). Prompts always run when a TTY is available; set `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` (or `CI=1`) to accept existing values. When running `brew bundle` manually, enable the ones you want with env vars:
+The setup script will prompt you for optional casks (VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle` and saves your choices to `~/.config/dotfiles/brew-optional.env` (reused by `setup.sh` and `make brew`). Prompts always run when a TTY is available; set `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` to accept existing values. When running `brew bundle` manually, enable the ones you want with env vars:
 
 ```bash
 BREW_INSTALL_VIRTUALBOX=1 BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
@@ -141,9 +141,9 @@ brew bundle install
 | Purpose | Env var(s) | Default | Notes |
 | --- | --- | --- | --- |
 | Optional casks | `BREW_INSTALL_VIRTUALBOX`, `BREW_INSTALL_BRAVE_BROWSER`, `BREW_INSTALL_VLC`, `BREW_INSTALL_SPOTIFY` | 0 | Setup prompts when a TTY is available; values are saved to `~/.config/dotfiles/brew-optional.env`. |
-| Skip optional prompts | `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` or `CI=1` | prompt | Reuse saved/env values without prompting. |
-| Git identity | `GIT_USER_NAME`, `GIT_USER_EMAIL`, `GIT_USER_SIGNINGKEY` | existing git config | Prompts populate `~/.gitconfig.local` when a TTY is available. |
-| Skip Git prompts | `DOTFILES_SKIP_GIT_PROMPTS=1` or `CI=1` | prompt | Leaves Git config as-is unless env defaults are provided. |
+| Skip optional prompts | `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` | prompt | Reuse saved/env values without prompting. |
+| Git identity | `GIT_USER_NAME`, `GIT_USER_EMAIL`, `GIT_USER_SIGNINGKEY` | env → existing git config → fallback | Prompts populate `~/.gitconfig.local` when a TTY is available. |
+| Skip Git prompts | `DOTFILES_SKIP_GIT_PROMPTS=1` | prompt | Leaves Git config as-is unless env defaults are provided. |
 | VSCode extensions | `SKIP_VSCODE_EXTENSIONS=1` | install if `code` exists | Skip installing extensions. |
 
 **TLDR pages** are provided via the maintained `tlrc` client; use the familiar `tldr <command>` syntax.
@@ -226,7 +226,7 @@ git commit --allow-empty -m "test" --gpg-sign  # Test signing
 
 **Add dotfiles**: Create dir → `stow <name>`
 
-**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). To preseed or run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
+**Git identity**: Setup prompts for `user.name`, `user.email`, and `user.signingkey`, writing them to `~/.gitconfig.local` (ignored by Git). Defaults resolve in order: `GIT_USER_*` env vars → existing Git config → fallback `Mike Attara / mpyebattara@gmail.com` with signing key `0x8C47F9FE2344DB2C`. To preseed or run non-interactively, set `GIT_USER_NAME/GIT_USER_EMAIL/GIT_USER_SIGNINGKEY`, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`.
 
 **Shell hooks**: Setup scripts append environment hooks to `~/.zshrc.local`/`~/.bashrc.local` when your rc files are stowed, so tracked configs stay clean.
 

@@ -188,7 +188,7 @@ configure_optional_cask() {
   fi
 
   # Skip prompting when explicitly requested or when no TTY is available
-  if [[ "${DOTFILES_SKIP_OPTIONAL_PROMPTS:-0}" == "1" || -n "${CI:-}" || ! has_tty ]]; then
+  if [[ "${DOTFILES_SKIP_OPTIONAL_PROMPTS:-0}" == "1" || ! has_tty ]]; then
     export "$var_name"="$normalized_current"
     print_info "Skipping prompt for $label; using $var_name=${!var_name} (set $var_name=1 to enable)."
     return
@@ -304,36 +304,13 @@ fi
 print_header "Step 5: Configuring Git Identity"
 
 configure_git_identity() {
-  git_history_identity() {
-    if ! command -v git >/dev/null 2>&1; then
-      echo "|"
-      return
-    fi
-    declare -A counts
-    local best_pair=""
-    local best_count=0
-    while IFS='|' read -r name email; do
-      [[ -z "$name" || -z "$email" ]] && continue
-      local key="$name|$email"
-      counts["$key"]=$((counts["$key"] + 1))
-      if (( counts["$key"] > best_count )); then
-        best_count=${counts["$key"]}
-        best_pair="$key"
-      fi
-    done < <(git -C "$DOTFILES_DIR" log -5 --format='%an|%ae' 2>/dev/null)
-    [[ -n "$best_pair" ]] && echo "$best_pair" || echo "|"
-  }
-
   local existing_name existing_email existing_signing
   existing_name="$(git config --global --get user.name 2>/dev/null || true)"
   existing_email="$(git config --global --get user.email 2>/dev/null || true)"
   existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
 
-  local history_name history_email
-  IFS='|' read -r history_name history_email <<<"$(git_history_identity)"
-
-  local default_name="${GIT_USER_NAME:-${existing_name:-${history_name:-$DEFAULT_GIT_NAME}}}"
-  local default_email="${GIT_USER_EMAIL:-${existing_email:-${history_email:-$DEFAULT_GIT_EMAIL}}}"
+  local default_name="${GIT_USER_NAME:-${existing_name:-$DEFAULT_GIT_NAME}}"
+  local default_email="${GIT_USER_EMAIL:-${existing_email:-$DEFAULT_GIT_EMAIL}}"
   local default_signing="${GIT_USER_SIGNINGKEY:-${existing_signing:-$DEFAULT_GIT_SIGNINGKEY}}"
 
   if [[ -n "$default_name" || -n "$default_email" || -n "$default_signing" ]]; then
