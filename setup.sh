@@ -61,6 +61,10 @@ print_note() {
   echo -e "${CYAN}ℹ${NC} $1"
 }
 
+has_tty() {
+  [[ -t 0 || -t 1 || -t 2 || -r /dev/tty ]]
+}
+
 prompt_yes_no() {
   local prompt="$1"
   local default_answer="${2:-n}"
@@ -72,8 +76,12 @@ prompt_yes_no() {
     default="y"
   fi
 
-  read -r -p "$(printf "%s %s " "$prompt" "$suffix")" answer </dev/tty || answer="$default"
-  answer="${answer:-$default}"
+  if has_tty && [[ -r /dev/tty ]]; then
+    read -r -p "$(printf "%s %s " "$prompt" "$suffix")" answer </dev/tty || answer="$default"
+    answer="${answer:-$default}"
+  else
+    answer="$default"
+  fi
 
   [[ "$answer" =~ ^[Yy]$ ]]
 }
@@ -156,10 +164,10 @@ configure_optional_cask() {
     return
   fi
 
-  # Skip prompting in non-interactive shells; default to disabled
-  if [[ ! -t 0 ]]; then
+  # Skip prompting only when no TTY is available; default to disabled
+  if ! has_tty; then
     export "$var_name"=0
-    print_info "Non-interactive shell detected; leaving $label disabled (set $var_name=1 to enable)."
+    print_info "No TTY detected; leaving $label disabled (set $var_name=1 to enable)."
     return
   fi
 
