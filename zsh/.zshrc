@@ -259,3 +259,6 @@ fi
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
+
+# Added by Antigravity
+export PATH="/Users/mpy/.antigravity/antigravity/bin:$PATH"
