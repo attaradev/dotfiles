@@ -10,6 +10,7 @@
 - **🔗 Smart Symlinks** - GNU Stow for organized, portable dotfile management
 - **🎨 Modern CLI Tools** - eza, bat, fd, ripgrep, fzf, zoxide, starship
 - **🛡️ Security Tools** - gitleaks, trivy, lynis, ssh-audit, git-crypt
+- **☸️ Kubernetes Tools** - kubectl, helm, eksctl, minikube, kind, k3d, tilt
 
 ## ⚙️ Quick Start
 
@@ -57,7 +58,7 @@ The setup installs Homebrew, packages, mise (Node/Python/Go/Ruby/pnpm), creates 
 
 During setup you’ll be prompted for:
 
-- Optional casks (VirtualBox, Brave, VLC, Spotify) — stored in `~/.config/dotfiles/brew-optional.env`
+- Optional casks (Antigravity, VirtualBox, Brave, VLC, Spotify) — stored in `~/.config/dotfiles/brew-optional.env`
 - Git identity (`user.name`, `user.email`, optional `signingkey`) — stored in `~/.gitconfig.local` (ignored by Git)
 
 ### 3. Verify installation
@@ -123,10 +124,10 @@ brew bundle dump --force         # Generate from system
 brew bundle cleanup --force      # Remove unlisted
 ```
 
-The setup script will prompt you for optional casks (VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle` and saves your choices to `~/.config/dotfiles/brew-optional.env` (reused by `setup.sh` and `make brew`). Prompts always run when a TTY is available; set `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` to accept existing values. When running `brew bundle` manually, enable the ones you want with env vars:
+The setup script will prompt you for optional casks (Antigravity, VirtualBox, Brave Browser, VLC, Spotify) before running `brew bundle` and saves your choices to `~/.config/dotfiles/brew-optional.env` (reused by `setup.sh` and `make brew`). Prompts always run when a TTY is available; set `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` to accept existing values. Homebrew filters most custom env vars, so the optional flags are mirrored into `HOMEBREW_BUNDLE_INSTALL_*`. When running `brew bundle` manually, enable the ones you want with env vars:
 
 ```bash
-BREW_INSTALL_VIRTUALBOX=1 BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
+HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=1 HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=1 brew bundle install
 ```
 
 Or source your saved preferences:
@@ -140,7 +141,7 @@ brew bundle install
 
 | Purpose | Env var(s) | Default | Notes |
 | --- | --- | --- | --- |
-| Optional casks | `BREW_INSTALL_VIRTUALBOX`, `BREW_INSTALL_BRAVE_BROWSER`, `BREW_INSTALL_VLC`, `BREW_INSTALL_SPOTIFY` | 0 | Setup prompts when a TTY is available; values are saved to `~/.config/dotfiles/brew-optional.env`. |
+| Optional casks | `BREW_INSTALL_*` (prompt values), mirrored to `HOMEBREW_BUNDLE_INSTALL_*` for brew bundle | 0 | Setup prompts when a TTY is available; values are saved to `~/.config/dotfiles/brew-optional.env`. |
 | Skip optional prompts | `DOTFILES_SKIP_OPTIONAL_PROMPTS=1` | prompt | Reuse saved/env values without prompting. |
 | Git identity | `GIT_USER_NAME`, `GIT_USER_EMAIL`, `GIT_USER_SIGNINGKEY` | `~/.gitconfig.local` → env → existing git config → fallback | Prompts show these defaults; set env vars to prefill, or skip prompts with `DOTFILES_SKIP_GIT_PROMPTS=1`. |
 | Skip Git prompts | `DOTFILES_SKIP_GIT_PROMPTS=1` | prompt | Leaves Git config as-is unless env defaults are provided. |

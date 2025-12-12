@@ -27,12 +27,22 @@ install:
 brew:
 	@echo "📦 Installing packages from Brewfile..."
 	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
+	 HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=$${BREW_INSTALL_ANTIGRAVITY:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=$${BREW_INSTALL_VIRTUALBOX:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=$${BREW_INSTALL_BRAVE_BROWSER:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_VLC=$${BREW_INSTALL_VLC:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_SPOTIFY=$${BREW_INSTALL_SPOTIFY:-0} \
 	 brew bundle install --verbose
 
 ## brew-check: Verify all Brewfile packages are installed
 brew-check:
 	@echo "✓ Checking Brewfile packages..."
 	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
+	 HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=$${BREW_INSTALL_ANTIGRAVITY:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=$${BREW_INSTALL_VIRTUALBOX:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=$${BREW_INSTALL_BRAVE_BROWSER:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_VLC=$${BREW_INSTALL_VLC:-0} \
+	 HOMEBREW_BUNDLE_INSTALL_SPOTIFY=$${BREW_INSTALL_SPOTIFY:-0} \
 	 brew bundle check || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
 
 ## mise: Setup mise and install language runtimes

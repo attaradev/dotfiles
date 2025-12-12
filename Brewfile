@@ -20,6 +20,11 @@
 # ============================================
 tap "hashicorp/tap"
 
+def optional_enabled?(key)
+  value = ENV["HOMEBREW_BUNDLE_INSTALL_#{key}"] || ENV["BREW_INSTALL_#{key}"]
+  value.to_s == "1"
+end
+
 # ============================================
 # Version Control & Collaboration
 # ============================================
@@ -66,6 +71,8 @@ brew "helm"                         # Kubernetes package manager
 brew "eksctl"                       # CLI for creating Kubernetes clusters on AWS
 brew "minikube"                     # Run Kubernetes clusters locally
 brew "kind"                         # Kubernetes IN Docker - local clusters for testing
+brew "k3d"                          # Create and manage k3s clusters in Docker
+brew "tilt"                         # Local development environment orchestration tool
 
 # ============================================
 # Databases & Data Tools
@@ -127,12 +134,14 @@ brew "stow"                         # Symlink farm manager for organizing dotfil
 # --- Development Tools ---
 cask "visual-studio-code"           # Powerful, extensible code editor
 cask "claude-code"                  # AI-powered coding assistant with CLI integration
+cask "codex"                        # AI-powered coding assistant
+cask "antigravity" if optional_enabled?("ANTIGRAVITY")    # AI coding agent IDE
 cask "postman"                      # API development and testing platform
 cask "postgres-unofficial"          # PostgreSQL database (Postgres.app) - supports multiple versions
 
 # --- Containers & Virtualization ---
 cask "docker-desktop"               # Containerization platform (includes Docker CLI and daemon)
-cask "virtualbox" if ENV["BREW_INSTALL_VIRTUALBOX"]       # Full VM hypervisor for running multiple OS environments
+cask "virtualbox" if optional_enabled?("VIRTUALBOX")      # Full VM hypervisor for running multiple OS environments
 
 # --- Development Utilities ---
 cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
@@ -143,7 +152,7 @@ cask "termius"                      # Cross-platform SSH client and terminal man
 cask "font-jetbrains-mono-nerd-font" # Patched Nerd Font so terminal icons render correctly
 
 # --- Web Browsers ---
-cask "brave-browser" if ENV["BREW_INSTALL_BRAVE_BROWSER"] # Privacy-focused browser with built-in ad blocking
+cask "brave-browser" if optional_enabled?("BRAVE_BROWSER") # Privacy-focused browser with built-in ad blocking
 cask "google-chrome"                # Popular web browser with extensive DevTools
 
 # --- Communication & Productivity ---
@@ -151,8 +160,8 @@ cask "slack"                        # Team communication and collaboration
 cask "zoom"                         # Video conferencing and virtual meetings
 
 # --- Media & Entertainment ---
-cask "spotify" if ENV["BREW_INSTALL_SPOTIFY"]             # Music streaming service
-cask "vlc" if ENV["BREW_INSTALL_VLC"]                     # Versatile media player supporting all formats
+cask "spotify" if optional_enabled?("SPOTIFY")            # Music streaming service
+cask "vlc" if optional_enabled?("VLC")                    # Versatile media player supporting all formats
 
 # ============================================
 # Installation Notes
@@ -173,10 +182,11 @@ cask "vlc" if ENV["BREW_INSTALL_VLC"]                     # Versatile media play
 #    ./vscode_setup.sh
 #
 # Optional casks (skipped by default; setup.sh will prompt, or set env var to install):
-#   BREW_INSTALL_VIRTUALBOX=1 brew bundle install
-#   BREW_INSTALL_BRAVE_BROWSER=1 brew bundle install
-#   BREW_INSTALL_VLC=1 brew bundle install
-#   BREW_INSTALL_SPOTIFY=1 brew bundle install
+#   HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=1 brew bundle install
+#   HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=1 brew bundle install
+#   HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=1 brew bundle install
+#   HOMEBREW_BUNDLE_INSTALL_VLC=1 brew bundle install
+#   HOMEBREW_BUNDLE_INSTALL_SPOTIFY=1 brew bundle install
 #
 # Or run everything at once:
 #    make install
