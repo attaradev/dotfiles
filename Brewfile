@@ -119,7 +119,8 @@ brew "zsh-syntax-highlighting"      # Real-time syntax highlighting for zsh
 
 brew "openssl@3"                    # Cryptography and SSL/TLS toolkit
 brew "readline"                     # Library for command-line editing
-brew "libyaml"                     # YAML parser/headers required for Ruby psych extension
+brew "libyaml"                      # YAML parser/headers required for Ruby psych extension
+brew "pkg-config"                   # Manage compile and link flags for libraries
 
 # ============================================
 # Dotfile Management
