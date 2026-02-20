@@ -1,329 +1,90 @@
-# 🔒 Security Best Practices
+# Security Guide
 
-This document outlines the security measures implemented in these dotfiles and best practices for maintaining a secure development environment.
+This repository keeps only shareable configuration in version control. Secrets and machine-specific credentials stay local.
 
-## 🚨 Critical Security Warnings
+## Never Commit Sensitive Files
 
-### Never Commit These Files
+The following must stay out of git history:
 
-The following files contain sensitive information and should **NEVER** be committed to version control:
+- SSH private keys (`~/.ssh/id_*`)
+- GPG private keys (`~/.gnupg/private-keys-v1.d/`)
+- npm tokens (`~/.npmrc.local`)
+- Cloud credentials (`~/.aws/credentials`, `~/.docker/config.json`)
+- `.env` files with real secrets
+- `~/.gitconfig.local` when it contains personal identity/signing values
 
-- SSH private keys (`~/.ssh/id_*`, `~/.ssh/*_rsa`, `~/.ssh/*_ed25519`)
-- GPG private keys (`~/.gnupg/private-keys-v1.d/`, `*.gpg`, `*.key`)
-- npm auth tokens (`~/.npmrc` with `_authToken`)
-- AWS credentials (`~/.aws/credentials`, `~/.aws/config`)
-- Docker credentials (`~/.docker/config.json`)
-- Environment files with secrets (`.env`, `.env.local`, `*.secret`)
-- Git credentials (`~/.git-credentials`)
+These patterns are covered by [.gitignore](.gitignore).
 
-All these patterns are included in [.gitignore](.gitignore:76-115).
+## Repository Security Defaults
 
-### ⚠️ If You Accidentally Commit Secrets
+### Git configuration (`git/.gitconfig`)
 
-If you accidentally commit sensitive data:
+- Includes local overrides from `~/.gitconfig.local`
+- Uses macOS Keychain credential helper (`osxkeychain`)
+- Enforces fast-forward pulls (`pull.ff=only`)
+- Enables transfer and receive object checks (`fsckObjects=true`)
+- Sets merge signature verification to off by default (`merge.verifySignatures=false`)
+- Rewrites GitHub HTTPS URLs to SSH (`https://github.com/...` -> `git@github.com:...`)
+- Rewrites `git://` URLs to `https://`
 
-1. **Immediately revoke the exposed credentials**
-   - npm tokens: `npm token revoke <token>`
-   - GitHub tokens: Settings → Developer settings → Personal access tokens
-   - AWS keys: AWS Console → IAM → Security credentials
+### Commit and tag signing behavior
 
-2. **Remove from Git history**
+Signing is configured in `~/.gitconfig.local` during `setup.sh`:
 
-   ```bash
-   # Use BFG Repo-Cleaner or git-filter-repo
-   brew install bfg
-   bfg --delete-files .npmrc
-   git push --force
-   ```
+- If a signing key is present, commit and tag signing are enabled.
+- If no signing key is set, signing remains disabled.
 
-3. **Scan for leaked secrets**
+This means signing is conditional, not universally forced.
 
-   ```bash
-   gitleaks detect --source . -v
-   ```
+### SSH configuration (`ssh/.ssh/config`)
 
-## 🛡️ Security Features Implemented
+- Prefers Ed25519 keys
+- Disables agent forwarding by default
+- Enables hashed known hosts (`HashKnownHosts yes`)
+- Uses per-host connection multiplexing under `~/.ssh/sockets`
+- Allows machine-local overrides via `~/.ssh/config.local`
 
-### Git Security ([git/.gitconfig](git/.gitconfig))
+`~/.ssh/known_hosts` is intentionally machine-local and not stowed.
 
-- ✅ **Commit signing**: All commits are GPG-signed to verify authorship
-- ✅ **Tag signing**: All tags are GPG-signed
-- ✅ **HTTPS enforcement**: Always use HTTPS instead of git:// protocol
-- ✅ **Merge signature verification**: Disabled by default to keep `git pull` unblocked; enable with `merge.verifySignatures=true` if required
-- ✅ **Object validation**: Check objects during transfer/receive
-- ✅ **Fast-forward only pulls**: Prevent accidental merge commits
-- ✅ **Safer force push**: Use `--force-with-lease` instead of `--force`
-- ✅ **macOS Keychain**: Uses `osxkeychain` credential helper
+### GPG configuration (`gpg/.gnupg/*`)
 
-### SSH Security ([ssh/.ssh/config](ssh/.ssh/config))
+- Uses `pinentry-mac` from detected Homebrew path
+- Sets agent cache timeout defaults
+- Enables key retrieval and fingerprint-friendly output in `gpg.conf`
 
-- ✅ **Ed25519 keys**: Prefer Ed25519 over RSA
-- ✅ **Hash known hosts**: Protect against host enumeration
-- ✅ **No agent forwarding**: Disabled by default
-- ✅ **Keychain + agent**: Add keys to agent and macOS Keychain
-- ✅ **Connection reuse**: ControlMaster with per-host sockets under `~/.ssh/sockets`
-- ✅ **Keepalive**: Server-alive pings to drop dead sessions
-- ✅ **Local overrides**: Place host-specific settings in `~/.ssh/config.local`
+### Shell and npm defaults
 
-### npm Security ([npm/.npmrc](npm/.npmrc))
+- `npm/.npmrc` avoids hardcoded tokens (use `~/.npmrc.local`)
+- `zsh/.zshrc` sets safer shell defaults (`NO_CLOBBER`, history filtering, strict umask)
 
-- ✅ **No hardcoded tokens**: Auth tokens stored separately
-- ✅ **Save exact versions**: Pin package versions for reproducibility
-- ✅ **Provenance support**: Ready for package attestation
-- ✅ **Prefer pnpm**: More secure package manager
-
-### Shell Security ([zsh/.zshrc](zsh/.zshrc))
-
-- ✅ **No clobber**: Prevent accidental file overwrites
-- ✅ **History privacy**: Don't save commands starting with space
-- ✅ **Strict umask**: Files 644, directories 755
-- ✅ **No core dumps**: Prevent sensitive data leakage
-- ✅ **Auto-clear secrets**: Unset sensitive env vars on exit
-- ✅ **GPG auto-lock**: Lock GPG after 30 minutes
-
-## 🔐 Security Tools Included
-
-### Installed via Brewfile
-
-- **gnupg**: GPG encryption and signing
-- **git-crypt**: Transparent file encryption in git
-- **age**: Modern file encryption
-- **ssh-audit**: Audit SSH configurations
-- **lynis**: System security auditing
-- **trivy**: Container and IaC vulnerability scanning
-- **gitleaks**: Scan for secrets in git repos
-- **mkcert**: Local TLS certificates
-
-### Usage Examples
-
-#### Scan for secrets in your repo
+## Verify Your Local Security State
 
 ```bash
+# Verify Git signing and identity settings in effect
+git config --show-origin --get user.signingkey
+git config --show-origin --get commit.gpgsign
+git config --show-origin --get tag.gpgSign
+
+# Check SSH and GPG tooling
+ssh -G github.com | head -n 30
+gpg --version | head -n 1
+
+# Scan for accidental secrets in this repo
 gitleaks detect --source . -v
 ```
 
-#### Audit your SSH configuration
-
-```bash
-ssh-audit localhost
-```
-
-#### Scan for vulnerabilities
-
-```bash
-trivy fs .
-trivy config .
-```
-
-#### System security audit
-
-```bash
-sudo lynis audit system
-```
-
-## 🔑 SSH Key Management
-
-### Generate Secure SSH Keys
-
-Use Ed25519 (most secure and fastest):
-
-```bash
-# Generate Ed25519 key (recommended)
-ssh-keygen -t ed25519 -C "your_email@example.com"
-
-# Or RSA 4096-bit (if Ed25519 not supported)
-ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-```
-
-### Create SSH socket directory
-
-```bash
-mkdir -p ~/.ssh/sockets
-chmod 700 ~/.ssh/sockets
-```
-
-### Set proper permissions
-
-```bash
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/id_ed25519
-chmod 644 ~/.ssh/id_ed25519.pub
-chmod 600 ~/.ssh/config
-```
-
-### Add to GitHub/GitLab
-
-```bash
-# Copy public key to clipboard
-pbcopy < ~/.ssh/id_ed25519.pub
-
-# Then add to:
-# GitHub: Settings → SSH and GPG keys
-# GitLab: Preferences → SSH Keys
-```
-
-## 🔐 GPG Key Management
-
-`pinentry-mac` is resolved via PATH, covering both Apple Silicon (`/opt/homebrew`) and Intel (`/usr/local`) Homebrew installs.
-
-### Generate GPG Keys
-
-```bash
-# Generate new GPG key (RSA 4096-bit)
-gpg --full-generate-key
-
-# List keys
-gpg --list-secret-keys --keyid-format LONG
-
-# Export public key
-gpg --armor --export YOUR_KEY_ID | pbcopy
-```
-
-### Configure Git to use GPG
-
-```bash
-# Set signing key
-git config --global user.signingkey YOUR_KEY_ID
-
-# Enable signing
-git config --global commit.gpgsign true
-git config --global tag.gpgsign true
-```
-
-### Backup GPG Keys
-
-```bash
-# Export private key (KEEP SECURE!)
-gpg --export-secret-keys YOUR_KEY_ID > gpg-private-key.asc
-
-# Export public key
-gpg --export YOUR_KEY_ID > gpg-public-key.asc
-
-# Store in secure location (NOT in this repo!)
-```
-
-## 🔒 git-crypt for Sensitive Files
-
-Use git-crypt to encrypt sensitive files in your repository:
-
-### Setup git-crypt
-
-```bash
-# Initialize git-crypt in your repo
-cd your-repo
-git-crypt init
-
-# Add GPG user (use your GPG key ID)
-git-crypt add-gpg-user YOUR_GPG_KEY_ID
-
-# Create .gitattributes to specify files to encrypt
-echo "secrets/** filter=git-crypt diff=git-crypt" >> .gitattributes
-echo ".env.* filter=git-crypt diff=git-crypt" >> .gitattributes
-
-# Lock/unlock
-git-crypt lock
-git-crypt unlock
-```
-
-### What to encrypt with git-crypt
-
-- API keys and tokens
-- Database credentials
-- SSL certificates
-- Environment files with secrets
-- Service account keys
-
-## 🌐 1Password SSH & Git Signing
-
-If you use 1Password, you can use it for SSH and Git signing:
-
-### Enable 1Password SSH Agent
-
-```bash
-# Add to ~/.ssh/config
-# IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-```
-
-### Configure Git to use 1Password
-
-1. Settings → Developer → Use the SSH agent
-2. Settings → Developer → Use 1Password to sign Git commits
-
-## 📋 Security Checklist
-
-### Initial Setup
-
-- [ ] Generate Ed25519 SSH key
-- [ ] Add SSH key to GitHub/GitLab
-- [ ] Add trusted hosts to `~/.ssh/known_hosts` (e.g., `ssh-keyscan github.com >> ~/.ssh/known_hosts`)
-- [ ] Generate GPG key (RSA 4096)
-- [ ] Configure Git to use GPG signing
-- [ ] Upload GPG public key to GitHub/GitLab
-- [ ] Create `~/.npmrc.local` with npm token (not `.npmrc`)
-- [ ] Create `~/.zshrc.local` for private aliases/env vars
-- [ ] Set up 1Password SSH agent (optional)
-
-### Regular Maintenance
-
-- [ ] Rotate SSH keys annually
-- [ ] Rotate GPG keys every 2-3 years
-- [ ] Rotate npm tokens quarterly
-- [ ] Rotate AWS keys every 90 days
-- [ ] Review and revoke unused tokens
-- [ ] Run `gitleaks detect` on repos
-- [ ] Run `trivy fs .` for vulnerabilities
-- [ ] Update security tools: `brew upgrade`
-
-### Before Committing
-
-- [ ] Review `git diff` for sensitive data
-- [ ] Never commit real secrets (use `.env.example` instead)
-- [ ] Never commit auth tokens
-- [ ] Never commit private keys
-- [ ] Run `gitleaks detect` before pushing
-
-## 🆘 Security Incident Response
-
-### If credentials are leaked
-
-1. **Stop the leak**
-   - Don't commit any more changes
-   - Don't push if not already pushed
-
-2. **Revoke immediately**
-   - Revoke the compromised credentials
-   - Generate new credentials
-
-3. **Clean history**
-   - Use `git-filter-repo` or BFG Repo-Cleaner
-   - Force push to remote (if already pushed)
-
-4. **Monitor**
-   - Check AWS CloudTrail for suspicious activity
-   - Check GitHub security log
-   - Enable 2FA if not already enabled
-
-5. **Learn**
-   - Update `.gitignore` to prevent recurrence
-   - Add pre-commit hooks (gitleaks)
-   - Document the incident
-
-## 📚 Additional Resources
-
-- [GitHub Security Best Practices](https://docs.github.com/en/code-security)
-- [npm Security Best Practices](https://github.com/bodadotsh/npm-security-best-practices)
-- [SSH Security Guide](https://infosec.mozilla.org/guidelines/openssh)
-- [GPG Best Practices](https://riseup.net/en/security/message-security/openpgp/best-practices)
-- [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)
-
-## 🔗 Related Documentation
-
-- [README.md](README.md) - Main setup documentation
-- [.gitignore](.gitignore) - Files excluded from version control
-- [git/.gitconfig](git/.gitconfig) - Git security configuration
-- [ssh/.ssh/config](ssh/.ssh/config) - SSH hardening configuration
-- [npm/.npmrc](npm/.npmrc) - npm security configuration
-
----
-
-**Remember**: Security is an ongoing process, not a one-time setup. Stay vigilant!
+## Incident Response (Credential Leak)
+
+1. Revoke exposed credentials immediately.
+2. Rotate keys/tokens and update local config.
+3. Remove leaked content from git history (`git-filter-repo` or BFG).
+4. Force-push cleaned history if needed.
+5. Re-run `gitleaks detect` before sharing the repository again.
+
+## Related Docs
+
+- [README.md](README.md)
+- [docs/INSTALL.md](docs/INSTALL.md)
+- [docs/OPERATIONS.md](docs/OPERATIONS.md)
+- [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md)
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)

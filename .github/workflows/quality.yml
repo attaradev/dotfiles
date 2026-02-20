@@ -1,0 +1,32 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install lint tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zsh
+          npm install --global markdownlint-cli
+
+      - name: Run quality gate
+        run: make check

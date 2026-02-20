@@ -42,6 +42,11 @@ setopt ALWAYS_TO_END        # move cursor to end if word had one match
 # ============================================
 # Completion System
 # ============================================
+# Include Docker CLI completions when available.
+if [[ -d "$HOME/.docker/completions" ]]; then
+  fpath=("$HOME/.docker/completions" $fpath)
+fi
+
 autoload -Uz compinit
 # Only check compinit once a day for performance
 if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
@@ -246,6 +251,11 @@ fi
 # Security: Verify SSH host keys
 export SSH_ASKPASS_REQUIRE=prefer
 
+# Add Antigravity CLI to PATH when installed locally.
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
+
 # ============================================
 # Starship Prompt (must be at the end)
 # ============================================
@@ -259,11 +269,3 @@ fi
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
-
-# Added by Antigravity
-export PATH="/Users/mpy/.antigravity/antigravity/bin:$PATH"
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/mpy/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions

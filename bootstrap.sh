@@ -1,6 +1,6 @@
 #!/bin/bash
 # bootstrap.sh - Dotfiles setup bootstrap script
-# Usage: curl -fsSL https://raw.githubusercontent.com/attaradev/dotfiles/main/bootstrap.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/attaradev/dotfiles/main/bootstrap.sh | bash
 
 set -e
 

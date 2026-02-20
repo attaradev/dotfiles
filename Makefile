@@ -9,9 +9,10 @@
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install update brew mise stow vscode clean doctor status dump backup test
+.PHONY: help install update upgrade brew brew-check mise stow vscode gnupg clean doctor status list dump cleanup backup test validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
+MARKDOWNLINT ?= markdownlint
 
 # ============================================
 # Setup & Installation
@@ -162,11 +163,13 @@ cleanup:
 ## backup: Create backup of current dotfiles
 backup:
 	@echo "💾 Creating backup of dotfiles..."
-	@mkdir -p ~/dotfiles-backup-$$(date +%Y%m%d-%H%M%S)
-	@cp -r ~/.zshrc ~/dotfiles-backup-$$(date +%Y%m%d-%H%M%S)/ 2>/dev/null || true
-	@cp -r ~/.zshrc.local ~/dotfiles-backup-$$(date +%Y%m%d-%H%M%S)/ 2>/dev/null || true
-	@cp -r ~/.config ~/dotfiles-backup-$$(date +%Y%m%d-%H%M%S)/ 2>/dev/null || true
-	@echo "✓ Backup created in ~/dotfiles-backup-$$(date +%Y%m%d-%H%M%S)"
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	backup_dir="$$HOME/dotfiles-backup-$$timestamp"; \
+	mkdir -p "$$backup_dir"; \
+	cp -r "$$HOME/.zshrc" "$$backup_dir/" 2>/dev/null || true; \
+	cp -r "$$HOME/.zshrc.local" "$$backup_dir/" 2>/dev/null || true; \
+	cp -r "$$HOME/.config" "$$backup_dir/" 2>/dev/null || true; \
+	echo "✓ Backup created in $$backup_dir"
 
 # ============================================
 # Testing & Validation
@@ -186,6 +189,36 @@ validate:
 	@echo "✓ Validating shell configuration..."
 	@zsh -n ~/.zshrc && echo "✓ .zshrc syntax is valid" || echo "❌ .zshrc has syntax errors"
 	@test -f ~/.zshrc.local && (zsh -n ~/.zshrc.local && echo "✓ .zshrc.local syntax is valid") || echo "ℹ️  No .zshrc.local found (optional)"
+
+## lint-shell: Validate shell syntax in scripts and zsh config
+lint-shell:
+	@echo "🔎 Linting shell scripts..."
+	@for file in $$(find . -maxdepth 1 -type f -name '*.sh' | sort); do \
+		bash -n "$$file"; \
+	done
+	@if [ -d "./scripts" ]; then \
+		for file in $$(find ./scripts -type f -name '*.sh' | sort); do \
+			bash -n "$$file"; \
+		done; \
+	fi
+	@command -v zsh >/dev/null 2>&1 || (echo "❌ zsh not found; required for zsh syntax check." && exit 1)
+	@zsh -n zsh/.zshrc
+	@echo "✓ Shell syntax checks passed"
+
+## lint-docs: Validate Markdown documentation formatting
+lint-docs:
+	@echo "📝 Linting Markdown docs..."
+	@command -v $(MARKDOWNLINT) >/dev/null 2>&1 || (echo "❌ markdownlint not found. Install with 'npm install -g markdownlint-cli'." && exit 1)
+	@docs=$$(find . -maxdepth 2 -type f -name '*.md' | sort); \
+	$(MARKDOWNLINT) $$docs
+	@echo "✓ Markdown lint checks passed"
+
+## check: Run local quality gate used by CI
+check: lint-shell lint-docs
+	@echo "🧪 Running repository quality checks..."
+	@./scripts/check-readme-make-targets.sh
+	@./scripts/check-no-absolute-host-paths.sh
+	@echo "✅ All checks passed!"
 
 # ============================================
 # Cleanup
@@ -239,6 +272,9 @@ help:
 	@echo "  make backup        - Backup current dotfiles"
 	@echo "  make test          - Test idempotency"
 	@echo "  make validate      - Validate shell config"
+	@echo "  make lint-shell    - Lint shell scripts"
+	@echo "  make lint-docs     - Lint markdown docs"
+	@echo "  make check         - Run all quality checks"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean         - Clean caches"

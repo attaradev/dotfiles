@@ -8,6 +8,20 @@ ssh/.ssh/config linguist-language=SSH-Config
 # Shell scripts
 *.sh linguist-language=Shell
 
+# Tilt configuration
+Tiltfile linguist-language=Starlark
+**/Tiltfile linguist-language=Starlark
+
+# Docker build files
+Dockerfile linguist-language=Dockerfile
+**/Dockerfile linguist-language=Dockerfile
+Dockerfile.* linguist-language=Dockerfile
+**/Dockerfile.* linguist-language=Dockerfile
+*.dockerfile linguist-language=Dockerfile
+**/*.dockerfile linguist-language=Dockerfile
+.dockerignore linguist-language=gitignore
+**/.dockerignore linguist-language=gitignore
+
 # Configuration files
 *.toml linguist-language=TOML
 Brewfile linguist-language=Ruby

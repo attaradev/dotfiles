@@ -62,7 +62,12 @@ print_note() {
 }
 
 has_tty() {
-  [[ -t 0 || -t 1 || -t 2 || -r /dev/tty ]]
+  [[ -t 0 || -t 1 || -t 2 ]]
+}
+
+can_read_tty() {
+  [[ -r /dev/tty ]] || return 1
+  : </dev/tty 2>/dev/null
 }
 
 prompt_yes_no() {
@@ -76,7 +81,7 @@ prompt_yes_no() {
     default="y"
   fi
 
-  if has_tty && [[ -r /dev/tty ]]; then
+  if has_tty && can_read_tty; then
     read -r -p "$(printf "%s %s " "$prompt" "$suffix")" answer </dev/tty || answer="$default"
     answer="${answer:-$default}"
   else
@@ -96,7 +101,7 @@ prompt_with_default() {
     suffix=" [$default_value]"
   fi
 
-  if has_tty && [[ -r /dev/tty ]]; then
+  if has_tty && can_read_tty; then
     read -r -p "$(printf "%s%s: " "$prompt" "$suffix")" input </dev/tty || input=""
     if [[ -n "$input" ]]; then
       answer="$input"
@@ -115,6 +120,13 @@ normalize_bool() {
     *) echo "0" ;;
   esac
 }
+
+DOTFILES_NONINTERACTIVE="$(normalize_bool "${DOTFILES_NONINTERACTIVE:-0}")"
+export DOTFILES_NONINTERACTIVE
+if [[ "$DOTFILES_NONINTERACTIVE" == "1" ]]; then
+  export DOTFILES_SKIP_OPTIONAL_PROMPTS=1
+  export DOTFILES_SKIP_GIT_PROMPTS=1
+fi
 
 # Persisted optional cask preferences live outside the repo to avoid dirty git state
 OPTIONAL_CASK_ENV_FILE="${OPTIONAL_CASK_ENV_FILE:-$HOME/.config/dotfiles/brew-optional.env}"
@@ -172,6 +184,10 @@ if ! xcode-select -p >/dev/null 2>&1; then
 fi
 
 print_success "Xcode Command Line Tools detected"
+
+if [[ "$DOTFILES_NONINTERACTIVE" == "1" ]]; then
+  print_info "Non-interactive mode enabled (DOTFILES_NONINTERACTIVE=1); prompts and sudo refresh are disabled."
+fi
 
 load_optional_cask_env
 
@@ -231,7 +247,9 @@ configure_optional_cask "BREW_INSTALL_SPOTIFY" "Spotify" "Music streaming client
 write_optional_cask_env
 
 # Keep sudo alive so Homebrew/cask installs only prompt once
-if command -v sudo >/dev/null 2>&1; then
+if [[ "$DOTFILES_NONINTERACTIVE" == "1" ]]; then
+  print_info "Skipping sudo credential refresh in non-interactive mode."
+elif command -v sudo >/dev/null 2>&1; then
   print_info "Refreshing sudo credentials to avoid repeated prompts..."
   if sudo -v; then
     # Background keepalive until this script exits
@@ -484,18 +502,18 @@ echo "1. Restart your terminal or run:"
 echo "   ${GREEN}source ~/.zshrc${NC}"
 echo ""
 echo "2. Verify installations:"
-echo "   ${GREEN}brew doctor${NC}        # Check Homebrew health"
-echo "   ${GREEN}mise doctor${NC}        # Check mise health"
-echo "   ${GREEN}mise list${NC}          # Show installed versions"
+echo "   ${GREEN}brew doctor${NC}          # Check Homebrew health"
+echo "   ${GREEN}mise doctor${NC}          # Check mise health"
+echo "   ${GREEN}mise list${NC}            # Show installed versions"
 echo ""
 echo "3. Install additional language versions with mise:"
-echo "   ${GREEN}mise use node@20${NC}   # Install Node.js 20"
+echo "   ${GREEN}mise use node@20${NC}     # Install Node.js 20"
 echo "   ${GREEN}mise use python@3.12${NC} # Install Python 3.12"
 echo ""
-echo "4. Explore modern CLI tools:"
-echo "   ${GREEN}ls${NC}                 # Now uses 'eza' with icons"
-echo "   ${GREEN}cat file.txt${NC}       # Now uses 'bat' with syntax highlighting"
-echo "   ${GREEN}cd${NC}                 # Now uses 'zoxide' for smart navigation"
+echo "4. Explore modern CLI helpers:"
+echo "   ${GREEN}l / ll / la${NC}          # eza listings with icons and Git status"
+echo "   ${GREEN}cat file.txt${NC}         # bat with syntax highlighting"
+echo "   ${GREEN}z <dir>${NC}              # zoxide smart directory jump"
 echo ""
 echo "💡 Tips:"
 echo "   - Use 'z <dir>' for smart directory jumping"
