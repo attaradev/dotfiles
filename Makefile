@@ -9,10 +9,21 @@
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install update upgrade brew brew-check mise stow vscode gnupg clean doctor status list dump cleanup backup test validate uninstall-stow lint-shell lint-docs check
+.PHONY: help install update upgrade brew brew-check mise stow vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
+BACKUP_ARTIFACTS = \
+	$(HOME)/dotfiles-backup-* \
+	$(HOME)/.zshrc.backup \
+	$(HOME)/.gitconfig.backup \
+	$(HOME)/.npmrc.backup \
+	$(HOME)/.mise.toml.backup \
+	$(HOME)/.ssh/config.backup \
+	$(HOME)/.gnupg/gpg-agent.conf.backup \
+	$(HOME)/.gnupg/gpg.conf.backup \
+	$(HOME)/.gnupg/gpg-agent.conf.bak.* \
+	$(HOME)/.gnupg/gpg.conf.bak.*
 
 # ============================================
 # Setup & Installation
@@ -177,6 +188,54 @@ backup:
 	cp -r "$$HOME/.config" "$$backup_dir/" 2>/dev/null || true; \
 	echo "✓ Backup created in $$backup_dir"
 
+## backup-list: Show backup files and directories created by dotfiles scripts
+backup-list:
+	@echo "📋 Backup artifacts:"
+	@found=0; \
+	for path in $(BACKUP_ARTIFACTS); do \
+		if [ -e "$$path" ]; then \
+			found=1; \
+			if [ -d "$$path" ]; then \
+				echo "  [dir]  $$path"; \
+			else \
+				echo "  [file] $$path"; \
+			fi; \
+		fi; \
+	done; \
+	if [ "$$found" -eq 0 ]; then \
+		echo "  (none found)"; \
+	fi
+
+## backup-clean: Remove backup files/directories (prompts unless CONFIRM=1)
+backup-clean:
+	@if [ "$${CONFIRM:-0}" != "1" ]; then \
+		if [ -t 0 ]; then \
+			printf "⚠️  Delete all backup artifacts? [y/N] "; \
+			read -r answer; \
+			case "$$answer" in \
+				[Yy]|[Yy][Ee][Ss]) ;; \
+				*) echo "ℹ️  Backup cleanup cancelled."; exit 0 ;; \
+			esac; \
+		else \
+			echo "❌ Non-interactive shell detected. Run: make backup-clean CONFIRM=1"; \
+			exit 1; \
+		fi; \
+	fi
+	@echo "🧹 Removing backup artifacts..."
+	@removed=0; \
+	for path in $(BACKUP_ARTIFACTS); do \
+		if [ -e "$$path" ]; then \
+			rm -rf "$$path"; \
+			echo "  removed $$path"; \
+			removed=1; \
+		fi; \
+	done; \
+	if [ "$$removed" -eq 0 ]; then \
+		echo "ℹ️  No backup artifacts found."; \
+	else \
+		echo "✓ Backup artifacts removed"; \
+	fi
+
 # ============================================
 # Testing & Validation
 # ============================================
@@ -276,6 +335,8 @@ help:
 	@echo ""
 	@echo "Backup & Testing:"
 	@echo "  make backup        - Backup current dotfiles"
+	@echo "  make backup-list   - Show backup files/directories"
+	@echo "  make backup-clean  - Prompt to delete backups (or use CONFIRM=1)"
 	@echo "  make test          - Test idempotency"
 	@echo "  make validate      - Validate shell config"
 	@echo "  make lint-shell    - Lint shell scripts"

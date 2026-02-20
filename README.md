@@ -71,6 +71,8 @@ make install      # Full setup
 make update       # Upgrade brew + mise-managed tools
 make doctor       # Health checks for Homebrew and mise
 make backup       # Timestamped backup of key local config
+make backup-list  # Show backup files/directories from setup scripts
+make backup-clean # Prompt to delete backups (or CONFIRM=1)
 make check        # Local quality gate (shell/docs/custom checks)
 make dump         # Re-generate Brewfile from current system
 make cleanup      # Remove packages not listed in Brewfile

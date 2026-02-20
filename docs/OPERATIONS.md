@@ -21,9 +21,15 @@ make cleanup     # Remove packages not in Brewfile
 
 ```bash
 make backup
+make backup-list
+make backup-clean
+make backup-clean CONFIRM=1
 ```
 
-This creates a timestamped directory under `~/dotfiles-backup-<timestamp>` and copies available local files.
+`make backup` creates a timestamped directory under `~/dotfiles-backup-<timestamp>` and copies available local files.
+`make backup-list` shows backup directories/files created by setup scripts (`*.backup`, `*.bak.*`, and `~/dotfiles-backup-*`).
+`make backup-clean` prompts before deleting backup artifacts.
+Use `make backup-clean CONFIRM=1` for non-interactive cleanup.
 
 ## Quality Gate
 
