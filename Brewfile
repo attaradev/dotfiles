@@ -67,6 +67,7 @@ brew "hashicorp/tap/terraform"      # Infrastructure as Code tool
 
 # Kubernetes
 brew "kubectl"                      # Kubernetes command-line tool
+brew "kubectx"                      # Faster context/namespace switching for kubectl
 brew "helm"                         # Kubernetes package manager
 brew "eksctl"                       # CLI for creating Kubernetes clusters on AWS
 brew "minikube"                     # Run Kubernetes clusters locally
