@@ -5,9 +5,14 @@
 Use local override files for secrets and machine-specific settings:
 
 - `~/.zshrc.local`
+- `~/.zshrc.local.d/*.zsh`
 - `~/.bashrc.local`
 - `~/.gitconfig.local`
 - `~/.npmrc.local`
+- `~/.ssh/config.local`
+- `~/.ssh/config.local.d/*.conf`
+
+These overrides are optional: they load when present and are skipped when missing.
 
 ## Add or Remove Packages
 

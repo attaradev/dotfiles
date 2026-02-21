@@ -308,9 +308,15 @@ fi
 # ============================================
 # Local customizations (not version controlled)
 # ============================================
-if [[ -f ~/.zshrc.local ]]; then
-  source ~/.zshrc.local
+if [[ -r "$HOME/.zshrc.local" ]]; then
+  source "$HOME/.zshrc.local"
 fi
+
+# Optional per-file local snippets (loaded in lexical order).
+for zsh_local_snippet in "$HOME"/.zshrc.local.d/*.zsh(N); do
+  [[ -r "$zsh_local_snippet" ]] || continue
+  source "$zsh_local_snippet"
+done
 
 # Re-apply after local customizations in case they modify PATH.
 prioritize_homebrew_path
