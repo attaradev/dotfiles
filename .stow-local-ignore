@@ -33,5 +33,5 @@ Thumbs\.db
 # Editor files
 \.vscode
 \.idea
-*.swp
-*.swo
+\.swp$
+\.swo$

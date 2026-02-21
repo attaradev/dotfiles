@@ -31,10 +31,10 @@ GPG_DIR="$HOME/.gnupg"
 if [[ ! -d "$GPG_DIR" ]]; then
   echo "📁 Creating GPG directory at $GPG_DIR..."
   mkdir -p "$GPG_DIR"
-  chmod 700 "$GPG_DIR"
 else
   echo "✓ GPG directory already exists"
 fi
+chmod 700 "$GPG_DIR"
 
 # Backup helper to preserve user configs
 backup_file() {
@@ -51,9 +51,27 @@ backup_file() {
 materialize_local_file() {
   local file="$1"
   if [[ -L "$file" ]]; then
+    local tmp
+    tmp="$(mktemp)"
+    cat "$file" > "$tmp"
     echo "🔁 Replacing symlinked $(basename "$file") with a local machine-specific file"
     rm "$file"
+    cat "$tmp" > "$file"
+    rm -f "$tmp"
   fi
+}
+
+append_setting_if_missing() {
+  local file="$1"
+  local pattern="$2"
+  local line="$3"
+
+  if grep -Eq "$pattern" "$file"; then
+    return 1
+  fi
+
+  printf '%s\n' "$line" >> "$file"
+  return 0
 }
 
 resolve_mutable_target() {
@@ -100,14 +118,27 @@ fi
 echo "✓ Using pinentry: $PINENTRY_BIN"
 
 materialize_local_file "$GPG_AGENT_CONF"
-backup_file "$GPG_AGENT_CONF"
-cat > "$GPG_AGENT_CONF" << EOF
-# GPG Agent Configuration
-# Timeout settings (in seconds)
-default-cache-ttl 3600
-max-cache-ttl 86400
-pinentry-program $PINENTRY_BIN
-EOF
+touch "$GPG_AGENT_CONF"
+
+needs_gpg_agent_update=0
+if ! grep -Eq '^[[:space:]]*default-cache-ttl([[:space:]]+|$)' "$GPG_AGENT_CONF"; then
+  needs_gpg_agent_update=1
+fi
+if ! grep -Eq '^[[:space:]]*max-cache-ttl([[:space:]]+|$)' "$GPG_AGENT_CONF"; then
+  needs_gpg_agent_update=1
+fi
+if ! grep -Eq '^[[:space:]]*pinentry-program([[:space:]]+|$)' "$GPG_AGENT_CONF"; then
+  needs_gpg_agent_update=1
+fi
+
+if (( needs_gpg_agent_update == 1 )); then
+  backup_file "$GPG_AGENT_CONF"
+  append_setting_if_missing "$GPG_AGENT_CONF" '^[[:space:]]*default-cache-ttl([[:space:]]+|$)' "default-cache-ttl 3600" && echo "✓ Added default-cache-ttl to gpg-agent.conf"
+  append_setting_if_missing "$GPG_AGENT_CONF" '^[[:space:]]*max-cache-ttl([[:space:]]+|$)' "max-cache-ttl 86400" && echo "✓ Added max-cache-ttl to gpg-agent.conf"
+  append_setting_if_missing "$GPG_AGENT_CONF" '^[[:space:]]*pinentry-program([[:space:]]+|$)' "pinentry-program $PINENTRY_BIN" && echo "✓ Added pinentry-program to gpg-agent.conf"
+else
+  echo "✓ Preserving existing gpg-agent.conf settings"
+fi
 
 chmod 600 "$GPG_AGENT_CONF"
 echo "✓ GPG agent configured at $GPG_AGENT_CONF"
@@ -121,14 +152,31 @@ GPG_CONF="$GPG_DIR/gpg.conf"
 echo "📝 Configuring GPG..."
 
 materialize_local_file "$GPG_CONF"
-backup_file "$GPG_CONF"
-cat > "$GPG_CONF" << 'EOF'
-# GPG Configuration (minimal defaults)
-keyid-format 0xlong
-with-fingerprint
-auto-key-retrieve
-use-agent
-EOF
+touch "$GPG_CONF"
+
+needs_gpg_conf_update=0
+if ! grep -Eq '^[[:space:]]*keyid-format([[:space:]]+|$)' "$GPG_CONF"; then
+  needs_gpg_conf_update=1
+fi
+if ! grep -Eq '^[[:space:]]*with-fingerprint([[:space:]]+|$)' "$GPG_CONF"; then
+  needs_gpg_conf_update=1
+fi
+if ! grep -Eq '^[[:space:]]*auto-key-retrieve([[:space:]]+|$)' "$GPG_CONF"; then
+  needs_gpg_conf_update=1
+fi
+if ! grep -Eq '^[[:space:]]*use-agent([[:space:]]+|$)' "$GPG_CONF"; then
+  needs_gpg_conf_update=1
+fi
+
+if (( needs_gpg_conf_update == 1 )); then
+  backup_file "$GPG_CONF"
+  append_setting_if_missing "$GPG_CONF" '^[[:space:]]*keyid-format([[:space:]]+|$)' "keyid-format 0xlong" && echo "✓ Added keyid-format to gpg.conf"
+  append_setting_if_missing "$GPG_CONF" '^[[:space:]]*with-fingerprint([[:space:]]+|$)' "with-fingerprint" && echo "✓ Added with-fingerprint to gpg.conf"
+  append_setting_if_missing "$GPG_CONF" '^[[:space:]]*auto-key-retrieve([[:space:]]+|$)' "auto-key-retrieve" && echo "✓ Added auto-key-retrieve to gpg.conf"
+  append_setting_if_missing "$GPG_CONF" '^[[:space:]]*use-agent([[:space:]]+|$)' "use-agent" && echo "✓ Added use-agent to gpg.conf"
+else
+  echo "✓ Preserving existing gpg.conf settings"
+fi
 
 chmod 600 "$GPG_CONF"
 echo "✓ GPG configured at $GPG_CONF"
@@ -213,15 +261,15 @@ ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local")
 
 if [[ -f "$ZSHRC_TARGET" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc.local" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc" ]]; then
   touch "$ZSHRC_TARGET"
-  if ! grep -q "GPG_TTY" "$ZSHRC_TARGET"; then
+  if grep -Eq '^[[:space:]]*export[[:space:]]+GPG_TTY=' "$ZSHRC_TARGET" || ([[ -f "$ZSHRC" ]] && grep -Eq '^[[:space:]]*export[[:space:]]+GPG_TTY=' "$ZSHRC"); then
+    echo "✓ GPG_TTY already configured in ~/.zshrc or ~/.zshrc.local"
+  else
     {
       echo ""
       echo "# GPG TTY configuration for commit signing"
       echo 'export GPG_TTY=$(tty)'
     } >> "$ZSHRC_TARGET"
     echo "✓ Added GPG_TTY export to ${ZSHRC_TARGET/#$HOME/~}"
-  else
-    echo "✓ GPG_TTY already configured in ${ZSHRC_TARGET/#$HOME/~}"
   fi
 else
   echo "⚠️  ${ZSHRC/#$HOME/~} not found. You may need to add manually:"
@@ -236,10 +284,10 @@ echo ""
 echo "✅ GnuPG setup complete!"
 echo ""
 echo "📋 What was configured:"
-echo "  ✓ GPG directory created at ~/.gnupg"
+echo "  ✓ GPG directory prepared at ~/.gnupg (permissions enforced)"
 echo "  ✓ GPG agent configured with pinentry-mac"
-echo "  ✓ GPG preferences set (AES256, SHA512)"
-echo "  ✓ Shell integration added to ~/.zshrc"
+echo "  ✓ GPG defaults ensured without overwriting custom settings"
+echo "  ✓ Shell integration checked for GPG_TTY"
 echo ""
 echo "🔐 Next Steps:"
 echo ""

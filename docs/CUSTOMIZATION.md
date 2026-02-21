@@ -38,6 +38,7 @@ make mise
 - Set `user.name` and `user.email` for your machine.
 - Set `user.signingkey` to enable signing.
 - Leave signing key empty to keep signing disabled.
+- This repository includes personal fallback defaults in `setup.sh`; for your fork, set `DEFAULT_GIT_*` or pass `GIT_USER_*` env vars.
 
 ## Shell Aliases and Prompt
 

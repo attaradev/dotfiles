@@ -56,12 +56,14 @@ GIT_USER_SIGNINGKEY="" \
 ./setup.sh
 ```
 
+This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork it, override with `GIT_USER_*` (or set `DEFAULT_GIT_*` in your fork).
+
 ## What This Configures
 
 - Homebrew packages and casks from `Brewfile`
-- Language runtimes via `mise` (Node.js, Python, Go, Ruby, pnpm)
+- Language runtimes via `mise`, installed from tracked `mise/.mise.toml`
 - Dotfile symlinks via GNU Stow
-- GPG configuration with `pinentry-mac`
+- GPG configuration with `pinentry-mac` and non-destructive defaults
 - VSCode extensions (when `code` CLI is present, unless skipped)
 
 ## Common Commands

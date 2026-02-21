@@ -131,6 +131,8 @@ fi
 # Persisted optional cask preferences live outside the repo to avoid dirty git state
 OPTIONAL_CASK_ENV_FILE="${OPTIONAL_CASK_ENV_FILE:-$HOME/.config/dotfiles/brew-optional.env}"
 GIT_LOCAL_CONFIG_FILE="${GIT_LOCAL_CONFIG_FILE:-$HOME/.gitconfig.local}"
+# Personal fallback identity defaults for this dotfiles repo owner.
+# Others should override via env (GIT_USER_*) or set DEFAULT_GIT_* for their fork.
 DEFAULT_GIT_NAME="${DEFAULT_GIT_NAME:-Mike Attara}"
 DEFAULT_GIT_EMAIL="${DEFAULT_GIT_EMAIL:-mpyebattara@gmail.com}"
 DEFAULT_GIT_SIGNINGKEY="${DEFAULT_GIT_SIGNINGKEY:-0x8C47F9FE2344DB2C}"
@@ -342,7 +344,7 @@ configure_git_identity() {
   existing_email="$(git config --global --get user.email 2>/dev/null || true)"
   existing_signing="$(git config --global --get user.signingkey 2>/dev/null || true)"
 
-  # Prefer saved local config, then env overrides, then global git, then hardcoded fallback.
+  # Prefer saved local config, then env overrides, then current global git, then hardcoded fallback.
   # Treat empty strings as unset.
   local default_name
   if [[ -n "${file_name:-}" ]]; then
@@ -421,21 +423,23 @@ configure_git_identity() {
   fi
 
   mkdir -p "$(dirname "$GIT_LOCAL_CONFIG_FILE")"
-  {
-    echo "[user]"
-    echo "    name = $final_name"
-    echo "    email = $final_email"
-    if [[ -n "$final_signing" ]]; then
-      echo "    signingkey = $final_signing"
-    fi
-    echo ""
-    echo "[commit]"
-    echo "    gpgsign = $([[ -n "$final_signing" ]] && echo true || echo false)"
-    echo ""
-    echo "[tag]"
-    echo "    gpgSign = $([[ -n "$final_signing" ]] && echo true || echo false)"
-    echo "    forceSignAnnotated = $([[ -n "$final_signing" ]] && echo true || echo false)"
-  } > "$GIT_LOCAL_CONFIG_FILE"
+  touch "$GIT_LOCAL_CONFIG_FILE"
+
+  # Update only the managed keys and preserve all other local custom settings.
+  git config --file "$GIT_LOCAL_CONFIG_FILE" user.name "$final_name"
+  git config --file "$GIT_LOCAL_CONFIG_FILE" user.email "$final_email"
+
+  if [[ -n "$final_signing" ]]; then
+    git config --file "$GIT_LOCAL_CONFIG_FILE" user.signingkey "$final_signing"
+    git config --file "$GIT_LOCAL_CONFIG_FILE" commit.gpgsign true
+    git config --file "$GIT_LOCAL_CONFIG_FILE" tag.gpgSign true
+    git config --file "$GIT_LOCAL_CONFIG_FILE" tag.forceSignAnnotated true
+  else
+    git config --file "$GIT_LOCAL_CONFIG_FILE" --unset-all user.signingkey 2>/dev/null || true
+    git config --file "$GIT_LOCAL_CONFIG_FILE" commit.gpgsign false
+    git config --file "$GIT_LOCAL_CONFIG_FILE" tag.gpgSign false
+    git config --file "$GIT_LOCAL_CONFIG_FILE" tag.forceSignAnnotated false
+  fi
 
   print_success "Git identity configured in $GIT_LOCAL_CONFIG_FILE"
   print_info "Git user.name: $final_name"

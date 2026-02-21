@@ -61,6 +61,8 @@ GIT_USER_SIGNINGKEY="" \
 
 Set `GIT_USER_SIGNINGKEY=""` to explicitly disable signing in local config.
 
+Note: this repository has personal fallback Git defaults in `setup.sh`; override with `GIT_USER_*` (or `DEFAULT_GIT_*` in your fork).
+
 ## Optional Casks
 
 Optional GUI tools are controlled by env vars and persisted to `~/.config/dotfiles/brew-optional.env`.
