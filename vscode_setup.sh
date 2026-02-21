@@ -86,15 +86,15 @@ for EXT in "${EXTENSIONS[@]}"; do
   # Check if extension is already installed
   if printf '%s\n' "$INSTALLED_EXTS" | grep -Fxqi "$EXT"; then
     echo "  ⏭️  $EXT (already installed)"
-    ((SKIPPED_COUNT++))
+    SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
   else
     echo "  📥 Installing $EXT..."
     if code --install-extension "$EXT" --force > /dev/null 2>&1; then
       echo "  ✓ $EXT installed successfully"
-      ((INSTALLED_COUNT++))
+      INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
     else
       echo "  ❌ Failed to install $EXT"
-      ((FAILED_COUNT++))
+      FAILED_COUNT=$((FAILED_COUNT + 1))
       FAILED_EXTENSIONS+=("$EXT")
     fi
   fi
