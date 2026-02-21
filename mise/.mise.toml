@@ -1,9 +1,10 @@
 [tools]
-node = "lts"
-python = "latest"
-go = "latest"
-ruby = "latest"
-pnpm = "latest"
+node = "24"
+python = "3.14"
+go = "1.26"
+ruby = "4.0"
+pnpm = "10"
+npm = "11"
 
 [env]
 NODE_ENV = "development"

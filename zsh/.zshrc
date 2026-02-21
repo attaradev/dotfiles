@@ -285,3 +285,6 @@ fi
 
 # Re-apply after local customizations in case they modify PATH.
 prioritize_homebrew_path
+
+# Clear command hash table so PATH precedence changes apply when re-sourcing.
+rehash 2>/dev/null || true

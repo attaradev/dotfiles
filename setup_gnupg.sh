@@ -48,6 +48,14 @@ backup_file() {
   fi
 }
 
+materialize_local_file() {
+  local file="$1"
+  if [[ -L "$file" ]]; then
+    echo "🔁 Replacing symlinked $(basename "$file") with a local machine-specific file"
+    rm "$file"
+  fi
+}
+
 resolve_mutable_target() {
   local primary="$1"
   local fallback="$2"
@@ -91,6 +99,7 @@ fi
 
 echo "✓ Using pinentry: $PINENTRY_BIN"
 
+materialize_local_file "$GPG_AGENT_CONF"
 backup_file "$GPG_AGENT_CONF"
 cat > "$GPG_AGENT_CONF" << EOF
 # GPG Agent Configuration
@@ -111,6 +120,7 @@ GPG_CONF="$GPG_DIR/gpg.conf"
 
 echo "📝 Configuring GPG..."
 
+materialize_local_file "$GPG_CONF"
 backup_file "$GPG_CONF"
 cat > "$GPG_CONF" << 'EOF'
 # GPG Configuration (minimal defaults)

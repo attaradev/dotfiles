@@ -1,6 +1,3 @@
-[include]
-	path = ~/.gitconfig.local
-
 [credential]
 	helper = osxkeychain
 
@@ -60,3 +57,7 @@
 
 [url "https://"]
 	insteadOf = git://
+
+# Keep local machine-specific overrides last so they take precedence.
+[include]
+	path = ~/.gitconfig.local
