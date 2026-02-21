@@ -41,6 +41,7 @@ setopt AUTO_CD              # cd by typing directory name
 setopt CORRECT              # command correction
 setopt COMPLETE_IN_WORD     # complete from both ends of a word
 setopt ALWAYS_TO_END        # move cursor to end if word had one match
+setopt INTERACTIVE_COMMENTS # allow # comments in interactive shells
 
 # ============================================
 # Completion System
