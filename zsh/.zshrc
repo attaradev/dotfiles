@@ -5,6 +5,9 @@
 # Performance: disable auto-update checks
 DISABLE_AUTO_UPDATE="true"
 
+# Keep PATH entries unique while preserving the first occurrence.
+typeset -U path PATH
+
 # ============================================
 # Homebrew Setup
 # ============================================
@@ -78,6 +81,16 @@ if command -v mise &> /dev/null; then
     export PATH="$PNPM_HOME:$PATH"
   fi
 fi
+
+# Keep Homebrew binaries ahead of mise-managed binaries (for tools like Tilt.dev).
+prioritize_homebrew_path() {
+  if [[ -d "/opt/homebrew/bin" ]]; then
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+  elif [[ -d "/usr/local/bin" ]]; then
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+  fi
+}
+prioritize_homebrew_path
 
 # ============================================
 # Zoxide (Smart cd)
@@ -269,3 +282,6 @@ fi
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
+
+# Re-apply after local customizations in case they modify PATH.
+prioritize_homebrew_path
