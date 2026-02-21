@@ -9,10 +9,11 @@
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install update upgrade brew brew-check mise stow vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test validate uninstall-stow lint-shell lint-docs check
+.PHONY: help install update upgrade brew brew-check mise stow vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
+BREW_BUNDLE_WITH_OPTIONALS = OPTIONAL_CASK_ENV_FILE="$(BUNDLE_ENV_FILE)" ./scripts/run-brew-bundle.sh
 BACKUP_ARTIFACTS = \
 	$(HOME)/dotfiles-backup-* \
 	$(HOME)/.zshrc.backup \
@@ -38,24 +39,12 @@ install:
 ## brew: Install/update packages from Brewfile
 brew:
 	@echo "📦 Installing packages from Brewfile..."
-	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
-	 HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=$${BREW_INSTALL_ANTIGRAVITY:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=$${BREW_INSTALL_VIRTUALBOX:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=$${BREW_INSTALL_BRAVE_BROWSER:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_VLC=$${BREW_INSTALL_VLC:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_SPOTIFY=$${BREW_INSTALL_SPOTIFY:-0} \
-	 brew bundle install --verbose
+	@$(BREW_BUNDLE_WITH_OPTIONALS) install --verbose
 
 ## brew-check: Verify all Brewfile packages are installed
 brew-check:
 	@echo "✓ Checking Brewfile packages..."
-	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
-	 HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=$${BREW_INSTALL_ANTIGRAVITY:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=$${BREW_INSTALL_VIRTUALBOX:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=$${BREW_INSTALL_BRAVE_BROWSER:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_VLC=$${BREW_INSTALL_VLC:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_SPOTIFY=$${BREW_INSTALL_SPOTIFY:-0} \
-	 brew bundle check || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
+	@$(BREW_BUNDLE_WITH_OPTIONALS) check || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
 
 ## mise: Setup mise and install language runtimes
 mise:
@@ -116,10 +105,18 @@ doctor:
 	@echo "🩺 Running health checks..."
 	@echo ""
 	@echo "📦 Homebrew Doctor:"
-	@command -v brew >/dev/null 2>&1 && brew doctor || echo "Homebrew not installed"
+	@if command -v brew >/dev/null 2>&1; then \
+		brew doctor; \
+	else \
+		echo "Homebrew not installed"; \
+	fi
 	@echo ""
 	@echo "🔧 mise Doctor:"
-	@command -v mise >/dev/null 2>&1 && mise doctor || echo "mise not installed"
+	@if command -v mise >/dev/null 2>&1; then \
+		mise doctor; \
+	else \
+		echo "mise not installed"; \
+	fi
 	@echo ""
 	@echo "✅ Health checks complete!"
 
@@ -132,10 +129,18 @@ status:
 	@brew --version | head -n 1 2>/dev/null || echo "Not installed"
 	@echo ""
 	@echo "🔧 mise:"
-	@command -v mise >/dev/null 2>&1 && mise --version || echo "Not installed"
+	@if command -v mise >/dev/null 2>&1; then \
+		mise --version; \
+	else \
+		echo "Not installed"; \
+	fi
 	@echo ""
 	@echo "📦 mise-managed tools:"
-	@command -v mise >/dev/null 2>&1 && mise list || echo "mise not installed"
+	@if command -v mise >/dev/null 2>&1; then \
+		mise list; \
+	else \
+		echo "mise not installed"; \
+	fi
 	@echo ""
 	@echo "🐚 Shell:"
 	@echo "$$SHELL"
@@ -146,7 +151,12 @@ status:
 
 ## list: List installed mise tools and versions
 list:
-	@command -v mise >/dev/null 2>&1 && mise list || echo "mise not installed. Run 'make mise' to install."
+	@if command -v mise >/dev/null 2>&1; then \
+		mise list; \
+	else \
+		echo "mise not installed. Run 'make mise' to install."; \
+		exit 1; \
+	fi
 
 # ============================================
 # Brewfile Management
@@ -164,13 +174,7 @@ dump:
 ## cleanup: Remove packages not in Brewfile
 cleanup:
 	@echo "🧹 Removing packages not in Brewfile..."
-	@if [ -f "$(BUNDLE_ENV_FILE)" ]; then . "$(BUNDLE_ENV_FILE)"; fi; \
-	 HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=$${BREW_INSTALL_ANTIGRAVITY:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=$${BREW_INSTALL_VIRTUALBOX:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=$${BREW_INSTALL_BRAVE_BROWSER:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_VLC=$${BREW_INSTALL_VLC:-0} \
-	 HOMEBREW_BUNDLE_INSTALL_SPOTIFY=$${BREW_INSTALL_SPOTIFY:-0} \
-	 brew bundle cleanup --force --file=./Brewfile
+	@$(BREW_BUNDLE_WITH_OPTIONALS) cleanup --force --file=./Brewfile
 	@echo "✓ Cleanup complete!"
 
 # ============================================
@@ -245,15 +249,25 @@ test:
 	@echo "🧪 Testing dotfiles idempotency..."
 	@echo ""
 	@echo "Running setup in check mode..."
-	@brew bundle check --verbose
+	@$(BREW_BUNDLE_WITH_OPTIONALS) check --verbose
 	@echo ""
 	@echo "✅ Idempotency test passed!"
+
+## smoke: Run mocked end-to-end setup + Makefile smoke checks
+smoke:
+	@bash ./scripts/ci-smoke-setup.sh
 
 ## validate: Validate shell configuration
 validate:
 	@echo "✓ Validating shell configuration..."
-	@zsh -n ~/.zshrc && echo "✓ .zshrc syntax is valid" || echo "❌ .zshrc has syntax errors"
-	@test -f ~/.zshrc.local && (zsh -n ~/.zshrc.local && echo "✓ .zshrc.local syntax is valid") || echo "ℹ️  No .zshrc.local found (optional)"
+	@zsh -n ~/.zshrc
+	@echo "✓ .zshrc syntax is valid"
+	@if [ -f ~/.zshrc.local ]; then \
+		zsh -n ~/.zshrc.local; \
+		echo "✓ .zshrc.local syntax is valid"; \
+	else \
+		echo "ℹ️  No .zshrc.local found (optional)"; \
+	fi
 
 ## lint-shell: Validate shell syntax in scripts and zsh config
 lint-shell:
@@ -338,6 +352,7 @@ help:
 	@echo "  make backup-list   - Show backup files/directories"
 	@echo "  make backup-clean  - Prompt to delete backups (or use CONFIRM=1)"
 	@echo "  make test          - Test idempotency"
+	@echo "  make smoke         - Run mocked smoke checks"
 	@echo "  make validate      - Validate shell config"
 	@echo "  make lint-shell    - Lint shell scripts"
 	@echo "  make lint-docs     - Lint markdown docs"

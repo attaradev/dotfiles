@@ -35,6 +35,7 @@ Use `make backup-clean CONFIRM=1` for non-interactive cleanup.
 
 ```bash
 make check
+make smoke
 ```
 
 `make check` runs:
@@ -43,6 +44,8 @@ make check
 - `make lint-docs`
 - `./scripts/check-readme-make-targets.sh`
 - `./scripts/check-no-absolute-host-paths.sh`
+
+`make smoke` runs mocked end-to-end setup and validates Makefile wrapper paths (`make brew-check` and `make test`) propagate optional-cask env consistently.
 
 ## Run Individual Setup Steps
 

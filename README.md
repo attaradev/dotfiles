@@ -76,6 +76,7 @@ make backup       # Timestamped backup of key local config
 make backup-list  # Show backup files/directories from setup scripts
 make backup-clean # Prompt to delete backups (or CONFIRM=1)
 make check        # Local quality gate (shell/docs/custom checks)
+make smoke        # Mocked smoke checks for setup + make wrapper paths
 make dump         # Re-generate Brewfile from current system
 make cleanup      # Remove packages not listed in Brewfile
 ```

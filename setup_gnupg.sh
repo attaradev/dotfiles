@@ -8,6 +8,8 @@
 set -e  # Exit on error
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./scripts/mutable-target.sh
+source "$DOTFILES_DIR/scripts/mutable-target.sh"
 
 echo "🔐 Setting up GnuPG (GPG)..."
 
@@ -72,17 +74,6 @@ append_setting_if_missing() {
 
   printf '%s\n' "$line" >> "$file"
   return 0
-}
-
-resolve_mutable_target() {
-  local primary="$1"
-  local fallback="$2"
-
-  if [[ -L "$primary" ]] || [[ "$primary" == "$DOTFILES_DIR"* ]]; then
-    echo "$fallback"
-  else
-    echo "$primary"
-  fi
 }
 
 find_pinentry_mac() {
@@ -225,11 +216,16 @@ echo ""
 echo "🔧 Git Integration"
 echo ""
 
-# Check if Git is configured with GPG
-GIT_SIGNING_KEY=$(git config --global user.signingkey 2>/dev/null || echo "")
+# Check effective Git config (includes ~/.gitconfig includes and local overrides)
+GIT_SIGNING_KEY=$(git config --get user.signingkey 2>/dev/null || true)
+GIT_COMMIT_GPGSIGN=$(git config --type=bool --get commit.gpgsign 2>/dev/null || true)
 
-if [[ -n "$GIT_SIGNING_KEY" ]]; then
-  echo "✓ Git is already configured to use GPG key: $GIT_SIGNING_KEY"
+if [[ -n "$GIT_SIGNING_KEY" && "$GIT_COMMIT_GPGSIGN" == "true" ]]; then
+  echo "✓ Git commit signing is configured with GPG key: $GIT_SIGNING_KEY"
+elif [[ -n "$GIT_SIGNING_KEY" ]]; then
+  echo "ℹ️  Git has a signing key configured: $GIT_SIGNING_KEY"
+  echo "ℹ️  Enable commit signing by default with:"
+  echo "   git config --global commit.gpgsign true"
 else
   echo "ℹ️  Git is not configured for commit signing"
   echo ""
@@ -257,7 +253,7 @@ echo ""
 
 ZSHRC="$HOME/.zshrc"
 
-ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local")
+ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local" "$DOTFILES_DIR")
 
 if [[ -f "$ZSHRC_TARGET" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc.local" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc" ]]; then
   touch "$ZSHRC_TARGET"

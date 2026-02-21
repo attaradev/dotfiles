@@ -30,3 +30,6 @@ jobs:
 
       - name: Run quality gate
         run: make check
+
+      - name: Run smoke checks
+        run: make smoke

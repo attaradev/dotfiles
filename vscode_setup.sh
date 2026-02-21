@@ -84,7 +84,7 @@ echo ""
 # Install each extension using VSCode CLI
 for EXT in "${EXTENSIONS[@]}"; do
   # Check if extension is already installed
-  if printf '%s\n' "$INSTALLED_EXTS" | grep -Fqi "^${EXT}$"; then
+  if printf '%s\n' "$INSTALLED_EXTS" | grep -Fxqi "$EXT"; then
     echo "  ⏭️  $EXT (already installed)"
     ((SKIPPED_COUNT++))
   else

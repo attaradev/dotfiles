@@ -8,6 +8,8 @@
 set -e  # Exit on error
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./scripts/mutable-target.sh
+source "$DOTFILES_DIR/scripts/mutable-target.sh"
 
 echo "🔧 Setting up mise (unified version manager)..."
 
@@ -26,17 +28,6 @@ fi
 ZSHRC="$HOME/.zshrc"
 BASHRC="$HOME/.bashrc"
 
-resolve_mutable_target() {
-  local primary="$1"
-  local fallback="$2"
-
-  if [[ -L "$primary" ]] || [[ "$primary" == "$DOTFILES_DIR"* ]]; then
-    echo "$fallback"
-  else
-    echo "$primary"
-  fi
-}
-
 has_mise_activation() {
   local pattern="$1"
   shift
@@ -52,7 +43,7 @@ has_mise_activation() {
 }
 
 # Add mise to .zshrc if not already present
-ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local")
+ZSHRC_TARGET=$(resolve_mutable_target "$ZSHRC" "$HOME/.zshrc.local" "$DOTFILES_DIR")
 if [[ -f "$ZSHRC_TARGET" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc.local" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc" ]]; then
   touch "$ZSHRC_TARGET"
   if ! has_mise_activation 'mise activate zsh' "$ZSHRC" "$ZSHRC_TARGET"; then
@@ -68,7 +59,7 @@ if [[ -f "$ZSHRC_TARGET" ]] || [[ "$ZSHRC_TARGET" == "$HOME/.zshrc.local" ]] || 
 fi
 
 # Add mise to .bashrc if not already present
-BASHRC_TARGET=$(resolve_mutable_target "$BASHRC" "$HOME/.bashrc.local")
+BASHRC_TARGET=$(resolve_mutable_target "$BASHRC" "$HOME/.bashrc.local" "$DOTFILES_DIR")
 if [[ -f "$BASHRC_TARGET" ]] || [[ "$BASHRC_TARGET" == "$HOME/.bashrc.local" ]] || [[ "$BASHRC_TARGET" == "$HOME/.bashrc" ]]; then
   touch "$BASHRC_TARGET"
   if ! has_mise_activation 'mise activate bash' "$BASHRC" "$BASHRC_TARGET"; then

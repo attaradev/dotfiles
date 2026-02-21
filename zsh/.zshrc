@@ -53,7 +53,9 @@ fi
 
 autoload -Uz compinit
 # Only check compinit once a day for performance
-if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+ZCOMPDUMP_FILE="${ZDOTDIR:-$HOME}/.zcompdump"
+zcompdump_stale=(${ZCOMPDUMP_FILE}(N.mh+24))
+if (( ${#zcompdump_stale[@]} > 0 )) || [[ ! -f "$ZCOMPDUMP_FILE" ]]; then
   compinit
 else
   compinit -C
@@ -93,6 +95,13 @@ prioritize_homebrew_path() {
 }
 prioritize_homebrew_path
 
+# Prefer Tilt.dev over Ruby gem `tilt` executable when both are present.
+if [[ -x "/opt/homebrew/bin/tilt" ]]; then
+  alias tilt='/opt/homebrew/bin/tilt'
+elif [[ -x "/usr/local/bin/tilt" ]]; then
+  alias tilt='/usr/local/bin/tilt'
+fi
+
 # ============================================
 # Zoxide (Smart cd)
 # ============================================
@@ -117,15 +126,18 @@ fi
 # ============================================
 # ZSH Plugins (via Homebrew)
 # ============================================
+if command -v brew &> /dev/null; then
+  BREW_PREFIX="$(brew --prefix 2>/dev/null || true)"
+fi
 
 # Fast syntax highlighting (loaded via Homebrew)
-if [[ -f "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [[ -n "${BREW_PREFIX:-}" && -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 
 # Fish-like autosuggestions (loaded via Homebrew)
-if [[ -f "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+if [[ -n "${BREW_PREFIX:-}" && -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
   # Performance: async suggestions
   ZSH_AUTOSUGGEST_USE_ASYNC=1
   # Suggest from history only
@@ -207,8 +219,24 @@ alias pntest='pnpm test'
 alias dps='docker ps'
 alias dpsa='docker ps -a'
 alias di='docker images'
-alias dstop='docker stop $(docker ps -q)'
-alias drm='docker rm $(docker ps -aq)'
+dstop() {
+  local -a container_ids
+  container_ids=("${(@f)$(docker ps -q)}")
+  if (( ${#container_ids[@]} == 0 )); then
+    echo "No running containers."
+    return 0
+  fi
+  docker stop "${container_ids[@]}"
+}
+drm() {
+  local -a container_ids
+  container_ids=("${(@f)$(docker ps -aq)}")
+  if (( ${#container_ids[@]} == 0 )); then
+    echo "No containers to remove."
+    return 0
+  fi
+  docker rm "${container_ids[@]}"
+}
 alias dprune='docker system prune -a'
 alias dbuild='docker build -t'
 alias dexec='docker exec -it'
