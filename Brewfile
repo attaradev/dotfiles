@@ -12,7 +12,7 @@
 #   brew bundle dump --force         # Regenerate from current system (use with caution)
 #
 # Note: Language runtimes and package tooling (Node.js, Python, Go, Ruby, Java, Rust, npm, pnpm, uv) are managed via mise,
-#       not Homebrew. See scripts/setup-mise.sh for runtime management (Java/Rust are optional via DOTFILES_INSTALL_* env vars).
+#       not Homebrew. See scripts/setup-mise.sh for runtime management via local ~/.mise.toml (bootstrapped when missing).
 # Optional casks are gated by environment variables (see Installation Notes).
 
 # ============================================

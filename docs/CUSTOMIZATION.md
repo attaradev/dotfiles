@@ -30,7 +30,7 @@ make dump
 
 ## Adjust Language Runtime Versions
 
-Edit `mise/.mise.toml` and re-run:
+Edit `~/.mise.toml` and re-run:
 
 ```bash
 make mise
@@ -58,7 +58,7 @@ mise list
 To remove a runtime/tool you previously added:
 
 ```bash
-# 1) Delete its entry from mise/.mise.toml
+# 1) Delete its entry from ~/.mise.toml
 make mise
 mise uninstall --all <tool>
 mise prune --tools

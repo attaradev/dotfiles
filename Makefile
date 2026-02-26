@@ -5,16 +5,16 @@
 #
 # Usage:
 #   make install    # Full setup (first time)
-#   make update     # Update packages and tools
+#   make update     # Update Homebrew and mise-managed packages
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install update upgrade brew brew-check mise stow obsidian vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
+.PHONY: help install setup update upgrade brew brew-check mise stow agents obsidian vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
 BREW_BUNDLE_WITH_OPTIONALS = OPTIONAL_CASK_ENV_FILE="$(BUNDLE_ENV_FILE)" ./scripts/run-brew-bundle.sh
-STOW_PACKAGES = zsh git npm mise starship ssh gpg claude codex
+STOW_PACKAGES = zsh git npm starship ssh gpg claude codex
 BACKUP_ARTIFACTS = \
 	$(HOME)/dotfiles-backup-* \
 	$(HOME)/.zshrc.backup \
@@ -54,6 +54,20 @@ install:
 	@chmod +x *.sh
 	@./setup.sh
 
+## setup: Re-apply idempotent dotfiles setup after pulling changes
+setup:
+	@echo "🔁 Re-applying idempotent setup tasks..."
+	@$(MAKE) --no-print-directory mise
+	@$(MAKE) --no-print-directory stow
+	@$(MAKE) --no-print-directory obsidian
+	@$(MAKE) --no-print-directory gnupg
+	@if command -v code >/dev/null 2>&1; then \
+		$(MAKE) --no-print-directory vscode; \
+	else \
+		echo "⚠️  VSCode CLI 'code' not found. Skipping extensions refresh."; \
+	fi
+	@echo "✅ Setup refresh complete!"
+
 ## brew: Install/update packages from Brewfile
 brew:
 	@echo "📦 Installing packages from Brewfile..."
@@ -74,6 +88,11 @@ stow:
 	@echo "🔗 Creating dotfile symlinks..."
 	@bash ./scripts/setup-stow.sh
 
+## agents: Refresh Claude/Codex configs
+agents:
+	@echo "🤖 Refreshing Claude/Codex configs..."
+	@bash ./scripts/setup-stow.sh claude codex
+
 ## obsidian: Configure Obsidian vault defaults and install plugins
 obsidian:
 	@echo "🧠 Configuring Obsidian vault and plugins..."
@@ -93,9 +112,9 @@ gnupg:
 # Updates & Maintenance
 # ============================================
 
-## update: Update Homebrew packages, mise, and tools
+## update: Update Homebrew and mise-managed packages
 update:
-	@echo "⬆️  Updating all packages and tools..."
+	@echo "⬆️  Updating package managers and managed packages..."
 	@echo ""
 	@echo "📦 Updating Homebrew..."
 	@brew update
@@ -348,16 +367,18 @@ help:
 	@echo ""
 	@echo "Setup & Installation:"
 	@echo "  make install       - Full setup (first time)"
+	@echo "  make setup         - Re-apply idempotent setup after config changes"
 	@echo "  make brew          - Install packages from Brewfile"
 	@echo "  make brew-check    - Verify Brewfile packages"
 	@echo "  make mise          - Setup mise version manager"
 	@echo "  make stow          - Create dotfile symlinks"
+	@echo "  make agents        - Refresh Claude/Codex configs"
 	@echo "  make obsidian      - Configure Obsidian vault + plugins"
 	@echo "  make vscode        - Install VSCode extensions"
 	@echo "  make gnupg         - Setup GnuPG"
 	@echo ""
 	@echo "Updates & Maintenance:"
-	@echo "  make update        - Update all packages and tools"
+	@echo "  make update        - Update Homebrew and mise-managed packages"
 	@echo "  make upgrade       - Alias for update"
 	@echo ""
 	@echo "Diagnostics & Status:"

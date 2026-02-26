@@ -69,7 +69,7 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 ## What This Configures
 
 - Homebrew packages and casks from `Brewfile`
-- Language runtimes and tooling via `scripts/setup-mise.sh`, installed from tracked `mise/.mise.toml`
+- Language runtimes and tooling via `scripts/setup-mise.sh`, installed from local `~/.mise.toml` (bootstrapped from `mise/.mise.toml` when missing)
 - Dotfile symlinks via `scripts/setup-stow.sh` (GNU Stow)
 - Obsidian knowledge vault and plugin setup via `scripts/setup-obsidian.sh` (personal vault notes stay local in `~/.knowledge`; only public scaffolding is tracked)
 - GPG configuration via `scripts/setup-gnupg.sh` with `pinentry-mac` and non-destructive defaults
@@ -82,7 +82,7 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 
 - Core runtimes (tracked): Node.js `25`, Python `3.14`, Go `1.26`, Ruby `4.0`
 - Package managers/tooling (tracked): npm `11`, pnpm `10`, uv `0.10`
-- Add additional runtimes as needed by updating `mise/.mise.toml` (for example, Java `21` or Rust `1.93`) and rerunning `make mise`
+- Add additional runtimes as needed by updating `~/.mise.toml` (for example, `java = "21"` or `rust = "1.93"`), then rerun `make mise`
 
 For runtime policy and workflows, see [docs/RUNTIMES.md](docs/RUNTIMES.md).
 
@@ -92,11 +92,13 @@ All `make` targets are defined in `~/.dotfiles/Makefile`. Run commands from `~/.
 
 ```bash
 make install      # Full setup
-make update       # Upgrade brew + mise-managed tools
+make setup        # Re-apply idempotent setup after pulling config changes
+make update       # Upgrade brew + mise-managed packages
 make doctor       # Health checks for Homebrew and mise
-make mise         # Install runtimes from mise/.mise.toml
-# Add tools in mise/.mise.toml as needed, then rerun make mise
+make mise         # Install runtimes from ~/.mise.toml
+# Add/remove tools in ~/.mise.toml as needed, then rerun make mise
 make stow         # Apply dotfile symlinks with GNU Stow
+make agents       # Refresh Claude/Codex global config symlinks
 make obsidian     # Configure knowledge vault defaults + install plugins
 make gnupg        # Configure GnuPG and signing defaults
 make vscode       # Install VSCode extensions

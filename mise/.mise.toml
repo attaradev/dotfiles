@@ -4,8 +4,6 @@ python = "3.14"
 uv = "0.10"
 go = "1.26"
 ruby = "4.0"
-java = "21"
-rust = "1.93"
 pnpm = "10"
 npm = "11"
 

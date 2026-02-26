@@ -79,13 +79,13 @@ make mise
 mise list
 ```
 
-If still missing, verify `mise/.mise.toml` includes the expected runtime and tooling entries:
+If still missing, verify `~/.mise.toml` includes the expected runtime and tooling entries:
 
 - `node`, `python`, `go`, `ruby`
 - `npm`, `pnpm`, `uv`
 - any additional tools you added
 
-If a required tool is not listed, add it to `mise/.mise.toml` and rerun install:
+If a required tool is not listed, add it to `~/.mise.toml` and rerun install:
 
 ```bash
 make mise
@@ -94,10 +94,10 @@ mise list
 
 ## Wrong runtime version is active
 
-Run from the tracked config directory:
+Run from your home directory so global `~/.mise.toml` is applied:
 
 ```bash
-cd ~/.dotfiles/mise
+cd ~
 mise install
 mise list
 ```

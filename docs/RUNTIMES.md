@@ -4,13 +4,14 @@ This repository manages development runtimes and language tooling with `mise`.
 
 ## Source of Truth
 
-- Runtime versions are tracked in `mise/.mise.toml`.
-- `make mise` installs tools from that file (via `scripts/setup-mise.sh`).
+- Runtime versions are managed in local `~/.mise.toml`.
+- `scripts/setup-mise.sh` bootstraps `~/.mise.toml` from tracked template `mise/.mise.toml` only when missing.
+- `make mise` installs tools from `~/.mise.toml`.
 - `make update` runs `mise upgrade` to move installed tools within configured tracks.
 
 ## Managed Tools and Version Policy
 
-| Tool | Track in `mise/.mise.toml` | Policy |
+| Tool | Default track in template (`mise/.mise.toml`) | Policy |
 | --- | --- | --- |
 | Node.js | `25` | Latest patch/minor within major 25 |
 | npm | `11` | Latest patch/minor within major 11 |
@@ -25,8 +26,7 @@ This policy keeps tracked tools on explicit major/minor lines while allowing pat
 ## Install and Verify
 
 ```bash
-cd ~/.dotfiles/mise
-mise install
+make mise
 mise list
 
 node -v
@@ -47,7 +47,7 @@ cargo --version
 Upgrade installed tools within configured tracks:
 
 ```bash
-cd ~/.dotfiles/mise
+cd ~
 mise upgrade
 mise install
 mise list
@@ -56,11 +56,11 @@ mise list
 Add tools as needed:
 
 ```bash
-# 1) Add a tool track in mise/.mise.toml, for example:
+# 1) Add a tool track in ~/.mise.toml, for example:
 #    java = "21"
 #    rust = "1.93"
 #
-# 2) Install from tracked config:
+# 2) Install from local config:
 make mise
 mise list
 ```
@@ -68,9 +68,9 @@ mise list
 Remove tools cleanly:
 
 ```bash
-# 1) Remove the tool from mise/.mise.toml
+# 1) Remove the tool from ~/.mise.toml
 #
-# 2) Re-sync tracked config:
+# 2) Re-sync from local config:
 make mise
 
 # 3) Remove installed versions:
@@ -97,8 +97,8 @@ mise ls-remote rust
 
 ## Change a Track Intentionally
 
-1. Edit `mise/.mise.toml` (for example, `node = "26"`).
-2. Run `make mise` (or `cd ~/.dotfiles/mise && mise install`).
+1. Edit `~/.mise.toml` (for example, `node = "26"`).
+2. Run `make mise` (or `cd ~ && mise install`).
 3. Verify versions with `mise list` and tool-specific version commands.
 4. Run `make check` and `make smoke`.
 

@@ -37,11 +37,13 @@ make install
 7. `scripts/setup-gnupg.sh`
 8. `scripts/setup-vscode.sh` (if `code` CLI exists)
 
-Runtime and tooling versions are sourced from `mise/.mise.toml`:
+After pulling later dotfile changes, run `make setup` to re-apply idempotent setup tasks without running package upgrades.
+
+Runtime and tooling versions are sourced from local `~/.mise.toml` (created from `mise/.mise.toml` template when missing):
 
 - Core runtimes: `node = "25"`, `python = "3.14"`, `go = "1.26"`, `ruby = "4.0"`
 - Package managers/tooling: `npm = "11"`, `pnpm = "10"`, `uv = "0.10"`
-- Add additional runtimes as needed by adding tracks to `mise/.mise.toml` (for example `java = "21"` or `rust = "1.93"`), then run `make mise`
+- Add additional runtimes as needed by adding tracks to `~/.mise.toml` (for example `java = "21"` or `rust = "1.93"`), then run `make mise`
 
 See [RUNTIMES.md](RUNTIMES.md) for version policy and update workflows.
 
@@ -139,7 +141,7 @@ python --version
 uv --version
 go version
 ruby -v
-# Additional runtimes you added in mise/.mise.toml:
+# Additional runtimes you added in ~/.mise.toml:
 java -version
 rustc --version
 cargo --version

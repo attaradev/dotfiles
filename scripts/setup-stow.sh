@@ -26,6 +26,40 @@ fi
 
 cd "$DOTFILES_DIR"
 
+# Optional package arguments allow targeted refreshes (e.g., claude/codex only).
+DEFAULT_PACKAGES=(
+  "zsh"
+  "git"
+  "npm"
+  "starship"
+  "ssh"
+  "gpg"
+  "claude"
+  "codex"
+)
+
+if [[ "$#" -gt 0 ]]; then
+  PACKAGES=("$@")
+  FULL_RUN=0
+  echo "ℹ️  Targeted stow run for packages: ${PACKAGES[*]}"
+else
+  PACKAGES=("${DEFAULT_PACKAGES[@]}")
+  FULL_RUN=1
+fi
+
+package_selected() {
+  local desired="$1"
+  local package
+
+  for package in "${PACKAGES[@]}"; do
+    if [[ "$package" == "$desired" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 # ============================================
 # Backup existing configs
 # ============================================
@@ -75,7 +109,7 @@ backup_package_files() {
 # Backup existing configs before symlinking.
 # This keeps stow non-destructive for package-managed files such as
 # ~/.hushlogin and ~/.config/starship.toml.
-for package in zsh git npm mise starship ssh claude codex; do
+for package in "${PACKAGES[@]}"; do
   backup_package_files "$package"
 done
 
@@ -140,21 +174,21 @@ ensure_knowledge_dir() {
   ensure_dir "$dir"
 }
 
-if [[ -d "$DOTFILES_DIR/ssh" ]]; then
+if package_selected "ssh" && [[ -d "$DOTFILES_DIR/ssh" ]]; then
   ensure_secure_dir "$HOME/.ssh" 700
   ensure_secure_dir "$HOME/.ssh/sockets" 700
 fi
 
-if [[ -d "$DOTFILES_DIR/gpg" ]]; then
+if package_selected "gpg" && [[ -d "$DOTFILES_DIR/gpg" ]]; then
   ensure_secure_dir "$HOME/.gnupg" 700
 fi
 
 SKIP_GPG=0
-if [[ -d "$DOTFILES_DIR/obsidian" ]]; then
+if [[ "$FULL_RUN" == "1" ]] && [[ -d "$DOTFILES_DIR/obsidian" ]]; then
   ensure_knowledge_dir
 fi
 
-if [[ -d "$DOTFILES_DIR/gpg" ]]; then
+if package_selected "gpg" && [[ -d "$DOTFILES_DIR/gpg" ]]; then
   if [[ -e "$HOME/.gnupg/gpg-agent.conf" && ! -L "$HOME/.gnupg/gpg-agent.conf" ]] || \
     [[ -e "$HOME/.gnupg/gpg.conf" && ! -L "$HOME/.gnupg/gpg.conf" ]]; then
     echo "ℹ️  Preserving local GPG config files in ~/.gnupg; skipping gpg stow package."
@@ -168,19 +202,6 @@ fi
 
 echo ""
 echo "📂 Stowing configuration packages..."
-
-# Array of packages to stow
-PACKAGES=(
-  "zsh"
-  "git"
-  "npm"
-  "mise"
-  "starship"
-  "ssh"
-  "gpg"
-  "claude"
-  "codex"
-)
 
 STOWED=()
 SKIPPED=()
@@ -218,7 +239,6 @@ if [[ ${#STOWED[@]} -gt 0 ]]; then
       zsh)      echo "  ~/.zshrc -> $DOTFILES_DIR/zsh/.zshrc" ;;
       git)      echo "  ~/.gitconfig -> $DOTFILES_DIR/git/.gitconfig" ;;
       npm)      echo "  ~/.npmrc -> $DOTFILES_DIR/npm/.npmrc" ;;
-      mise)     echo "  ~/.mise.toml -> $DOTFILES_DIR/mise/.mise.toml" ;;
       starship) echo "  ~/.config/starship.toml -> $DOTFILES_DIR/starship/.config/starship.toml" ;;
       ssh)      echo "  ~/.ssh/config -> $DOTFILES_DIR/ssh/.ssh/config" ;;
       gpg)      echo "  ~/.gnupg/gpg.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg.conf"; echo "  ~/.gnupg/gpg-agent.conf -> $DOTFILES_DIR/gpg/.gnupg/gpg-agent.conf" ;;

@@ -5,17 +5,18 @@ All `make` commands below use `~/.dotfiles/Makefile`. Run from `~/.dotfiles`, or
 ## Routine Commands
 
 ```bash
-make update      # Update Homebrew and mise-managed tools
+make setup       # Re-apply idempotent setup after config changes
+make update      # Update Homebrew and mise-managed packages
 make doctor      # Homebrew + mise diagnostics
 make status      # Summary of key tool versions
 make list        # Installed mise runtimes
-make mise        # Install runtimes from tracked config
+make mise        # Install runtimes from ~/.mise.toml
 ```
 
 ## Runtime and Tooling Updates
 
 ```bash
-cd ~/.dotfiles/mise
+cd ~
 mise upgrade
 mise install
 mise list
@@ -32,12 +33,12 @@ rustc --version
 cargo --version
 ```
 
-To add more runtimes or tools, add them to `mise/.mise.toml` and rerun `make mise`.
+To add more runtimes or tools, add them to `~/.mise.toml` and rerun `make mise`.
 
 To remove a previously added runtime/tool cleanly:
 
 ```bash
-# Remove it from mise/.mise.toml first
+# Remove it from ~/.mise.toml first
 make mise
 mise uninstall --all <tool>
 mise prune --tools
@@ -45,6 +46,16 @@ mise list
 ```
 
 For runtime version policy and track changes, see [RUNTIMES.md](RUNTIMES.md).
+
+## Setup Refresh
+
+After pulling dotfile changes, re-apply local setup safely:
+
+```bash
+make setup
+```
+
+`make setup` is idempotent and runs `mise`, `stow`, `obsidian`, `gnupg`, and `vscode` refresh steps.
 
 ## Brewfile Lifecycle
 
@@ -90,6 +101,7 @@ make smoke
 make brew
 make mise
 make stow
+make agents
 make gnupg
 make vscode
 ```

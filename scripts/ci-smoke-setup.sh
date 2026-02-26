@@ -201,6 +201,11 @@ test -f "$TEST_HOME/.gnupg/gpg-agent.conf"
 test -f "$TEST_HOME/.gnupg/gpg.conf"
 test -f "$TEST_HOME/.hushlogin.backup"
 test -f "$TEST_HOME/.config/starship.toml.backup"
+test -f "$TEST_HOME/.mise.toml"
+if [[ -L "$TEST_HOME/.mise.toml" ]]; then
+  echo "❌ Expected ~/.mise.toml to be a local file, not a symlink"
+  exit 1
+fi
 test -f "$TEST_HOME/.codex/config.toml"
 test -f "$TEST_HOME/.codex/AGENTS.md"
 test -f "$TEST_HOME/.knowledge/hub.md"
