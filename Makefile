@@ -9,7 +9,7 @@
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install setup update upgrade brew brew-check mise stow agents obsidian obsidian-lock vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
+.PHONY: help install setup update upgrade brew brew-check mise stow agents obsidian obsidian-lock obsidian-clean vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
@@ -93,15 +93,20 @@ agents:
 	@echo "🤖 Refreshing Claude/Codex configs..."
 	@bash ./scripts/setup-stow.sh claude codex
 
-## obsidian: Configure Obsidian vault defaults and install plugins
+## obsidian: Setup Knowledge vault and install/update Obsidian plugins
 obsidian:
-	@echo "🧠 Configuring Obsidian vault and plugins..."
+	@echo "🧠 Setting up Knowledge vault and Obsidian plugins..."
 	@bash ./scripts/setup-obsidian.sh
 
 ## obsidian-lock: Refresh pinned Obsidian plugin lock file with latest release hashes
 obsidian-lock:
 	@echo "🔒 Refreshing pinned Obsidian plugin lock file..."
 	@bash ./scripts/refresh-obsidian-plugin-lock.sh
+
+## obsidian-clean: Remove unmanaged Obsidian community plugin directories
+obsidian-clean:
+	@echo "🧹 Cleaning unmanaged Obsidian plugins..."
+	@bash ./scripts/cleanup-obsidian-plugins.sh
 
 ## vscode: Install VSCode extensions
 vscode:
@@ -371,46 +376,47 @@ help:
 	@echo "════════════════════════════════════════════"
 	@echo ""
 	@echo "Setup & Installation:"
-	@echo "  make install       - Full setup (first time)"
-	@echo "  make setup         - Re-apply idempotent setup after config changes"
-	@echo "  make brew          - Install packages from Brewfile"
-	@echo "  make brew-check    - Verify Brewfile packages"
-	@echo "  make mise          - Setup mise version manager"
-	@echo "  make stow          - Create dotfile symlinks"
-	@echo "  make agents        - Refresh Claude/Codex configs"
-	@echo "  make obsidian      - Configure Obsidian vault + plugins"
-	@echo "  make obsidian-lock - Refresh pinned Obsidian plugin lock"
-	@echo "  make vscode        - Install VSCode extensions"
-	@echo "  make gnupg         - Setup GnuPG"
+	@echo "  make install       	- Full setup (first time)"
+	@echo "  make setup         	- Re-apply idempotent setup after config changes"
+	@echo "  make brew          	- Install packages from Brewfile"
+	@echo "  make brew-check    	- Verify Brewfile packages"
+	@echo "  make mise          	- Setup mise version manager"
+	@echo "  make stow          	- Create dotfile symlinks"
+	@echo "  make agents        	- Refresh Claude/Codex configs"
+	@echo "  make obsidian      	- Configure Obsidian vault + plugins"
+	@echo "  make obsidian-lock 	- Refresh pinned Obsidian plugin lock"
+	@echo "  make obsidian-clean	- Remove unmanaged Obsidian plugin dirs"
+	@echo "  make vscode        	- Install VSCode extensions"
+	@echo "  make gnupg         	- Setup GnuPG"
 	@echo ""
 	@echo "Updates & Maintenance:"
-	@echo "  make update        - Update Homebrew and mise-managed packages"
-	@echo "  make upgrade       - Alias for update"
+	@echo "  make update        	- Update Homebrew and mise-managed packages"
+	@echo "  make upgrade       	- Alias for update"
 	@echo ""
 	@echo "Diagnostics & Status:"
-	@echo "  make doctor        - Run health checks"
-	@echo "  make status        - Show system status"
-	@echo "  make list          - List mise tools"
+	@echo "  make doctor        	- Run health checks"
+	@echo "  make status        	- Show system status"
+	@echo "  make list          	- List mise tools"
 	@echo ""
 	@echo "Brewfile Management:"
-	@echo "  make dump          - Generate Brewfile from system"
-	@echo "  make cleanup       - Remove unlisted packages"
+	@echo "  make dump          	- Generate Brewfile from system"
+	@echo "  make cleanup       	- Remove unlisted packages"
 	@echo ""
 	@echo "Backup & Testing:"
-	@echo "  make backup        - Backup current dotfiles"
-	@echo "  make backup-list   - Show backup files/directories"
-	@echo "  make backup-clean  - Prompt to delete backups (or use CONFIRM=1)"
-	@echo "  make test          - Test idempotency"
-	@echo "  make smoke         - Run mocked smoke checks"
-	@echo "  make validate      - Validate shell config"
-	@echo "  make lint-shell    - Lint shell scripts"
-	@echo "  make lint-docs     - Lint markdown docs"
-	@echo "  make check         - Run all quality checks"
+	@echo "  make backup        	- Backup current dotfiles"
+	@echo "  make backup-list   	- Show backup files/directories"
+	@echo "  make backup-clean  	- Prompt to delete backups (or use CONFIRM=1)"
+	@echo "  make test          	- Test idempotency"
+	@echo "  make smoke         	- Run mocked smoke checks"
+	@echo "  make validate      	- Validate shell config"
+	@echo "  make lint-shell    	- Lint shell scripts"
+	@echo "  make lint-docs     	- Lint markdown docs"
+	@echo "  make check         	- Run all quality checks"
 	@echo ""
 	@echo "Cleanup:"
-	@echo "  make clean         - Clean caches"
-	@echo "  make uninstall-stow - Remove symlinks"
+	@echo "  make clean         	- Clean caches"
+	@echo "  make uninstall-stow 	- Remove symlinks"
 	@echo ""
 	@echo "Help:"
-	@echo "  make help          - Show this message"
+	@echo "  make help          	- Show this message"
 	@echo ""

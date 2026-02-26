@@ -19,7 +19,10 @@ Plugin installation is automated. This file is an operator note, not the source 
 ## Baseline Expectations
 
 - Vault path is `~/.knowledge`.
-- Templates folder is `_templates` via `.obsidian/templates.json`.
+- Templates folder is `_templates` via core Templates (`.obsidian/templates.json`).
+- Core Templates is the canonical templating engine; Templater is intentionally not enabled.
+- Core Search is the canonical search surface; OmniSearch is intentionally not enabled.
+- QuickAdd is enabled for capture and command automation; templating remains on core Templates.
 - File Explorer, Search, and Quick Switcher core plugins are enabled by default.
 - DataviewJS (`enableDataviewJs` and `enableInlineDataviewJs`) is enabled.
 - Metadata Menu Dataview prompt is suppressed (`disableDataviewPrompt = true`).

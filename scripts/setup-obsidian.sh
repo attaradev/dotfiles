@@ -8,6 +8,8 @@ PLUGINS_DIR="$OBSIDIAN_CONFIG_DIR/plugins"
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBLIC_VAULT_SOURCE_DIR="$DOTFILES_DIR/obsidian/.knowledge"
 PLUGIN_LOCK_FILE="${DOTFILES_OBSIDIAN_PLUGIN_LOCK_FILE:-$DOTFILES_DIR/obsidian/community-plugin-lock.json}"
+TEMPLATES_FOLDER="_templates"
+VISIBLE_VAULT_ALIAS="${OBSIDIAN_VISIBLE_VAULT_ALIAS:-$HOME/Knowledge}"
 
 normalize_bool() {
   local raw
@@ -73,6 +75,14 @@ replace_if_changed() {
   return 0
 }
 
+remove_path_if_exists() {
+  local target=$1
+  if [[ ! -e "$target" ]]; then
+    return 0
+  fi
+  rm -rf "$target"
+}
+
 detach_if_symlink() {
   local file=$1
   local tmp_file
@@ -89,6 +99,186 @@ detach_if_symlink() {
   rm -f "$tmp_file"
 }
 
+ensure_local_vault_directory() {
+  local backup_dir
+
+  if [[ -L "$VAULT_DIR" ]]; then
+    backup_dir="${VAULT_DIR}.backup.$(date +%Y%m%d-%H%M%S)"
+    print_warning "Converting symlinked vault path to a local directory: $VAULT_DIR"
+    mkdir -p "$backup_dir"
+    cp -a "$VAULT_DIR/." "$backup_dir/" 2>/dev/null || true
+    rm "$VAULT_DIR"
+    mkdir -p "$VAULT_DIR"
+    cp -a "$backup_dir/." "$VAULT_DIR/" 2>/dev/null || true
+    print_info "Created vault backup from symlink target at: $backup_dir"
+    return 0
+  fi
+
+  if [[ -e "$VAULT_DIR" && ! -d "$VAULT_DIR" ]]; then
+    echo "❌ Obsidian vault path exists but is not a directory: $VAULT_DIR"
+    exit 1
+  fi
+
+  mkdir -p "$VAULT_DIR"
+}
+
+obsidian_global_config_file() {
+  local app_config_dir
+
+  if [[ -n "${OBSIDIAN_APP_CONFIG_DIR:-}" ]]; then
+    app_config_dir="$OBSIDIAN_APP_CONFIG_DIR"
+  else
+    case "${OSTYPE:-}" in
+      darwin*)
+        app_config_dir="$HOME/Library/Application Support/obsidian"
+        ;;
+      linux*)
+        app_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/obsidian"
+        ;;
+      *)
+        print_warning "Skipping Obsidian UI vault registration on unsupported OS: ${OSTYPE:-unknown}"
+        return 1
+        ;;
+    esac
+  fi
+
+  printf '%s\n' "$app_config_dir/obsidian.json"
+}
+
+ensure_visible_vault_alias() {
+  local alias_path=$1
+  local vault_real alias_real
+
+  [[ -n "$alias_path" ]] || return 1
+
+  vault_real="$(cd "$VAULT_DIR" && pwd -P)"
+  alias_path="${alias_path/#\~/$HOME}"
+
+  if [[ "$alias_path" == "$VAULT_DIR" ]]; then
+    return 1
+  fi
+
+  if [[ -e "$alias_path" ]]; then
+    if [[ -L "$alias_path" ]]; then
+      if alias_real="$(cd "$alias_path" && pwd -P 2>/dev/null)" && [[ "$alias_real" == "$vault_real" ]]; then
+        printf '%s\n' "$alias_path"
+        return 0
+      fi
+      print_warning "Visible vault alias points elsewhere, skipping: $alias_path" >&2
+      return 1
+    fi
+
+    if [[ -d "$alias_path" ]]; then
+      if alias_real="$(cd "$alias_path" && pwd -P 2>/dev/null)" && [[ "$alias_real" == "$vault_real" ]]; then
+        printf '%s\n' "$alias_path"
+        return 0
+      fi
+    fi
+
+    print_warning "Visible vault alias path exists and is not managed, skipping: $alias_path" >&2
+    return 1
+  fi
+
+  mkdir -p "$(dirname "$alias_path")"
+  ln -s "$VAULT_DIR" "$alias_path"
+  print_success "Created visible vault alias: $alias_path -> $VAULT_DIR" >&2
+  printf '%s\n' "$alias_path"
+  return 0
+}
+
+register_vault_with_obsidian_ui() {
+  local global_file global_dir canonical_vault_path ui_vault_path
+  local existing_id existing_path existing_path_real
+  local key path vault_id now_ts suffix tmp_file
+
+  if ! global_file="$(obsidian_global_config_file)"; then
+    return 0
+  fi
+
+  global_dir="$(dirname "$global_file")"
+  mkdir -p "$global_dir"
+  canonical_vault_path="$(cd "$VAULT_DIR" && pwd -P)"
+  ui_vault_path="$canonical_vault_path"
+
+  if ui_vault_path="$(ensure_visible_vault_alias "$VISIBLE_VAULT_ALIAS")"; then
+    :
+  else
+    ui_vault_path="$canonical_vault_path"
+  fi
+
+  if [[ -f "$global_file" ]]; then
+    if ! jq -e 'type == "object"' "$global_file" >/dev/null 2>&1; then
+      print_warning "Skipping Obsidian UI vault registration; invalid global config: $global_file"
+      return 0
+    fi
+
+    while IFS=$'\t' read -r key path; do
+      [[ -n "$key" ]] || continue
+      [[ -n "$path" ]] || continue
+
+      if [[ "$path" == "$ui_vault_path" ]]; then
+        existing_id="$key"
+        existing_path="$path"
+        break
+      fi
+
+      if existing_path_real="$(cd "$path" 2>/dev/null && pwd -P)"; then
+        if [[ "$existing_path_real" == "$canonical_vault_path" ]]; then
+          existing_id="$key"
+          existing_path="$path"
+          break
+        fi
+      fi
+    done < <(jq -r '.vaults // {} | to_entries[]? | "\(.key)\t\(.value.path // "")"' "$global_file")
+  fi
+
+  if [[ -n "${existing_id:-}" ]]; then
+    if [[ "$existing_path" == "$ui_vault_path" ]]; then
+      print_info "Obsidian UI already includes vault path: $ui_vault_path"
+      return 0
+    fi
+
+    tmp_file="$(mktemp)"
+    jq --arg id "$existing_id" --arg path "$ui_vault_path" \
+      '.vaults = (.vaults // {}) | .vaults[$id].path = $path' \
+      "$global_file" >"$tmp_file"
+
+    if replace_if_changed "$tmp_file" "$global_file"; then
+      print_success "Updated Obsidian UI vault path: $existing_path -> $ui_vault_path"
+    else
+      print_info "Obsidian UI vault registration already up to date: $ui_vault_path"
+    fi
+    return 0
+  fi
+
+  now_ts="$(date +%s)"
+  vault_id="vault-${now_ts}"
+  suffix=0
+
+  if [[ -f "$global_file" ]]; then
+    while jq -e --arg id "$vault_id" '.vaults // {} | has($id)' "$global_file" >/dev/null 2>&1; do
+      suffix=$((suffix + 1))
+      vault_id="vault-${now_ts}-${suffix}"
+    done
+  fi
+
+  tmp_file="$(mktemp)"
+  if [[ -f "$global_file" ]]; then
+    jq --arg id "$vault_id" --arg path "$ui_vault_path" --argjson ts "$now_ts" \
+      '.vaults = (.vaults // {}) | .vaults[$id] = {path: $path, ts: $ts}' \
+      "$global_file" >"$tmp_file"
+  else
+    jq -n --arg id "$vault_id" --arg path "$ui_vault_path" --argjson ts "$now_ts" \
+      '{vaults: {($id): {path: $path, ts: $ts}}}' >"$tmp_file"
+  fi
+
+  if replace_if_changed "$tmp_file" "$global_file"; then
+    print_success "Registered Knowledge vault in Obsidian UI list: $ui_vault_path"
+  else
+    print_info "Obsidian UI vault registration already up to date: $ui_vault_path"
+  fi
+}
+
 seed_vault_files() {
   local template
 
@@ -99,7 +289,7 @@ seed_vault_files() {
     "$VAULT_DIR/reading" \
     "$VAULT_DIR/learning" \
     "$VAULT_DIR/career" \
-    "$VAULT_DIR/_templates"
+    "$VAULT_DIR/$TEMPLATES_FOLDER"
 
   copy_if_missing "$VAULT_DIR/hub.md" "$PUBLIC_VAULT_SOURCE_DIR/hub.md"
   write_if_missing "$VAULT_DIR/hub.md" <<'EOF'
@@ -139,8 +329,8 @@ EOF
     lesson-entry-template.md \
     achievement-entry-template.md; do
     copy_if_missing \
-      "$VAULT_DIR/_templates/$template" \
-      "$PUBLIC_VAULT_SOURCE_DIR/_templates/$template"
+      "$VAULT_DIR/$TEMPLATES_FOLDER/$template" \
+      "$PUBLIC_VAULT_SOURCE_DIR/$TEMPLATES_FOLDER/$template"
   done
 
   write_if_missing "$VAULT_DIR/tasks.md" <<'EOF'
@@ -379,6 +569,7 @@ Auto-captured achievement candidates from Claude task completion events and
 Codex notify events.
 Keep this as an intake queue and promote polished entries into
 `achievement-log.md`.
+Hook-generated entries are structured for quick review and easy promotion.
 
 ## How To Use
 
@@ -439,6 +630,29 @@ write_array_union() {
   replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
+write_array_without_values() {
+  local file=$1
+  shift
+  local tmp_file remove_json
+  tmp_file="$(mktemp)"
+
+  remove_json="$(
+    printf '%s\n' "$@" \
+      | jq -R . \
+      | jq -s 'map(select(length > 0)) | unique'
+  )"
+
+  if [[ -f "$file" ]] && jq -e 'type == "array"' "$file" >/dev/null 2>&1; then
+    jq --argjson remove "$remove_json" \
+      '[ .[] as $id | select(($remove | index($id)) == null) | $id ]' \
+      "$file" >"$tmp_file"
+  else
+    jq -n '[]' >"$tmp_file"
+  fi
+
+  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+}
+
 configure_core_plugins() {
   local file="$OBSIDIAN_CONFIG_DIR/core-plugins.json"
   local tmp_file required_json
@@ -465,15 +679,16 @@ configure_core_plugins() {
   replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
-configure_templates_plugin() {
+configure_templates_settings() {
   local file="$OBSIDIAN_CONFIG_DIR/templates.json"
   local tmp_file
   tmp_file="$(mktemp)"
+  mkdir -p "$OBSIDIAN_CONFIG_DIR"
 
   if [[ -f "$file" ]] && jq -e 'type == "object"' "$file" >/dev/null 2>&1; then
-    jq '.folder = "_templates"' "$file" >"$tmp_file"
+    jq --arg folder "$TEMPLATES_FOLDER" '.folder = $folder' "$file" >"$tmp_file"
   else
-    jq -n '{"folder":"_templates"}' >"$tmp_file"
+    jq -n --arg folder "$TEMPLATES_FOLDER" '{"folder": $folder}' >"$tmp_file"
   fi
 
   replace_if_changed "$tmp_file" "$file" >/dev/null || true
@@ -845,6 +1060,9 @@ install_community_plugins() {
     return 0
   fi
 
+  require_cmd curl
+  require_cmd shasum
+
   if ! ensure_plugin_lock_file; then
     return 1
   fi
@@ -875,14 +1093,10 @@ install_community_plugins() {
 }
 
 require_cmd jq
-require_cmd curl
-require_cmd shasum
-
-if [[ ! -d "$VAULT_DIR" ]]; then
-  mkdir -p "$VAULT_DIR"
-fi
+ensure_local_vault_directory
 
 seed_vault_files
+register_vault_with_obsidian_ui
 
 mkdir -p "$OBSIDIAN_CONFIG_DIR" "$PLUGINS_DIR"
 
@@ -890,8 +1104,8 @@ CORE_PLUGINS=(
   "file-explorer"
   "global-search"
   "switcher"
-  "daily-notes"
   "templates"
+  "daily-notes"
   "backlink"
   "outgoing-link"
   "tag-pane"
@@ -901,7 +1115,6 @@ CORE_PLUGINS=(
 
 COMMUNITY_PLUGINS=(
   "auto-classifier"
-  "templater-obsidian"
   "quickadd"
   "dataview"
   "metadata-menu"
@@ -910,18 +1123,27 @@ COMMUNITY_PLUGINS=(
   "calendar"
   "obsidian-kanban"
   "obsidian-linter"
+)
+
+CONFLICTING_COMMUNITY_PLUGINS=(
+  "templater-obsidian"
   "omnisearch"
 )
 
 configure_core_plugins "${CORE_PLUGINS[@]}"
 write_array_union "$OBSIDIAN_CONFIG_DIR/community-plugins.json" "${COMMUNITY_PLUGINS[@]}"
-configure_templates_plugin
+write_array_without_values "$OBSIDIAN_CONFIG_DIR/community-plugins.json" "${CONFLICTING_COMMUNITY_PLUGINS[@]}"
+for plugin_id in "${CONFLICTING_COMMUNITY_PLUGINS[@]}"; do
+  remove_path_if_exists "$PLUGINS_DIR/$plugin_id"
+done
+configure_templates_settings
 install_community_plugins
 configure_dataview_plugin
 configure_metadata_menu_plugin
 configure_workspace_defaults
 
 print_success "Obsidian vault configured at $VAULT_DIR"
+print_success "Knowledge vault files ensured at $VAULT_DIR"
 print_success "Core plugins enabled: ${CORE_PLUGINS[*]}"
 print_success "Community plugins enabled: ${COMMUNITY_PLUGINS[*]}"
 print_success "Community plugin assets verified using lock file: $PLUGIN_LOCK_FILE"

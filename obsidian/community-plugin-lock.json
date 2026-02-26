@@ -22,21 +22,17 @@
     "calendar": {
       "assets": {
         "main.js": {
-          "sha256": "64d1c6c620803246724bc922c5c2e0a17c406ffc23f6bbcfbfb14c643958fbb7",
-          "url": "https://github.com/liamcain/obsidian-calendar-plugin/releases/download/2.0.0-beta.2/main.js"
+          "sha256": "7fb339e9cf9fdbe5a801fa2b8ab85b366b5b3777fbd193cbc8728bc27711d125",
+          "url": "https://github.com/liamcain/obsidian-calendar-plugin/releases/download/1.5.10/main.js"
         },
         "manifest.json": {
-          "sha256": "314fc17929a2270b17ea392538ee2d93330714800e244b2975b6c19f9b8dc689",
-          "url": "https://github.com/liamcain/obsidian-calendar-plugin/releases/download/2.0.0-beta.2/manifest.json"
-        },
-        "styles.css": {
-          "sha256": "486b450076f3439b9e40853665a3f51e5084caba60b882c285b60f4764c20852",
-          "url": "https://github.com/liamcain/obsidian-calendar-plugin/releases/download/2.0.0-beta.2/styles.css"
+          "sha256": "f3e9581338648512baa12d5b458490f7fd367918f7bdb6bd86171ce57be7d08b",
+          "url": "https://github.com/liamcain/obsidian-calendar-plugin/releases/download/1.5.10/manifest.json"
         }
       },
-      "release_id": "41733092",
+      "release_id": "40842718",
       "repo": "liamcain/obsidian-calendar-plugin",
-      "tag": "2.0.0-beta.2"
+      "tag": "1.5.10"
     },
     "dataview": {
       "assets": {
@@ -133,43 +129,24 @@
       "repo": "obsidian-tasks-group/obsidian-tasks",
       "tag": "7.22.0"
     },
-    "omnisearch": {
-      "assets": {
-        "main.js": {
-          "sha256": "2df5b3d0285f683a945a7454b6f2f7785070101db0a88cee89fe8f15e1553325",
-          "url": "https://github.com/scambier/obsidian-omnisearch/releases/download/1.28.0/main.js"
-        },
-        "manifest.json": {
-          "sha256": "210b79fe98a334ffd97dddba37698fc204baa078725d8e7f61b6a05c3ac640f5",
-          "url": "https://github.com/scambier/obsidian-omnisearch/releases/download/1.28.0/manifest.json"
-        },
-        "styles.css": {
-          "sha256": "b70b786c51a899e376fb936954f655908709fe3cb746d98f1ba1f5171852ae2b",
-          "url": "https://github.com/scambier/obsidian-omnisearch/releases/download/1.28.0/styles.css"
-        }
-      },
-      "release_id": "274316236",
-      "repo": "scambier/obsidian-omnisearch",
-      "tag": "1.28.0"
-    },
     "periodic-notes": {
       "assets": {
         "main.js": {
-          "sha256": "934ca94359b6a4b9f02093d4a44fa59654c5237b31cf02d7b982c58168851bb1",
-          "url": "https://github.com/liamcain/obsidian-periodic-notes/releases/download/1.0.0-beta.3/main.js"
+          "sha256": "04f5605a8fd62b2d11bb05b82a19219afff5456ffe859412990dfabfaea5fabb",
+          "url": "https://github.com/liamcain/obsidian-periodic-notes/releases/download/1.0.0/main.js"
         },
         "manifest.json": {
           "sha256": "bda29323f75d3b3fcbda489335825b97fe4b574914d04635e9a7e67f2414049c",
-          "url": "https://github.com/liamcain/obsidian-periodic-notes/releases/download/1.0.0-beta.3/manifest.json"
+          "url": "https://github.com/liamcain/obsidian-periodic-notes/releases/download/1.0.0/manifest.json"
         },
         "styles.css": {
           "sha256": "ff2c00b5ee79d18d02e7a8f48cb2e6512c912f75f88ee053d94668c90a96b39a",
-          "url": "https://github.com/liamcain/obsidian-periodic-notes/releases/download/1.0.0-beta.3/styles.css"
+          "url": "https://github.com/liamcain/obsidian-periodic-notes/releases/download/1.0.0/styles.css"
         }
       },
-      "release_id": "64469477",
+      "release_id": "64061722",
       "repo": "liamcain/obsidian-periodic-notes",
-      "tag": "1.0.0-beta.3"
+      "tag": "1.0.0"
     },
     "quickadd": {
       "assets": {
@@ -189,25 +166,6 @@
       "release_id": "284127976",
       "repo": "chhoumann/quickadd",
       "tag": "2.11.0"
-    },
-    "templater-obsidian": {
-      "assets": {
-        "main.js": {
-          "sha256": "390be01a6e5b78ffb21b79dce296564c126972c32a4ef94deff81fe2c43ec5c6",
-          "url": "https://github.com/SilentVoid13/Templater/releases/download/2.18.1/main.js"
-        },
-        "manifest.json": {
-          "sha256": "bef3e826246535ad45c698f375e3f2d8adf082e97ef4389622e60e7c3da569ab",
-          "url": "https://github.com/SilentVoid13/Templater/releases/download/2.18.1/manifest.json"
-        },
-        "styles.css": {
-          "sha256": "f7d4ee5bd4ec1d032eda1f4e1da481e713c57af964ec1e55d31494f086068d1e",
-          "url": "https://github.com/SilentVoid13/Templater/releases/download/2.18.1/styles.css"
-        }
-      },
-      "release_id": "281154269",
-      "repo": "SilentVoid13/Templater",
-      "tag": "2.18.1"
     }
   },
   "schema_version": 1

@@ -5,14 +5,15 @@ All `make` commands below use `~/.dotfiles/Makefile`. Run from `~/.dotfiles`, or
 ## Routine Commands
 
 ```bash
-make setup       # Re-apply idempotent setup after config changes
-make update      # Update Homebrew and mise-managed packages
-make doctor      # Homebrew + mise diagnostics
-make status      # Summary of key tool versions
-make list        # Installed mise runtimes
-make mise        # Install runtimes from ~/.mise.toml
-make obsidian    # Apply pinned Obsidian plugin assets
-make obsidian-lock # Refresh pinned Obsidian plugin lock
+make setup              # Re-apply idempotent setup after config changes
+make update             # Update Homebrew and mise-managed packages
+make doctor             # Homebrew + mise diagnostics
+make status             # Summary of key tool versions
+make list               # Installed mise runtimes
+make mise               # Install runtimes from ~/.mise.toml
+make obsidian           # Setup Knowledge vault and apply pinned plugin assets
+make obsidian-lock      # Refresh pinned Obsidian plugin lock
+make obsidian-clean     # Remove unmanaged Obsidian plugin directories
 ```
 
 ## Runtime and Tooling Updates
@@ -63,6 +64,12 @@ make setup
 
 `make obsidian` installs community plugins from the pinned lock file
 `obsidian/community-plugin-lock.json` and verifies SHA-256 checksums before writing assets.
+It also creates a visible `~/Knowledge` alias (when available) and registers that path in Obsidian app config (`obsidian.json`) so it appears in the UI vault picker.
+It also enforces the conflict-free baseline by enabling core `templates` with
+`_templates` as the folder (`.obsidian/templates.json`), pruning overlapping
+community plugins (`templater-obsidian`, `omnisearch`) from
+`.obsidian/community-plugins.json`, and removing stale plugin directories for
+those pruned IDs.
 
 To update versions:
 
@@ -70,6 +77,13 @@ To update versions:
 make obsidian-lock
 # review obsidian/community-plugin-lock.json
 make obsidian
+```
+
+To explicitly remove plugin directories that are not present in
+`obsidian/community-plugin-lock.json`:
+
+```bash
+make obsidian-clean
 ```
 
 ## Brewfile Lifecycle

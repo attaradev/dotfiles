@@ -51,6 +51,7 @@ Keep this file aligned with `claude/.claude/CLAUDE.md` so Claude and Codex behav
 - Treat `~/.knowledge` as the execution memory system (`hub.md` is the entry note).
 - Keep tasks, lessons, and achievements current when relevant.
 - Use templates in `~/.knowledge/_templates` for structured notes.
+- Write notes as human-readable reports: summarize outcome first, include verification evidence, and capture achievements with clear impact.
 
 ## Core Principles
 

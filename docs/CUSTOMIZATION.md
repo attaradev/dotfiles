@@ -94,9 +94,10 @@ Notable defaults:
 Global Claude Code context/settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow.
 `claude/.claude/settings.json` includes Obsidian-oriented hooks (session start, pre-compact, session end, task completion, and note-write detection) backed by `scripts/claude-obsidian-hook.py`.
 Achievement candidates are intentionally low-noise: prefix Claude task-complete labels or Codex prompts with `achievement:`, `win:`, `impact:`, or `[achievement]` to capture only meaningful wins into `~/.knowledge/career/achievement-inbox.md`.
+Codex achievement capture is explicit-only: the marker must be in the latest user prompt, and duplicate candidates for the same source are ignored.
 Claude/Codex activity logs are local runtime artifacts (not tracked in git) and auto-create on first hook event.
 Codex CLI defaults/notifications are tracked at `codex/.codex/config.toml`, then symlinked to `~/.codex/config.toml` by stow.
-`codex/.codex/config.toml` uses Codex `notify` to call `scripts/claude-obsidian-hook.py codex-notify`, which appends turn-complete telemetry to Obsidian.
+`codex/.codex/config.toml` uses Codex `notify` to call `scripts/claude-obsidian-hook.py codex-notify`, which appends human-readable turn reports to Obsidian.
 Codex user behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in `~/.codex/config.toml`.
 `~/.codex/AGENTS.md` mirrors `claude/.claude/CLAUDE.md` so both agents follow the same workflow expectations.
 Public Obsidian scaffold files are tracked in `obsidian/.knowledge/` (hub, plugin note, templates). Personal vault content stays local in `~/.knowledge` and is not tracked in git.
@@ -134,6 +135,7 @@ make obsidian
 ```
 
 `make obsidian` is safe to rerun. It can repair a degraded workspace layout (for example, if Obsidian opens with empty tabs and no Files pane) by resetting to a `hub.md` + File Explorer default.
+It also creates a visible `~/Knowledge` alias (if available) and registers the vault in Obsidian app config so it shows in the UI picker.
 Reruns also skip re-downloading community plugins that are already installed.
 
 Skip community plugin installation for constrained environments with:

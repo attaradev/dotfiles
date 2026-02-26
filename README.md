@@ -102,28 +102,30 @@ For runtime policy and workflows, see [docs/RUNTIMES.md](docs/RUNTIMES.md).
 All `make` targets are defined in `~/.dotfiles/Makefile`. Run commands from `~/.dotfiles`, or run `make` with `-C ~/.dotfiles` from any directory.
 
 ```bash
-make install      # Full setup
-make setup        # Re-apply idempotent setup after pulling config changes
-make update       # Upgrade brew + mise-managed packages
-make doctor       # Health checks for Homebrew and mise
-make mise         # Install runtimes from ~/.mise.toml
+make install        # Full setup
+make setup          # Re-apply idempotent setup after pulling config changes
+make update         # Upgrade brew + mise-managed packages
+make doctor         # Health checks for Homebrew and mise
+make mise           # Install runtimes from ~/.mise.toml
 # Add/remove tools in ~/.mise.toml as needed, then rerun make mise
-make stow         # Apply dotfile symlinks with GNU Stow
-make agents       # Refresh Claude/Codex global config symlinks
-make obsidian     # Configure knowledge vault defaults + install plugins
-make obsidian-lock # Refresh pinned Obsidian plugin lock (review diff before applying)
-make gnupg        # Configure GnuPG and signing defaults
-make vscode       # Install VSCode extensions
-make backup       # Timestamped backup of key local config
-make backup-list  # Show backup files/directories from setup scripts
-make backup-clean # Prompt to delete backups (or CONFIRM=1)
-make check        # Local quality gate (shell/docs/custom checks)
-make smoke        # Mocked smoke checks for setup + make wrapper paths
-make dump         # Re-generate Brewfile from current system
-make cleanup      # Remove packages not listed in Brewfile
+make stow           # Apply dotfile symlinks with GNU Stow
+make agents         # Refresh Claude/Codex global config symlinks
+make obsidian       # Setup vault + create ~/Knowledge alias + register in Obsidian UI + plugins
+make obsidian-lock  # Refresh pinned Obsidian plugin lock (review diff before applying)
+make obsidian-clean # Remove unmanaged Obsidian plugin directories
+make gnupg          # Configure GnuPG and signing defaults
+make vscode         # Install VSCode extensions
+make backup         # Timestamped backup of key local config
+make backup-list    # Show backup files/directories from setup scripts
+make backup-clean   # Prompt to delete backups (or CONFIRM=1)
+make check          # Local quality gate (shell/docs/custom checks)
+make smoke          # Mocked smoke checks for setup + make wrapper paths
+make dump           # Re-generate Brewfile from current system
+make cleanup        # Remove packages not listed in Brewfile
 ```
 
 To update Obsidian community plugins safely: run `make obsidian-lock`, review `obsidian/community-plugin-lock.json`, then run `make obsidian`.
+To prune stale plugin directories not present in the lock file, run `make obsidian-clean`.
 
 ## Documentation
 

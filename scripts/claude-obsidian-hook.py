@@ -22,17 +22,23 @@ ACTIVITY_LOG_FILE = VAULT_DIR / "setup" / "claude-activity-log.md"
 CODEX_ACTIVITY_LOG_FILE = VAULT_DIR / "setup" / "codex-activity-log.md"
 DEFAULT_ACTIVITY_LOG = """# Claude Activity Log
 
-Auto-generated from Claude hooks. Use this as raw session telemetry, then
-promote meaningful outcomes into `tasks.md`, `learning/lessons.md`, and
+Auto-generated from Claude hooks as a human-readable session report stream.
+Promote meaningful outcomes into `tasks.md`, `learning/lessons.md`, and
 `career/achievement-log.md`.
+
+Entry format:
+- `YYYY-MM-DD HH:MM UTC — <Event> [session/thread]: <summary>`
 
 ## Entries
 """
 DEFAULT_CODEX_ACTIVITY_LOG = """# Codex Activity Log
 
-Auto-generated from Codex notifications. Use this as raw session telemetry, then
-promote meaningful outcomes into `tasks.md`, `learning/lessons.md`, and
+Auto-generated from Codex notifications as a human-readable turn report stream.
+Promote meaningful outcomes into `tasks.md`, `learning/lessons.md`, and
 `career/achievement-log.md`.
+
+Entry format:
+- `YYYY-MM-DD HH:MM UTC — <Event> [session/thread]: <summary>`
 
 ## Entries
 """
@@ -43,6 +49,8 @@ Codex notify events.
 Only intentionally marked wins are captured here (for example:
 `achievement: reduced build time by 42%`).
 Promote polished, evidence-backed entries into `career/achievement-log.md`.
+Entries are intentionally structured so they can be reviewed quickly and
+promoted with minimal rewriting.
 
 ## Entries
 """
@@ -134,8 +142,26 @@ def utc_now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def utc_now_label() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+
 def normalize_whitespace(value: str) -> str:
     return " ".join(value.split())
+
+
+def humanize_event(event: str) -> str:
+    cleaned = normalize_whitespace(event.replace("_", " ").replace("-", " ").strip())
+    if not cleaned:
+        return "Activity"
+    return cleaned[0].upper() + cleaned[1:]
+
+
+def short_identifier(value: str, limit: int = 14) -> str:
+    normalized = normalize_whitespace(value)
+    if len(normalized) <= limit:
+        return normalized
+    return normalized[: limit - 3] + "..."
 
 
 def short_path(path: Path) -> str:
@@ -188,13 +214,13 @@ def append_markdown_activity_entry(
     existing = read_text(path)
     preamble, entries = split_activity_log(existing, default_content)
 
-    entry_parts = [utc_now_iso(), f"event={event}"]
+    entry = f"- {utc_now_label()} — {humanize_event(event)}"
     if session_id:
-        entry_parts.append(f"session={session_id}")
+        entry += f" [{short_identifier(session_id)}]"
     if details:
-        entry_parts.append(normalize_whitespace(details))
+        entry += ": " + normalize_whitespace(details)
 
-    entries.append("- " + " | ".join(entry_parts))
+    entries.append(entry)
     entries = entries[-MAX_ACTIVITY_ENTRIES:]
 
     content = "\n".join(preamble + [""] + entries + [""])
@@ -336,11 +362,11 @@ def emit_session_start(payload: dict[str, Any]) -> None:
     if cwd:
         append_activity_entry(
             "session_start",
-            f"cwd={short_path(Path(cwd))}",
+            f"Started in {short_path(Path(cwd))}.",
             session_id,
         )
     else:
-        append_activity_entry("session_start", "session started", session_id)
+        append_activity_entry("session_start", "Session started.", session_id)
 
     missing = missing_required_files()
     if not VAULT_DIR.exists() or missing:
@@ -383,20 +409,21 @@ def emit_pre_compact() -> None:
 
 
 def emit_session_end(payload: dict[str, Any]) -> None:
-    append_activity_entry("session_end", "session ended", extract_session_id(payload))
+    append_activity_entry("session_end", "Session ended.", extract_session_id(payload))
 
     if not VAULT_DIR.exists():
         return
 
     print_json(
-        {
-            "systemMessage": (
-                "Before ending, update ~/.knowledge/tasks.md with progress and "
-                "~/.knowledge/learning/lessons.md with any new rules."
-            ),
-            "suppressOutput": True,
-        }
-    )
+            {
+                "systemMessage": (
+                    "Before ending, add a concise human-readable report to "
+                    "~/.knowledge/tasks.md (outcome, verification, follow-ups) and "
+                    "capture any new rules in ~/.knowledge/learning/lessons.md."
+                ),
+                "suppressOutput": True,
+            }
+        )
 
 
 def path_from_payload(payload: dict[str, Any]) -> Path | None:
@@ -455,9 +482,17 @@ def emit_post_tool_write_edit(payload: dict[str, Any]) -> None:
     tool_name = tool_name_from_payload(payload)
 
     if file_path:
-        append_activity_entry("file_edit", f"{tool_name} {short_path(file_path)}", session_id)
+        append_activity_entry(
+            "file_edit",
+            f"{tool_name} edited {short_path(file_path)}.",
+            session_id,
+        )
     else:
-        append_activity_entry("file_edit", f"{tool_name} (path unavailable)", session_id)
+        append_activity_entry(
+            "file_edit",
+            f"{tool_name} edited a file (path unavailable).",
+            session_id,
+        )
         return
 
     if not path_is_in_vault(file_path):
@@ -523,14 +558,50 @@ def extract_achievement_candidate_from_multiline(text: str) -> str | None:
     return None
 
 
-def append_achievement_candidate(candidate: str, session_id: str | None = None) -> None:
-    append_markdown_activity_entry(
-        ACHIEVEMENT_INBOX_FILE,
-        DEFAULT_ACHIEVEMENT_INBOX,
-        "candidate",
-        "outcome=" + candidate,
-        session_id,
-    )
+def latest_nonempty_message(messages: list[Any]) -> str:
+    for item in reversed(messages):
+        if isinstance(item, str) and item.strip():
+            return item.strip()
+    return ""
+
+
+def append_achievement_candidate(
+    candidate: str,
+    session_id: str | None = None,
+    source_label: str = "Claude task completed",
+) -> None:
+    ensure_markdown_log_exists(ACHIEVEMENT_INBOX_FILE, DEFAULT_ACHIEVEMENT_INBOX)
+    existing = read_text(ACHIEVEMENT_INBOX_FILE).rstrip()
+
+    if "## Entries" not in existing.splitlines():
+        if existing:
+            existing = existing + "\n\n## Entries"
+        else:
+            existing = DEFAULT_ACHIEVEMENT_INBOX.rstrip()
+
+    source = source_label
+    if session_id:
+        source += f" ({short_identifier(session_id, 18)})"
+
+    outcome_line = f"- Outcome: {candidate}"
+    source_line = f"- Source: {source}"
+    if outcome_line in existing and source_line in existing:
+        return
+
+    entry_lines = [
+        f"### {utc_now_label()} | Candidate Achievement",
+        outcome_line,
+        source_line,
+        "- Why this matters:",
+        "- Evidence:",
+        "- Promote to `career/achievement-log.md` after review.",
+    ]
+
+    content = existing + "\n\n" + "\n".join(entry_lines) + "\n"
+    try:
+        ACHIEVEMENT_INBOX_FILE.write_text(content, encoding="utf-8")
+    except OSError:
+        return
 
 
 def emit_task_completed(payload: dict[str, Any]) -> None:
@@ -538,13 +609,17 @@ def emit_task_completed(payload: dict[str, Any]) -> None:
     session_id = extract_session_id(payload)
     append_activity_entry(
         "task_completed",
-        task_label,
+        truncate(normalize_whitespace(task_label), 320),
         session_id,
     )
 
     candidate = extract_achievement_candidate(task_label)
     if candidate:
-        append_achievement_candidate(candidate, session_id)
+        append_achievement_candidate(
+            candidate,
+            session_id,
+            source_label="Claude task completed",
+        )
         print_json(
             {
                 "systemMessage": (
@@ -589,16 +664,15 @@ def extract_codex_assistant_message(payload: dict[str, Any]) -> str:
 def extract_codex_achievement_candidate(payload: dict[str, Any]) -> str | None:
     input_messages = payload.get("input-messages")
     if isinstance(input_messages, list):
-        for item in input_messages:
-            if not isinstance(item, str):
-                continue
-            candidate = extract_achievement_candidate_from_multiline(item.strip())
+        latest_message = latest_nonempty_message(input_messages)
+        if latest_message:
+            candidate = extract_achievement_candidate_from_multiline(latest_message)
             if candidate:
                 return candidate
 
-    assistant_message = extract_codex_assistant_message(payload)
-    if assistant_message:
-        candidate = extract_achievement_candidate_from_multiline(assistant_message)
+    user_message = extract_codex_string(payload, "user-message")
+    if user_message:
+        candidate = extract_achievement_candidate_from_multiline(user_message)
         if candidate:
             return candidate
 
@@ -613,17 +687,17 @@ def emit_codex_notify(payload: dict[str, Any]) -> None:
 
     cwd = extract_codex_string(payload, "cwd")
     if cwd:
-        details_parts.append(f"cwd={short_path(Path(cwd))}")
+        details_parts.append(f"Working directory: {short_path(Path(cwd))}.")
 
     user_messages = extract_codex_messages(payload)
     if user_messages:
-        details_parts.append("user=" + truncate(user_messages, 220))
+        details_parts.append("User asked: " + truncate(user_messages, 220) + ".")
 
     assistant_message = extract_codex_assistant_message(payload)
     if assistant_message:
-        details_parts.append("assistant=" + truncate(assistant_message, 220))
+        details_parts.append("Assistant replied: " + truncate(assistant_message, 220) + ".")
 
-    details = " | ".join(details_parts) if details_parts else "notification received"
+    details = " ".join(details_parts) if details_parts else "Notification received."
 
     append_codex_activity_entry(
         event_type.replace("-", "_"),
@@ -633,7 +707,11 @@ def emit_codex_notify(payload: dict[str, Any]) -> None:
 
     candidate = extract_codex_achievement_candidate(payload)
     if candidate:
-        append_achievement_candidate(candidate, thread_id)
+        append_achievement_candidate(
+            candidate,
+            thread_id,
+            source_label="Codex notify",
+        )
 
 
 def main() -> int:

@@ -550,19 +550,17 @@ verify_obsidian_setup() {
   if [[ "$DOTFILES_SETUP_OBSIDIAN_PLUGINS" == "1" ]]; then
     required_files+=(
       "$HOME/.knowledge/.obsidian/core-plugins.json"
-      "$HOME/.knowledge/.obsidian/community-plugins.json"
       "$HOME/.knowledge/.obsidian/templates.json"
+      "$HOME/.knowledge/.obsidian/community-plugins.json"
       "$HOME/.knowledge/.obsidian/plugins/auto-classifier/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/templater-obsidian/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/quickadd/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/dataview/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/metadata-menu/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/obsidian-tasks-plugin/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/periodic-notes/manifest.json"
+      "$HOME/.knowledge/.obsidian/plugins/quickadd/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/calendar/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/obsidian-kanban/manifest.json"
       "$HOME/.knowledge/.obsidian/plugins/obsidian-linter/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/omnisearch/manifest.json"
     )
   fi
 

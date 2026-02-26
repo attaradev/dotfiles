@@ -259,6 +259,12 @@ fi
 # Validate Obsidian setup mode that skips plugin downloads.
 OBSIDIAN_TEST_VAULT="$TMP_DIR/obsidian-vault"
 mkdir -p "$OBSIDIAN_TEST_VAULT"
+mkdir -p \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/quickadd" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/omnisearch" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/templater-obsidian"
+mkdir -p "$OBSIDIAN_TEST_VAULT/.obsidian"
+echo '{"folder":"_templates"}' > "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json"
 
 PATH="$MOCK_BIN:$PATH" \
 HOME="$TEST_HOME" \
@@ -266,16 +272,77 @@ OBSIDIAN_VAULT_DIR="$OBSIDIAN_TEST_VAULT" \
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
 bash ./scripts/setup-obsidian.sh
 
+OBSIDIAN_APP_CONFIG_FILE="$TEST_HOME/Library/Application Support/obsidian/obsidian.json"
+OBSIDIAN_TEST_VAULT_REAL="$(cd "$OBSIDIAN_TEST_VAULT" && pwd -P)"
+OBSIDIAN_VISIBLE_VAULT_ALIAS="$TEST_HOME/Knowledge"
+
+test -f "$OBSIDIAN_TEST_VAULT/hub.md"
+test -f "$OBSIDIAN_TEST_VAULT/tasks.md"
+test -f "$OBSIDIAN_TEST_VAULT/setup/obsidian-plugins.md"
+test -f "$OBSIDIAN_APP_CONFIG_FILE"
+test -L "$OBSIDIAN_VISIBLE_VAULT_ALIAS"
+jq -e --arg path "$OBSIDIAN_VISIBLE_VAULT_ALIAS" \
+  '[.vaults // {} | to_entries[]? | select((.value.path // "") == $path)] | length == 1' \
+  "$OBSIDIAN_APP_CONFIG_FILE" >/dev/null
 test -f "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json"
 test -f "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"
+jq -e 'if type == "object" then .templates == true else index("templates") != null end' \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/core-plugins.json" >/dev/null
+jq -e '.folder == "_templates"' \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" >/dev/null
+jq -e 'index("templater-obsidian") | not' \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" >/dev/null
+jq -e 'index("quickadd") != null' \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" >/dev/null
+jq -e 'index("omnisearch") | not' \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" >/dev/null
+test ! -e "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/templater-obsidian"
+test -e "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/quickadd"
+test ! -e "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/omnisearch"
+
+# Validate symlinked vault paths are converted to local directories.
+OBSIDIAN_SYMLINK_TARGET="$TMP_DIR/obsidian-symlink-target"
+OBSIDIAN_SYMLINK_VAULT="$TMP_DIR/obsidian-vault-symlink"
+mkdir -p "$OBSIDIAN_SYMLINK_TARGET"
+ln -s "$OBSIDIAN_SYMLINK_TARGET" "$OBSIDIAN_SYMLINK_VAULT"
+
+PATH="$MOCK_BIN:$PATH" \
+HOME="$TEST_HOME" \
+OBSIDIAN_VAULT_DIR="$OBSIDIAN_SYMLINK_VAULT" \
+DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
+bash ./scripts/setup-obsidian.sh
+
+test ! -L "$OBSIDIAN_SYMLINK_VAULT"
+test -d "$OBSIDIAN_SYMLINK_VAULT"
+test -f "$OBSIDIAN_SYMLINK_VAULT/hub.md"
+OBSIDIAN_SYMLINK_VAULT_REAL="$(cd "$OBSIDIAN_SYMLINK_VAULT" && pwd -P)"
+jq -e --arg path "$OBSIDIAN_SYMLINK_VAULT_REAL" \
+  '[.vaults // {} | to_entries[]? | select((.value.path // "") == $path)] | length == 1' \
+  "$OBSIDIAN_APP_CONFIG_FILE" >/dev/null
+if ! compgen -G "$OBSIDIAN_SYMLINK_VAULT.backup.*" >/dev/null; then
+  echo "❌ Expected backup when converting symlinked Obsidian vault path"
+  exit 1
+fi
+
+mkdir -p "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/unmanaged-plugin"
+
+PATH="$MOCK_BIN:$PATH" \
+HOME="$TEST_HOME" \
+OBSIDIAN_VAULT_DIR="$OBSIDIAN_TEST_VAULT" \
+make -s obsidian-clean
+
+test ! -e "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/unmanaged-plugin"
+test -e "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview"
+test -e "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/quickadd"
 
 OBS_STATE_BEFORE="$TMP_DIR/obs-state-before.txt"
 OBS_STATE_AFTER="$TMP_DIR/obs-state-after.txt"
 
 for file in \
+  "$OBSIDIAN_APP_CONFIG_FILE" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/core-plugins.json" \
-  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"; do
   file_state "$file" >> "$OBS_STATE_BEFORE"
@@ -290,9 +357,10 @@ DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
 bash ./scripts/setup-obsidian.sh
 
 for file in \
+  "$OBSIDIAN_APP_CONFIG_FILE" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/core-plugins.json" \
-  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"; do
   file_state "$file" >> "$OBS_STATE_AFTER"
@@ -301,6 +369,68 @@ done
 if ! cmp -s "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER"; then
   echo "❌ Obsidian setup is not idempotent; file metadata changed on second run"
   diff -u "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER" || true
+  exit 1
+fi
+
+# Validate human-readable hook output for activity reports and achievements.
+HOOK_VAULT="$TMP_DIR/hook-vault"
+mkdir -p "$HOOK_VAULT"
+
+printf '{"task":"achievement: Wrote a clearer deployment report for teammates","session_id":"session-1234567890"}' \
+  | OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py task-completed >/dev/null
+
+test -f "$HOOK_VAULT/setup/claude-activity-log.md"
+test -f "$HOOK_VAULT/career/achievement-inbox.md"
+rg -q "Task completed" "$HOOK_VAULT/setup/claude-activity-log.md"
+rg -q "^### .*\\| Candidate Achievement$" "$HOOK_VAULT/career/achievement-inbox.md"
+rg -q "^- Outcome: Wrote a clearer deployment report for teammates$" "$HOOK_VAULT/career/achievement-inbox.md"
+rg -q "^- Source: Claude task completed" "$HOOK_VAULT/career/achievement-inbox.md"
+
+if rg -q "event=" "$HOOK_VAULT/setup/claude-activity-log.md"; then
+  echo "❌ Claude activity log still contains machine-style event fields"
+  cat "$HOOK_VAULT/setup/claude-activity-log.md"
+  exit 1
+fi
+
+codex_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
+  "type":"agent-turn-complete",
+  "thread-id":"thread-abcdef1234567890",
+  "cwd":$cwd,
+  "input-messages":["impact: Reduced CI rerun rate with clearer reports"],
+  "last-assistant-message":"Added a concise summary section and evidence bullets."
+}')"
+
+OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
+
+test -f "$HOOK_VAULT/setup/codex-activity-log.md"
+rg -q "Agent turn complete" "$HOOK_VAULT/setup/codex-activity-log.md"
+rg -q "User asked:" "$HOOK_VAULT/setup/codex-activity-log.md"
+rg -q "Assistant replied:" "$HOOK_VAULT/setup/codex-activity-log.md"
+rg -q "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md"
+
+# Ensure achievements are not captured from every prompt:
+# only latest explicit marker is captured and duplicates are suppressed.
+codex_non_achievement_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
+  "type":"agent-turn-complete",
+  "thread-id":"thread-abcdef1234567890",
+  "cwd":$cwd,
+  "input-messages":["achievement: old marker from previous turn","plain follow-up question"],
+  "last-assistant-message":"No achievement marker here."
+}')"
+
+OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_non_achievement_payload" >/dev/null
+OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
+
+codex_achievement_count="$(rg -c "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md")"
+if [[ "$codex_achievement_count" != "1" ]]; then
+  echo "❌ Codex achievement capture should be explicit and de-duplicated; expected 1 entry, got $codex_achievement_count"
+  cat "$HOOK_VAULT/career/achievement-inbox.md"
+  exit 1
+fi
+
+if rg -q "user=|assistant=|event=" "$HOOK_VAULT/setup/codex-activity-log.md"; then
+  echo "❌ Codex activity log still contains machine-style telemetry fields"
+  cat "$HOOK_VAULT/setup/codex-activity-log.md"
   exit 1
 fi
 

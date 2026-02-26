@@ -19,7 +19,6 @@ require_cmd shasum
 
 plugins=(
   "auto-classifier|HyeonseoNam/auto-classifier"
-  "templater-obsidian|SilentVoid13/Templater"
   "quickadd|chhoumann/quickadd"
   "dataview|blacksmithgu/obsidian-dataview"
   "metadata-menu|mdelobelle/metadatamenu"
@@ -28,7 +27,6 @@ plugins=(
   "calendar|liamcain/obsidian-calendar-plugin"
   "obsidian-kanban|mgmeyers/obsidian-kanban"
   "obsidian-linter|platers/obsidian-linter"
-  "omnisearch|scambier/obsidian-omnisearch"
 )
 
 curl_common=(
@@ -88,6 +86,33 @@ curl_fetch() {
   fi
 }
 
+select_release_json() {
+  local repo=$1
+  local releases_json release_json
+
+  releases_json="$(curl_fetch "https://api.github.com/repos/$repo/releases?per_page=100")"
+  release_json="$(printf '%s' "$releases_json" | jq -c '
+    map(select(.draft | not)) as $all
+    | (
+        $all
+        | map(select((.tag_name // "") | test("(?i)(alpha|beta|rc)") | not))
+        | first
+      )
+      // (
+        $all
+        | map(select(.prerelease | not))
+        | first
+      )
+      // ($all | first)
+  ')"
+
+  if [[ -z "$release_json" || "$release_json" == "null" ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "$release_json"
+}
+
 download_to_file() {
   local url=$1
   local output=$2
@@ -122,7 +147,10 @@ for spec in "${plugins[@]}"; do
   IFS='|' read -r plugin_id repo <<< "$spec"
   echo "🔒 Resolving lock entry for $plugin_id ($repo)..."
 
-  release_json="$(curl_fetch "https://api.github.com/repos/$repo/releases/latest")"
+  if ! release_json="$(select_release_json "$repo")"; then
+    echo "❌ Failed to resolve release metadata for $plugin_id ($repo)"
+    exit 1
+  fi
 
   tag_name="$(printf '%s' "$release_json" | jq -r '.tag_name // empty')"
   release_id="$(printf '%s' "$release_json" | jq -r '.id // empty')"

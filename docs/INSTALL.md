@@ -139,6 +139,7 @@ brew list --cask obsidian
 test -e ~/.codex/config.toml
 test -e ~/.codex/AGENTS.md
 test -e ~/.knowledge/hub.md
+test -L ~/Knowledge
 test -e ~/.knowledge/setup/obsidian-plugins.md
 test -e ~/.knowledge/tasks.md
 test -e ~/.knowledge/projects/projects.md
