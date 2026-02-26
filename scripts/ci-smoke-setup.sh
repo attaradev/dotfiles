@@ -259,4 +259,39 @@ bash ./scripts/setup-obsidian.sh
 test -f "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json"
 test -f "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"
 
+OBS_STATE_BEFORE="$TMP_DIR/obs-state-before.txt"
+OBS_STATE_AFTER="$TMP_DIR/obs-state-after.txt"
+
+for file in \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/core-plugins.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"; do
+  stat -f '%N|%i|%m' "$file" >> "$OBS_STATE_BEFORE"
+done
+
+sleep 1
+
+PATH="$MOCK_BIN:$PATH" \
+HOME="$TEST_HOME" \
+OBSIDIAN_VAULT_DIR="$OBSIDIAN_TEST_VAULT" \
+DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
+bash ./scripts/setup-obsidian.sh
+
+for file in \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/core-plugins.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/community-plugins.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json" \
+  "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"; do
+  stat -f '%N|%i|%m' "$file" >> "$OBS_STATE_AFTER"
+done
+
+if ! cmp -s "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER"; then
+  echo "❌ Obsidian setup is not idempotent; file metadata changed on second run"
+  diff -u "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER" || true
+  exit 1
+fi
+
 echo "✓ setup.sh smoke test passed with mocked toolchain"

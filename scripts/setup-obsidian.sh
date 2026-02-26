@@ -56,6 +56,22 @@ copy_if_missing() {
   fi
 }
 
+replace_if_changed() {
+  local tmp_file=$1
+  local target=$2
+
+  detach_if_symlink "$target"
+  mkdir -p "$(dirname "$target")"
+
+  if [[ -f "$target" ]] && cmp -s "$tmp_file" "$target"; then
+    rm -f "$tmp_file"
+    return 1
+  fi
+
+  mv "$tmp_file" "$target"
+  return 0
+}
+
 detach_if_symlink() {
   local file=$1
   local tmp_file
@@ -439,7 +455,7 @@ write_array_union() {
     jq -n --argjson add "$values_json" '$add | unique' >"$tmp_file"
   fi
 
-  mv "$tmp_file" "$file"
+  replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_core_plugins() {
@@ -465,7 +481,7 @@ configure_core_plugins() {
       'reduce $required[] as $id ({}; .[$id] = true)' >"$tmp_file"
   fi
 
-  mv "$tmp_file" "$file"
+  replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_templates_plugin() {
@@ -479,7 +495,7 @@ configure_templates_plugin() {
     jq -n '{"folder":"_templates"}' >"$tmp_file"
   fi
 
-  mv "$tmp_file" "$file"
+  replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_dataview_plugin() {
@@ -494,7 +510,7 @@ configure_dataview_plugin() {
     jq -n '{"enableDataviewJs": true, "enableInlineDataviewJs": true}' >"$tmp_file"
   fi
 
-  mv "$tmp_file" "$file"
+  replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_metadata_menu_plugin() {
@@ -509,7 +525,7 @@ configure_metadata_menu_plugin() {
     jq -n '{"disableDataviewPrompt": true}' >"$tmp_file"
   fi
 
-  mv "$tmp_file" "$file"
+  replace_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_workspace_defaults() {
@@ -745,14 +761,46 @@ install_plugin_assets_from_zip() {
   fi
 }
 
+plugin_release_up_to_date() {
+  local plugin_dir=$1
+  local release_id=$2
+  local styles_required=$3
+  local state_file="$plugin_dir/.dotfiles-release-id"
+  local installed_release
+
+  [[ -n "$release_id" ]] || return 1
+  [[ -f "$state_file" ]] || return 1
+  [[ -f "$plugin_dir/manifest.json" && -f "$plugin_dir/main.js" ]] || return 1
+
+  if [[ "$styles_required" == "1" && ! -f "$plugin_dir/styles.css" ]]; then
+    return 1
+  fi
+
+  installed_release="$(cat "$state_file" 2>/dev/null || true)"
+  [[ "$installed_release" == "$release_id" ]]
+}
+
+record_plugin_release_state() {
+  local plugin_dir=$1
+  local release_id=$2
+  local tmp_file
+
+  [[ -n "$release_id" ]] || return 0
+
+  tmp_file="$(mktemp)"
+  printf '%s\n' "$release_id" >"$tmp_file"
+  replace_if_changed "$tmp_file" "$plugin_dir/.dotfiles-release-id" >/dev/null || true
+}
+
 install_community_plugin() {
   local plugin_id=$1
   local repo=$2
   local plugin_dir="$PLUGINS_DIR/$plugin_id"
   local release_json
-  local tag_name manifest_url main_url styles_url zip_url
+  local tag_name manifest_url main_url styles_url zip_url release_id styles_required
 
   release_json="$(fetch_latest_release_json "$repo")"
+  release_id="$(printf '%s' "$release_json" | jq -r '.id // empty')"
   tag_name="$(printf '%s' "$release_json" | jq -r '.tag_name // empty')"
   manifest_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="manifest.json") | .browser_download_url' | head -n1)"
   main_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="main.js") | .browser_download_url' | head -n1)"
@@ -761,22 +809,34 @@ install_community_plugin() {
 
   mkdir -p "$plugin_dir"
 
+  styles_required=0
+  [[ -n "$styles_url" ]] && styles_required=1
+
   if [[ -z "$manifest_url" && -n "$tag_name" ]]; then
     manifest_url="https://raw.githubusercontent.com/$repo/$tag_name/manifest.json"
   fi
   if [[ -z "$main_url" && -n "$tag_name" ]]; then
     main_url="https://raw.githubusercontent.com/$repo/$tag_name/main.js"
   fi
+
+  if plugin_release_up_to_date "$plugin_dir" "$release_id" "$styles_required"; then
+    print_info "Plugin already up to date: $plugin_id"
+    return 0
+  fi
+
   if [[ -n "$manifest_url" && -n "$main_url" ]]; then
     if install_plugin_assets_from_urls "$plugin_dir" "$manifest_url" "$main_url" "$styles_url"; then
+      record_plugin_release_state "$plugin_dir" "$release_id"
       return 0
     fi
     print_warning "Direct asset download failed for $plugin_id; trying zip asset fallback."
   fi
 
   if [[ -n "$zip_url" ]]; then
-    install_plugin_assets_from_zip "$plugin_dir" "$zip_url"
-    return 0
+    if install_plugin_assets_from_zip "$plugin_dir" "$zip_url"; then
+      record_plugin_release_state "$plugin_dir" "$release_id"
+      return 0
+    fi
   fi
 
   print_warning "Could not resolve downloadable assets for plugin: $plugin_id ($repo)"
@@ -786,15 +846,24 @@ install_community_plugin() {
 install_community_plugins() {
   local plugin_id repo
   local failures=()
-  local install_downloads
+  local install_downloads update_plugins
 
   install_downloads="$(normalize_bool "${DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS:-0}")"
+  update_plugins="$(normalize_bool "${DOTFILES_OBSIDIAN_UPDATE_PLUGINS:-0}")"
   if [[ "$install_downloads" == "1" ]]; then
     print_info "Skipping community plugin downloads (DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1)"
     return 0
   fi
+  if [[ "$update_plugins" == "1" ]]; then
+    print_info "Checking for community plugin updates (DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1)"
+  fi
 
   for plugin_id in "${COMMUNITY_PLUGINS[@]}"; do
+    if [[ "$update_plugins" != "1" ]] && [[ -f "$PLUGINS_DIR/$plugin_id/manifest.json" && -f "$PLUGINS_DIR/$plugin_id/main.js" ]]; then
+      print_info "Plugin already installed: $plugin_id (set DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1 to check for updates)"
+      continue
+    fi
+
     if ! repo="$(community_plugin_repo "$plugin_id")"; then
       print_warning "No repository mapping found for plugin: $plugin_id"
       failures+=("$plugin_id")

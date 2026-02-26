@@ -134,6 +134,7 @@ make obsidian
 ```
 
 `make obsidian` is safe to rerun. It can repair a degraded workspace layout (for example, if Obsidian opens with empty tabs and no Files pane) by resetting to a `hub.md` + File Explorer default.
+Reruns also skip re-downloading community plugins that are already installed.
 
 Skip community plugin installation for constrained environments with:
 
@@ -145,6 +146,12 @@ Skip community plugin asset downloads while preserving plugin JSON settings with
 
 ```bash
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/setup-obsidian.sh
+```
+
+Force plugin update checks and asset refreshes with:
+
+```bash
+DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1 make obsidian
 ```
 
 If plugin install requests are rate-limited by GitHub API, run:

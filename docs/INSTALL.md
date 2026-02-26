@@ -85,6 +85,13 @@ Skip community plugin asset downloads while still writing plugin enablement JSON
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/setup-obsidian.sh
 ```
 
+By default, already installed community plugins are not re-downloaded on reruns.
+To force a plugin update check and refresh assets:
+
+```bash
+DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1 make obsidian
+```
+
 If plugin downloads hit GitHub API rate limits, rerun with:
 
 ```bash
