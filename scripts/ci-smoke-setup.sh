@@ -35,6 +35,28 @@ file_state() {
   fi
 }
 
+search_q() {
+  local pattern="$1"
+  local file="$2"
+
+  if command -v rg >/dev/null 2>&1; then
+    rg -q -- "$pattern" "$file"
+  else
+    grep -Eq -- "$pattern" "$file"
+  fi
+}
+
+search_count() {
+  local pattern="$1"
+  local file="$2"
+
+  if command -v rg >/dev/null 2>&1; then
+    rg -c -- "$pattern" "$file" || true
+  else
+    grep -Ec -- "$pattern" "$file" || true
+  fi
+}
+
 write_mock xcode-select <<'EOF'
 #!/usr/bin/env bash
 if [[ "${1:-}" == "-p" ]]; then
@@ -386,12 +408,12 @@ printf '{"task":"achievement: Wrote a clearer deployment report for teammates","
 
 test -f "$HOOK_VAULT/setup/claude-activity-log.md"
 test -f "$HOOK_VAULT/career/achievement-inbox.md"
-rg -q "Task completed" "$HOOK_VAULT/setup/claude-activity-log.md"
-rg -q "^### .*\\| Candidate Achievement$" "$HOOK_VAULT/career/achievement-inbox.md"
-rg -q "^- Outcome: Wrote a clearer deployment report for teammates$" "$HOOK_VAULT/career/achievement-inbox.md"
-rg -q "^- Source: Claude task completed" "$HOOK_VAULT/career/achievement-inbox.md"
+search_q "Task completed" "$HOOK_VAULT/setup/claude-activity-log.md"
+search_q "^### .*\\| Candidate Achievement$" "$HOOK_VAULT/career/achievement-inbox.md"
+search_q "^- Outcome: Wrote a clearer deployment report for teammates$" "$HOOK_VAULT/career/achievement-inbox.md"
+search_q "^- Source: Claude task completed" "$HOOK_VAULT/career/achievement-inbox.md"
 
-if rg -q "event=" "$HOOK_VAULT/setup/claude-activity-log.md"; then
+if search_q "event=" "$HOOK_VAULT/setup/claude-activity-log.md"; then
   echo "❌ Claude activity log still contains machine-style event fields"
   cat "$HOOK_VAULT/setup/claude-activity-log.md"
   exit 1
@@ -408,10 +430,10 @@ codex_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
 OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
 
 test -f "$HOOK_VAULT/setup/codex-activity-log.md"
-rg -q "Agent turn complete" "$HOOK_VAULT/setup/codex-activity-log.md"
-rg -q "User asked:" "$HOOK_VAULT/setup/codex-activity-log.md"
-rg -q "Assistant replied:" "$HOOK_VAULT/setup/codex-activity-log.md"
-rg -q "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md"
+search_q "Agent turn complete" "$HOOK_VAULT/setup/codex-activity-log.md"
+search_q "User asked:" "$HOOK_VAULT/setup/codex-activity-log.md"
+search_q "Assistant replied:" "$HOOK_VAULT/setup/codex-activity-log.md"
+search_q "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md"
 
 # Ensure achievements are not captured from every prompt:
 # only latest explicit marker is captured and duplicates are suppressed.
@@ -426,14 +448,14 @@ codex_non_achievement_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
 OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_non_achievement_payload" >/dev/null
 OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
 
-codex_achievement_count="$(rg -c "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md")"
+codex_achievement_count="$(search_count "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md")"
 if [[ "$codex_achievement_count" != "1" ]]; then
   echo "❌ Codex achievement capture should be explicit and de-duplicated; expected 1 entry, got $codex_achievement_count"
   cat "$HOOK_VAULT/career/achievement-inbox.md"
   exit 1
 fi
 
-if rg -q "user=|assistant=|event=" "$HOOK_VAULT/setup/codex-activity-log.md"; then
+if search_q "user=|assistant=|event=" "$HOOK_VAULT/setup/codex-activity-log.md"; then
   echo "❌ Codex activity log still contains machine-style telemetry fields"
   cat "$HOOK_VAULT/setup/codex-activity-log.md"
   exit 1
