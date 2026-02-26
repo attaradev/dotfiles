@@ -24,6 +24,16 @@ write_mock() {
   chmod +x "$MOCK_BIN/$name"
 }
 
+file_state() {
+  local file="$1"
+
+  if stat --format '%n|%i|%Y' "$file" >/dev/null 2>&1; then
+    stat --format '%n|%i|%Y' "$file"
+  else
+    stat -f '%N|%i|%m' "$file"
+  fi
+}
+
 write_mock xcode-select <<'EOF'
 #!/usr/bin/env bash
 if [[ "${1:-}" == "-p" ]]; then
@@ -268,7 +278,7 @@ for file in \
   "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"; do
-  stat -f '%N|%i|%m' "$file" >> "$OBS_STATE_BEFORE"
+  file_state "$file" >> "$OBS_STATE_BEFORE"
 done
 
 sleep 1
@@ -285,7 +295,7 @@ for file in \
   "$OBSIDIAN_TEST_VAULT/.obsidian/templates.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/dataview/data.json" \
   "$OBSIDIAN_TEST_VAULT/.obsidian/plugins/metadata-menu/data.json"; do
-  stat -f '%N|%i|%m' "$file" >> "$OBS_STATE_AFTER"
+  file_state "$file" >> "$OBS_STATE_AFTER"
 done
 
 if ! cmp -s "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER"; then
