@@ -148,17 +148,22 @@ Skip community plugin asset downloads while preserving plugin JSON settings with
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/setup-obsidian.sh
 ```
 
-Force plugin update checks and asset refreshes with:
+Re-check and re-apply versions pinned in `obsidian/community-plugin-lock.json` with:
 
 ```bash
 DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1 make obsidian
 ```
 
-If plugin install requests are rate-limited by GitHub API, run:
+Refresh plugin versions safely by regenerating the lock file, reviewing diffs, then applying:
 
 ```bash
-GITHUB_TOKEN=<token> make obsidian
+make obsidian-lock
+# review obsidian/community-plugin-lock.json
+make obsidian
 ```
+
+If lock refresh hits GitHub API limits, set `GITHUB_TOKEN_FILE` to a local file
+containing a token before running `make obsidian-lock`.
 
 ## Add a New Stow Package
 

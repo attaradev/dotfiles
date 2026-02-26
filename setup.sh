@@ -4,7 +4,7 @@
 # Main Setup Script for macOS Development Environment
 # ============================================
 # This script orchestrates the setup of:
-# - Homebrew packages and applications (via Brewfile)
+# - Homebrew installation + packages and applications (via Brewfile)
 # - mise for version management (Node, Python, Ruby, etc.)
 # - GNU Stow for dotfile symlink management
 # - GnuPG (GPG) for secure communications and commit signing
@@ -145,8 +145,7 @@ DEFAULT_GIT_SIGNINGKEY="${DEFAULT_GIT_SIGNINGKEY:-0x8C47F9FE2344DB2C}"
 
 load_optional_cask_env() {
   if [[ -f "$OPTIONAL_CASK_ENV_FILE" ]]; then
-    # shellcheck disable=SC1090
-    source "$OPTIONAL_CASK_ENV_FILE"
+    load_optional_cask_env_file "$OPTIONAL_CASK_ENV_FILE"
     print_info "Loaded optional cask preferences from $OPTIONAL_CASK_ENV_FILE"
   fi
 }
@@ -172,13 +171,59 @@ write_optional_cask_env() {
 
   if [[ -f "$OPTIONAL_CASK_ENV_FILE" ]] && cmp -s "$tmp_file" "$OPTIONAL_CASK_ENV_FILE"; then
     rm -f "$tmp_file"
+    chmod 600 "$OPTIONAL_CASK_ENV_FILE" 2>/dev/null || true
     print_info "Optional cask preferences unchanged at $OPTIONAL_CASK_ENV_FILE"
     return
   fi
 
   mv "$tmp_file" "$OPTIONAL_CASK_ENV_FILE"
+  chmod 600 "$OPTIONAL_CASK_ENV_FILE" 2>/dev/null || true
 
   print_success "Saved optional cask preferences to $OPTIONAL_CASK_ENV_FILE"
+}
+
+install_homebrew() {
+  local installer_url installer_script
+  installer_url="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+  installer_script="$(mktemp)"
+
+  if ! command -v curl >/dev/null 2>&1; then
+    print_error "curl is required to install Homebrew automatically."
+    rm -f "$installer_script"
+    exit 1
+  fi
+
+  print_info "Homebrew not found. Downloading official installer..."
+  if ! curl --fail --silent --show-error --location "$installer_url" --output "$installer_script"; then
+    print_error "Failed to download Homebrew installer from $installer_url"
+    rm -f "$installer_script"
+    exit 1
+  fi
+
+  chmod 700 "$installer_script"
+
+  print_info "Running Homebrew installer..."
+  if [[ "$DOTFILES_NONINTERACTIVE" == "1" ]]; then
+    NONINTERACTIVE=1 CI=1 /bin/bash "$installer_script"
+  else
+    /bin/bash "$installer_script"
+  fi
+
+  rm -f "$installer_script"
+
+  if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    print_error "Homebrew installer completed, but 'brew' is still unavailable in PATH."
+    print_info "Install Homebrew manually from https://brew.sh/ and rerun setup."
+    exit 1
+  fi
+
+  print_success "Homebrew installed successfully ($(brew --version | head -n 1))"
 }
 
 # ============================================
@@ -293,18 +338,18 @@ cd "$DOTFILES_DIR"
 
 print_header "Step 1: Homebrew Installation"
 
+if ! command -v brew &> /dev/null; then
+  if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
+
 if command -v brew &> /dev/null; then
   print_success "Homebrew is already installed ($(brew --version | head -n 1))"
 else
-  print_info "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  # Add Homebrew to PATH for Apple Silicon Macs
-  if [[ -f "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  fi
-
-  print_success "Homebrew installed successfully"
+  install_homebrew
 fi
 
 # ============================================

@@ -7,6 +7,7 @@ OBSIDIAN_CONFIG_DIR="$VAULT_DIR/.obsidian"
 PLUGINS_DIR="$OBSIDIAN_CONFIG_DIR/plugins"
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBLIC_VAULT_SOURCE_DIR="$DOTFILES_DIR/obsidian/.knowledge"
+PLUGIN_LOCK_FILE="${DOTFILES_OBSIDIAN_PLUGIN_LOCK_FILE:-$DOTFILES_DIR/obsidian/community-plugin-lock.json}"
 
 normalize_bool() {
   local raw
@@ -417,26 +418,6 @@ require_cmd() {
   fi
 }
 
-community_plugin_repo() {
-  local plugin_id=$1
-  case "$plugin_id" in
-    auto-classifier) echo "HyeonseoNam/auto-classifier" ;;
-    templater-obsidian) echo "SilentVoid13/Templater" ;;
-    quickadd) echo "chhoumann/quickadd" ;;
-    dataview) echo "blacksmithgu/obsidian-dataview" ;;
-    metadata-menu) echo "mdelobelle/metadatamenu" ;;
-    obsidian-tasks-plugin) echo "obsidian-tasks-group/obsidian-tasks" ;;
-    periodic-notes) echo "liamcain/obsidian-periodic-notes" ;;
-    calendar) echo "liamcain/obsidian-calendar-plugin" ;;
-    obsidian-kanban) echo "mgmeyers/obsidian-kanban" ;;
-    obsidian-linter) echo "platers/obsidian-linter" ;;
-    omnisearch) echo "scambier/obsidian-omnisearch" ;;
-    *)
-      return 1
-      ;;
-  esac
-}
-
 write_array_union() {
   local file=$1
   shift
@@ -698,77 +679,67 @@ download_with_retry() {
   curl "${curl_args[@]}" "$url" --output "$output"
 }
 
-fetch_latest_release_json() {
-  local repo=$1
-  local curl_args=(
-    --fail
-    --silent
-    --show-error
-    --location
-    --retry 3
-    --retry-delay 1
-    --retry-all-errors
-  )
-
-  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    curl_args+=(--header "Authorization: Bearer ${GITHUB_TOKEN}")
-  fi
-
-  curl "${curl_args[@]}" "https://api.github.com/repos/$repo/releases/latest"
-}
-
-install_plugin_assets_from_urls() {
-  local plugin_dir=$1
-  local manifest_url=$2
-  local main_url=$3
-  local styles_url=$4
-
-  download_with_retry "$manifest_url" "$plugin_dir/manifest.json"
-  download_with_retry "$main_url" "$plugin_dir/main.js"
-  if [[ -n "$styles_url" ]]; then
-    if ! download_with_retry "$styles_url" "$plugin_dir/styles.css"; then
-      print_warning "styles.css not downloaded for $(basename "$plugin_dir"); continuing without it."
-    fi
-  fi
-}
-
-install_plugin_assets_from_zip() {
-  local plugin_dir=$1
-  local zip_url=$2
-  local tmp_dir zip_path
-  local manifest_src main_src styles_src
-
-  tmp_dir="$(mktemp -d)"
-  zip_path="$tmp_dir/plugin.zip"
-  trap 'rm -rf "$tmp_dir"' RETURN
-
-  download_with_retry "$zip_url" "$zip_path"
-  unzip -q -o "$zip_path" -d "$tmp_dir/unpacked"
-
-  manifest_src="$(find "$tmp_dir/unpacked" -type f -name manifest.json | head -n1 || true)"
-  main_src="$(find "$tmp_dir/unpacked" -type f -name main.js | head -n1 || true)"
-  styles_src="$(find "$tmp_dir/unpacked" -type f -name styles.css | head -n1 || true)"
-
-  if [[ -z "$manifest_src" || -z "$main_src" ]]; then
-    print_warning "Zip asset missing manifest.json or main.js in $zip_url"
+ensure_plugin_lock_file() {
+  if [[ ! -f "$PLUGIN_LOCK_FILE" ]]; then
+    echo "❌ Missing Obsidian plugin lock file: $PLUGIN_LOCK_FILE"
     return 1
   fi
 
-  cp "$manifest_src" "$plugin_dir/manifest.json"
-  cp "$main_src" "$plugin_dir/main.js"
-  if [[ -n "$styles_src" ]]; then
-    cp "$styles_src" "$plugin_dir/styles.css"
+  if ! jq -e '.schema_version == 1 and (.plugins | type == "object")' "$PLUGIN_LOCK_FILE" >/dev/null 2>&1; then
+    echo "❌ Invalid Obsidian plugin lock file format: $PLUGIN_LOCK_FILE"
+    return 1
   fi
+}
+
+normalize_sha256() {
+  local value
+  value="$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$value" =~ ^[0-9a-f]{64}$ ]]; then
+    printf '%s\n' "$value"
+  fi
+}
+
+sha256_file() {
+  shasum -a 256 "$1" | awk '{print tolower($1)}'
+}
+
+download_verified_asset() {
+  local url=$1
+  local expected_sha=$2
+  local output=$3
+  local tmp_file actual_sha normalized_expected
+
+  normalized_expected="$(normalize_sha256 "$expected_sha")"
+  if [[ -z "$normalized_expected" ]]; then
+    print_warning "Invalid checksum for $url"
+    return 1
+  fi
+
+  tmp_file="$(mktemp)"
+  if ! download_with_retry "$url" "$tmp_file"; then
+    rm -f "$tmp_file"
+    return 1
+  fi
+
+  actual_sha="$(sha256_file "$tmp_file")"
+  if [[ "$actual_sha" != "$normalized_expected" ]]; then
+    rm -f "$tmp_file"
+    print_warning "Checksum mismatch for $url"
+    return 1
+  fi
+
+  mkdir -p "$(dirname "$output")"
+  mv "$tmp_file" "$output"
 }
 
 plugin_release_up_to_date() {
   local plugin_dir=$1
-  local release_id=$2
+  local expected_state=$2
   local styles_required=$3
   local state_file="$plugin_dir/.dotfiles-release-id"
   local installed_release
 
-  [[ -n "$release_id" ]] || return 1
+  [[ -n "$expected_state" ]] || return 1
   [[ -f "$state_file" ]] || return 1
   [[ -f "$plugin_dir/manifest.json" && -f "$plugin_dir/main.js" ]] || return 1
 
@@ -777,7 +748,7 @@ plugin_release_up_to_date() {
   fi
 
   installed_release="$(cat "$state_file" 2>/dev/null || true)"
-  [[ "$installed_release" == "$release_id" ]]
+  [[ "$installed_release" == "$expected_state" ]]
 }
 
 record_plugin_release_state() {
@@ -794,59 +765,78 @@ record_plugin_release_state() {
 
 install_community_plugin() {
   local plugin_id=$1
-  local repo=$2
+  local force_refresh="${2:-0}"
   local plugin_dir="$PLUGINS_DIR/$plugin_id"
-  local release_json
-  local tag_name manifest_url main_url styles_url zip_url release_id styles_required
+  local lock_entry repo tag_name release_id release_state styles_required
+  local manifest_url manifest_sha main_url main_sha styles_url styles_sha
 
-  release_json="$(fetch_latest_release_json "$repo")"
-  release_id="$(printf '%s' "$release_json" | jq -r '.id // empty')"
-  tag_name="$(printf '%s' "$release_json" | jq -r '.tag_name // empty')"
-  manifest_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="manifest.json") | .browser_download_url' | head -n1)"
-  main_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="main.js") | .browser_download_url' | head -n1)"
-  styles_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="styles.css") | .browser_download_url' | head -n1)"
-  zip_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name | test("\\.zip$")) | .browser_download_url' | head -n1)"
+  lock_entry="$(jq -c --arg plugin_id "$plugin_id" '.plugins[$plugin_id] // empty' "$PLUGIN_LOCK_FILE")"
+  if [[ -z "$lock_entry" ]]; then
+    print_warning "Plugin lock entry missing for: $plugin_id"
+    return 1
+  fi
+
+  repo="$(printf '%s' "$lock_entry" | jq -r '.repo // empty')"
+  tag_name="$(printf '%s' "$lock_entry" | jq -r '.tag // empty')"
+  release_id="$(printf '%s' "$lock_entry" | jq -r '.release_id // empty')"
+  manifest_url="$(printf '%s' "$lock_entry" | jq -r '.assets["manifest.json"].url // empty')"
+  manifest_sha="$(printf '%s' "$lock_entry" | jq -r '.assets["manifest.json"].sha256 // empty')"
+  main_url="$(printf '%s' "$lock_entry" | jq -r '.assets["main.js"].url // empty')"
+  main_sha="$(printf '%s' "$lock_entry" | jq -r '.assets["main.js"].sha256 // empty')"
+  styles_url="$(printf '%s' "$lock_entry" | jq -r '.assets["styles.css"].url // empty')"
+  styles_sha="$(printf '%s' "$lock_entry" | jq -r '.assets["styles.css"].sha256 // empty')"
+
+  if [[ -z "$repo" || -z "$manifest_url" || -z "$manifest_sha" || -z "$main_url" || -z "$main_sha" ]]; then
+    print_warning "Plugin lock entry incomplete for: $plugin_id"
+    return 1
+  fi
+
+  release_state="$release_id"
+  if [[ -z "$release_state" ]]; then
+    release_state="$tag_name"
+  fi
+  if [[ -z "$release_state" ]]; then
+    release_state="${manifest_sha}:${main_sha}"
+  fi
 
   mkdir -p "$plugin_dir"
 
   styles_required=0
-  [[ -n "$styles_url" ]] && styles_required=1
-
-  if [[ -z "$manifest_url" && -n "$tag_name" ]]; then
-    manifest_url="https://raw.githubusercontent.com/$repo/$tag_name/manifest.json"
+  if [[ -n "$styles_url" || -n "$styles_sha" ]]; then
+    if [[ -z "$styles_url" || -z "$styles_sha" ]]; then
+      print_warning "Plugin lock styles entry incomplete for: $plugin_id"
+      return 1
+    fi
+    styles_required=1
   fi
-  if [[ -z "$main_url" && -n "$tag_name" ]]; then
-    main_url="https://raw.githubusercontent.com/$repo/$tag_name/main.js"
-  fi
 
-  if plugin_release_up_to_date "$plugin_dir" "$release_id" "$styles_required"; then
+  if [[ "$force_refresh" != "1" ]] && plugin_release_up_to_date "$plugin_dir" "$release_state" "$styles_required"; then
     print_info "Plugin already up to date: $plugin_id"
-    return 0
+    return 3
   fi
 
-  if [[ -n "$manifest_url" && -n "$main_url" ]]; then
-    if install_plugin_assets_from_urls "$plugin_dir" "$manifest_url" "$main_url" "$styles_url"; then
-      record_plugin_release_state "$plugin_dir" "$release_id"
-      return 0
+  if ! download_verified_asset "$manifest_url" "$manifest_sha" "$plugin_dir/manifest.json"; then
+    print_warning "Failed to install manifest.json for $plugin_id ($repo)"
+    return 1
+  fi
+  if ! download_verified_asset "$main_url" "$main_sha" "$plugin_dir/main.js"; then
+    print_warning "Failed to install main.js for $plugin_id ($repo)"
+    return 1
+  fi
+  if [[ "$styles_required" == "1" ]]; then
+    if ! download_verified_asset "$styles_url" "$styles_sha" "$plugin_dir/styles.css"; then
+      print_warning "Failed to install styles.css for $plugin_id ($repo)"
+      return 1
     fi
-    print_warning "Direct asset download failed for $plugin_id; trying zip asset fallback."
   fi
 
-  if [[ -n "$zip_url" ]]; then
-    if install_plugin_assets_from_zip "$plugin_dir" "$zip_url"; then
-      record_plugin_release_state "$plugin_dir" "$release_id"
-      return 0
-    fi
-  fi
-
-  print_warning "Could not resolve downloadable assets for plugin: $plugin_id ($repo)"
-  return 1
+  record_plugin_release_state "$plugin_dir" "$release_state"
 }
 
 install_community_plugins() {
-  local plugin_id repo
+  local plugin_id
   local failures=()
-  local install_downloads update_plugins
+  local install_downloads update_plugins status
 
   install_downloads="$(normalize_bool "${DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS:-0}")"
   update_plugins="$(normalize_bool "${DOTFILES_OBSIDIAN_UPDATE_PLUGINS:-0}")"
@@ -854,26 +844,25 @@ install_community_plugins() {
     print_info "Skipping community plugin downloads (DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1)"
     return 0
   fi
+
+  if ! ensure_plugin_lock_file; then
+    return 1
+  fi
+
   if [[ "$update_plugins" == "1" ]]; then
-    print_info "Checking for community plugin updates (DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1)"
+    print_info "Re-checking community plugins from pinned lock (refresh lock file to change versions)."
   fi
 
   for plugin_id in "${COMMUNITY_PLUGINS[@]}"; do
-    if [[ "$update_plugins" != "1" ]] && [[ -f "$PLUGINS_DIR/$plugin_id/manifest.json" && -f "$PLUGINS_DIR/$plugin_id/main.js" ]]; then
-      print_info "Plugin already installed: $plugin_id (set DOTFILES_OBSIDIAN_UPDATE_PLUGINS=1 to check for updates)"
-      continue
-    fi
-
-    if ! repo="$(community_plugin_repo "$plugin_id")"; then
-      print_warning "No repository mapping found for plugin: $plugin_id"
-      failures+=("$plugin_id")
-      continue
-    fi
-
-    print_info "Installing Obsidian plugin: $plugin_id ($repo)"
-    if install_community_plugin "$plugin_id" "$repo"; then
+    print_info "Installing Obsidian plugin from lock: $plugin_id"
+    if install_community_plugin "$plugin_id" "$update_plugins"; then
       print_success "Installed: $plugin_id"
     else
+      status=$?
+      if [[ "$status" -eq 3 ]]; then
+        print_info "Verified existing install: $plugin_id"
+        continue
+      fi
       print_warning "Failed: $plugin_id"
       failures+=("$plugin_id")
     fi
@@ -887,7 +876,7 @@ install_community_plugins() {
 
 require_cmd jq
 require_cmd curl
-require_cmd unzip
+require_cmd shasum
 
 if [[ ! -d "$VAULT_DIR" ]]; then
   mkdir -p "$VAULT_DIR"
@@ -935,3 +924,4 @@ configure_workspace_defaults
 print_success "Obsidian vault configured at $VAULT_DIR"
 print_success "Core plugins enabled: ${CORE_PLUGINS[*]}"
 print_success "Community plugins enabled: ${COMMUNITY_PLUGINS[*]}"
+print_success "Community plugin assets verified using lock file: $PLUGIN_LOCK_FILE"

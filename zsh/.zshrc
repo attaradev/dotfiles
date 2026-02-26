@@ -276,8 +276,8 @@ setopt CHECK_JOBS
 # Don't save commands that start with space to history (for sensitive commands)
 setopt HIST_IGNORE_SPACE
 
-# Security: Strict umask (files: 644, dirs: 755)
-umask 022
+# Security: Restrictive umask (files: 600, dirs: 700 by default)
+umask 077
 
 # Security: Limit core dump size to 0
 ulimit -c 0

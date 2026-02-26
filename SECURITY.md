@@ -23,7 +23,7 @@ These patterns are covered by [.gitignore](.gitignore).
 - Uses macOS Keychain credential helper (`osxkeychain`)
 - Enforces fast-forward pulls (`pull.ff=only`)
 - Enables transfer and receive object checks (`fsckObjects=true`)
-- Sets merge signature verification to off by default (`merge.verifySignatures=false`)
+- Enables merge signature verification by default (`merge.verifySignatures=true`)
 - Rewrites GitHub HTTPS URLs to SSH (`https://github.com/...` -> `git@github.com:...`)
 - Rewrites `git://` URLs to `https://`
 
@@ -51,6 +51,12 @@ This means signing is conditional, not universally forced.
 - Uses `pinentry-mac` from detected Homebrew path
 - Sets agent cache timeout defaults
 - Enables key retrieval and fingerprint-friendly output in `gpg.conf`
+
+### Obsidian plugin installer (`scripts/setup-obsidian.sh`)
+
+- Installs community plugins from pinned lock data in `obsidian/community-plugin-lock.json`
+- Verifies SHA-256 checksums for each downloaded plugin asset before install
+- Requires an explicit lock refresh (`make obsidian-lock`) before version changes are applied
 
 ### Shell and npm defaults
 

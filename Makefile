@@ -9,7 +9,7 @@
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install setup update upgrade brew brew-check mise stow agents obsidian vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
+.PHONY: help install setup update upgrade brew brew-check mise stow agents obsidian obsidian-lock vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
@@ -97,6 +97,11 @@ agents:
 obsidian:
 	@echo "🧠 Configuring Obsidian vault and plugins..."
 	@bash ./scripts/setup-obsidian.sh
+
+## obsidian-lock: Refresh pinned Obsidian plugin lock file with latest release hashes
+obsidian-lock:
+	@echo "🔒 Refreshing pinned Obsidian plugin lock file..."
+	@bash ./scripts/refresh-obsidian-plugin-lock.sh
 
 ## vscode: Install VSCode extensions
 vscode:
@@ -374,6 +379,7 @@ help:
 	@echo "  make stow          - Create dotfile symlinks"
 	@echo "  make agents        - Refresh Claude/Codex configs"
 	@echo "  make obsidian      - Configure Obsidian vault + plugins"
+	@echo "  make obsidian-lock - Refresh pinned Obsidian plugin lock"
 	@echo "  make vscode        - Install VSCode extensions"
 	@echo "  make gnupg         - Setup GnuPG"
 	@echo ""

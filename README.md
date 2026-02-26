@@ -18,11 +18,22 @@ Personal macOS development environment focused on reproducible installs, securit
 xcode-select --install
 ```
 
-### 2. Run bootstrap with Bash (recommended)
+### 2. Run bootstrap with Bash
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/attaradev/dotfiles/main/bootstrap.sh | bash
 ```
+
+Or clone first and run locally:
+
+```bash
+git clone https://github.com/attaradev/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+./bootstrap.sh
+```
+
+Bootstrap is idempotent: rerunning it safely updates `~/.dotfiles` and reapplies setup.
+If Homebrew is missing, `setup.sh` installs it automatically via the official installer.
 
 ### 3. Verify setup
 
@@ -71,7 +82,7 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 - Homebrew packages and casks from `Brewfile`
 - Language runtimes and tooling via `scripts/setup-mise.sh`, installed from local `~/.mise.toml` (bootstrapped from `mise/.mise.toml` when missing)
 - Dotfile symlinks via `scripts/setup-stow.sh` (GNU Stow)
-- Obsidian knowledge vault and plugin setup via `scripts/setup-obsidian.sh` (personal vault notes stay local in `~/.knowledge`; only public scaffolding is tracked)
+- Obsidian knowledge vault and plugin setup via `scripts/setup-obsidian.sh` using pinned plugin assets + SHA-256 verification (`obsidian/community-plugin-lock.json`)
 - GPG configuration via `scripts/setup-gnupg.sh` with `pinentry-mac` and non-destructive defaults
 - VSCode extensions via `scripts/setup-vscode.sh` (when `code` CLI is present, unless skipped)
 - Claude Code global context/settings via `~/.claude/CLAUDE.md` and `~/.claude/settings.json`
@@ -100,6 +111,7 @@ make mise         # Install runtimes from ~/.mise.toml
 make stow         # Apply dotfile symlinks with GNU Stow
 make agents       # Refresh Claude/Codex global config symlinks
 make obsidian     # Configure knowledge vault defaults + install plugins
+make obsidian-lock # Refresh pinned Obsidian plugin lock (review diff before applying)
 make gnupg        # Configure GnuPG and signing defaults
 make vscode       # Install VSCode extensions
 make backup       # Timestamped backup of key local config
@@ -110,6 +122,8 @@ make smoke        # Mocked smoke checks for setup + make wrapper paths
 make dump         # Re-generate Brewfile from current system
 make cleanup      # Remove packages not listed in Brewfile
 ```
+
+To update Obsidian community plugins safely: run `make obsidian-lock`, review `obsidian/community-plugin-lock.json`, then run `make obsidian`.
 
 ## Documentation
 

@@ -11,6 +11,8 @@ make doctor      # Homebrew + mise diagnostics
 make status      # Summary of key tool versions
 make list        # Installed mise runtimes
 make mise        # Install runtimes from ~/.mise.toml
+make obsidian    # Apply pinned Obsidian plugin assets
+make obsidian-lock # Refresh pinned Obsidian plugin lock
 ```
 
 ## Runtime and Tooling Updates
@@ -56,6 +58,19 @@ make setup
 ```
 
 `make setup` is idempotent and runs `mise`, `stow`, `obsidian`, `gnupg`, and `vscode` refresh steps.
+
+## Obsidian Plugin Updates
+
+`make obsidian` installs community plugins from the pinned lock file
+`obsidian/community-plugin-lock.json` and verifies SHA-256 checksums before writing assets.
+
+To update versions:
+
+```bash
+make obsidian-lock
+# review obsidian/community-plugin-lock.json
+make obsidian
+```
 
 ## Brewfile Lifecycle
 

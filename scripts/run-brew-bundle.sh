@@ -9,8 +9,7 @@ OPTIONAL_CASK_ENV_FILE="${OPTIONAL_CASK_ENV_FILE:-$HOME/.config/dotfiles/brew-op
 source "$ROOT_DIR/scripts/optional-casks.sh"
 
 if [[ -f "$OPTIONAL_CASK_ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
-  source "$OPTIONAL_CASK_ENV_FILE"
+  load_optional_cask_env_file "$OPTIONAL_CASK_ENV_FILE"
 fi
 
 sync_optional_cask_env_vars

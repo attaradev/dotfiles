@@ -34,7 +34,7 @@
 	useForceIfIncludes = true
 
 [merge]
-	verifySignatures = false
+	verifySignatures = true
 	conflictStyle = zdiff3
 
 [transfer]
