@@ -81,14 +81,15 @@ mise list
 
 If still missing, verify `mise/.mise.toml` includes the expected runtime and tooling entries:
 
-- `node`, `python`, `go`, `ruby`, `java`, `rust`
+- `node`, `python`, `go`, `ruby`
 - `npm`, `pnpm`, `uv`
+- any additional tools you added
 
-Java and Rust are optional by default. Enable them explicitly:
+If a required tool is not listed, add it to `mise/.mise.toml` and rerun install:
 
 ```bash
-DOTFILES_INSTALL_JAVA=1 make mise
-DOTFILES_INSTALL_RUST=1 make mise
+make mise
+mise list
 ```
 
 ## Wrong runtime version is active
@@ -111,7 +112,7 @@ python --version
 uv --version
 go version
 ruby -v
-# Optional runtimes (if enabled):
+# Additional runtimes (if added):
 java -version
 rustc --version
 cargo --version

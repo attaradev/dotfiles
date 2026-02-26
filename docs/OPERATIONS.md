@@ -32,11 +32,16 @@ rustc --version
 cargo --version
 ```
 
-Install optional runtimes:
+To add more runtimes or tools, add them to `mise/.mise.toml` and rerun `make mise`.
+
+To remove a previously added runtime/tool cleanly:
 
 ```bash
-DOTFILES_INSTALL_JAVA=1 make mise
-DOTFILES_INSTALL_RUST=1 make mise
+# Remove it from mise/.mise.toml first
+make mise
+mise uninstall --all <tool>
+mise prune --tools
+mise list
 ```
 
 For runtime version policy and track changes, see [RUNTIMES.md](RUNTIMES.md).

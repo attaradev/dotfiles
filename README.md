@@ -80,9 +80,9 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 
 ## Managed Runtime and Tooling Tracks
 
-- Core runtimes: Node.js `25`, Python `3.14`, Go `1.26`, Ruby `4.0`
-- Optional runtimes: Java `21`, Rust `1.93` (opt-in via env vars below)
-- Package managers/tooling: npm `11`, pnpm `10`, uv `0.10`
+- Core runtimes (tracked): Node.js `25`, Python `3.14`, Go `1.26`, Ruby `4.0`
+- Package managers/tooling (tracked): npm `11`, pnpm `10`, uv `0.10`
+- Add additional runtimes as needed by updating `mise/.mise.toml` (for example, Java `21` or Rust `1.93`) and rerunning `make mise`
 
 For runtime policy and workflows, see [docs/RUNTIMES.md](docs/RUNTIMES.md).
 
@@ -95,7 +95,7 @@ make install      # Full setup
 make update       # Upgrade brew + mise-managed tools
 make doctor       # Health checks for Homebrew and mise
 make mise         # Install runtimes from mise/.mise.toml
-DOTFILES_INSTALL_JAVA=1 DOTFILES_INSTALL_RUST=1 make mise # Install optional runtimes
+# Add tools in mise/.mise.toml as needed, then rerun make mise
 make stow         # Apply dotfile symlinks with GNU Stow
 make obsidian     # Configure knowledge vault defaults + install plugins
 make gnupg        # Configure GnuPG and signing defaults

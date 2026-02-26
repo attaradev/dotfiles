@@ -10,19 +10,17 @@ This repository manages development runtimes and language tooling with `mise`.
 
 ## Managed Tools and Version Policy
 
-| Tool | Track in `mise/.mise.toml` | Policy | Installed by default |
-| --- | --- | --- | --- |
-| Node.js | `25` | Latest patch/minor within major 25 | Yes |
-| npm | `11` | Latest patch/minor within major 11 | Yes |
-| pnpm | `10` | Latest patch/minor within major 10 | Yes |
-| Python | `3.14` | Latest patch release within 3.14 | Yes |
-| uv | `0.10` | Latest patch release within 0.10 | Yes |
-| Go | `1.26` | Latest patch release within 1.26 | Yes |
-| Ruby | `4.0` | Latest patch release within 4.0 | Yes |
-| Java | `21` | Latest patch/minor within major 21 | No (`DOTFILES_INSTALL_JAVA=1`) |
-| Rust | `1.93` | Latest patch release within 1.93 | No (`DOTFILES_INSTALL_RUST=1`) |
+| Tool | Track in `mise/.mise.toml` | Policy |
+| --- | --- | --- |
+| Node.js | `25` | Latest patch/minor within major 25 |
+| npm | `11` | Latest patch/minor within major 11 |
+| pnpm | `10` | Latest patch/minor within major 10 |
+| Python | `3.14` | Latest patch release within 3.14 |
+| uv | `0.10` | Latest patch release within 0.10 |
+| Go | `1.26` | Latest patch release within 1.26 |
+| Ruby | `4.0` | Latest patch release within 4.0 |
 
-This policy keeps all tools on explicit major/minor tracks while allowing Java/Rust to stay optional.
+This policy keeps tracked tools on explicit major/minor lines while allowing patch/minor updates inside each line.
 
 ## Install and Verify
 
@@ -38,6 +36,7 @@ python --version
 uv --version
 go version
 ruby -v
+# Additional runtimes you added (for example java/rust):
 java -version
 rustc --version
 cargo --version
@@ -54,12 +53,35 @@ mise install
 mise list
 ```
 
-Install optional runtimes:
+Add tools as needed:
 
 ```bash
-DOTFILES_INSTALL_JAVA=1 make mise
-DOTFILES_INSTALL_RUST=1 make mise
-DOTFILES_INSTALL_JAVA=1 DOTFILES_INSTALL_RUST=1 make mise
+# 1) Add a tool track in mise/.mise.toml, for example:
+#    java = "21"
+#    rust = "1.93"
+#
+# 2) Install from tracked config:
+make mise
+mise list
+```
+
+Remove tools cleanly:
+
+```bash
+# 1) Remove the tool from mise/.mise.toml
+#
+# 2) Re-sync tracked config:
+make mise
+
+# 3) Remove installed versions:
+mise uninstall --all <tool>
+
+# 4) Clean unused installs:
+mise prune --tools --dry-run
+mise prune --tools
+
+# 5) Verify:
+mise list
 ```
 
 Check available upstream versions:

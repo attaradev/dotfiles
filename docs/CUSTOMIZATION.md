@@ -42,8 +42,8 @@ Examples:
 - Keep Python on 3.14 patch stream: `python = "3.14"`
 - Keep Go on 1.26 patch stream: `go = "1.26"`
 - Keep Ruby on 4.0 patch stream: `ruby = "4.0"`
-- Keep Java on LTS major line 21: `java = "21"` (optional install)
-- Keep Rust on 1.93 patch stream: `rust = "1.93"` (optional install)
+- Add Java when needed on LTS major line 21: `java = "21"`
+- Add Rust when needed on 1.93 patch stream: `rust = "1.93"`
 - Keep npm in major line 11: `npm = "11"`
 - Keep pnpm in major line 10: `pnpm = "10"`
 - Keep uv on 0.10 patch stream: `uv = "0.10"`
@@ -55,11 +55,14 @@ make mise
 mise list
 ```
 
-Enable optional runtime installs when needed:
+To remove a runtime/tool you previously added:
 
 ```bash
-DOTFILES_INSTALL_JAVA=1 make mise
-DOTFILES_INSTALL_RUST=1 make mise
+# 1) Delete its entry from mise/.mise.toml
+make mise
+mise uninstall --all <tool>
+mise prune --tools
+mise list
 ```
 
 See [RUNTIMES.md](RUNTIMES.md) for runtime policies and update workflows.

@@ -40,8 +40,8 @@ make install
 Runtime and tooling versions are sourced from `mise/.mise.toml`:
 
 - Core runtimes: `node = "25"`, `python = "3.14"`, `go = "1.26"`, `ruby = "4.0"`
-- Optional runtimes: `java = "21"`, `rust = "1.93"` (install with `DOTFILES_INSTALL_JAVA=1` / `DOTFILES_INSTALL_RUST=1`)
 - Package managers/tooling: `npm = "11"`, `pnpm = "10"`, `uv = "0.10"`
+- Add additional runtimes as needed by adding tracks to `mise/.mise.toml` (for example `java = "21"` or `rust = "1.93"`), then run `make mise`
 
 See [RUNTIMES.md](RUNTIMES.md) for version policy and update workflows.
 
@@ -139,7 +139,7 @@ python --version
 uv --version
 go version
 ruby -v
-# Optional runtimes (if enabled during make mise):
+# Additional runtimes you added in mise/.mise.toml:
 java -version
 rustc --version
 cargo --version
