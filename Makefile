@@ -76,7 +76,7 @@ brew:
 ## brew-check: Verify all Brewfile packages are installed
 brew-check:
 	@echo "✓ Checking Brewfile packages..."
-	@$(BREW_BUNDLE_WITH_OPTIONALS) check || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
+	@$(BREW_BUNDLE_WITH_OPTIONALS) check --no-upgrade || (echo "❌ Some packages are missing. Run 'make brew' to install." && exit 1)
 
 ## mise: Setup mise and install language runtimes
 mise:
