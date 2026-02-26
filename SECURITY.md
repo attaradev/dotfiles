@@ -23,7 +23,6 @@ These patterns are covered by [.gitignore](.gitignore).
 - Uses macOS Keychain credential helper (`osxkeychain`)
 - Enforces fast-forward pulls (`pull.ff=only`)
 - Enables transfer and receive object checks (`fsckObjects=true`)
-- Enables merge signature verification by default (`merge.verifySignatures=true`)
 - Rewrites GitHub HTTPS URLs to SSH (`https://github.com/...` -> `git@github.com:...`)
 - Rewrites `git://` URLs to `https://`
 
