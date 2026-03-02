@@ -402,6 +402,13 @@ fi
 # Validate human-readable hook output for activity reports and achievements.
 HOOK_VAULT="$TMP_DIR/hook-vault"
 mkdir -p "$HOOK_VAULT"
+HOOK_REPO="$TMP_DIR/hook-repo"
+HOOK_REPO_WORKDIR="$HOOK_REPO/src/app"
+HOOK_WORKSPACE="$TMP_DIR/hook-workspace"
+
+mkdir -p "$HOOK_REPO_WORKDIR"
+mkdir -p "$HOOK_WORKSPACE"
+git -C "$HOOK_REPO" init -q
 
 printf '{"task":"achievement: Wrote a clearer deployment report for teammates","session_id":"session-1234567890"}' \
   | OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py task-completed >/dev/null
@@ -419,7 +426,7 @@ if search_q "event=" "$HOOK_VAULT/setup/claude-activity-log.md"; then
   exit 1
 fi
 
-codex_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
+codex_payload="$(jq -cn --arg cwd "$HOOK_REPO_WORKDIR" '{
   "type":"agent-turn-complete",
   "thread-id":"thread-abcdef1234567890",
   "cwd":$cwd,
@@ -430,14 +437,35 @@ codex_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
 OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
 
 test -f "$HOOK_VAULT/setup/codex-activity-log.md"
+test -f "$HOOK_REPO/tasks/todo.md"
+test -f "$HOOK_REPO/tasks/lessons.md"
 search_q "Agent turn complete" "$HOOK_VAULT/setup/codex-activity-log.md"
 search_q "User asked:" "$HOOK_VAULT/setup/codex-activity-log.md"
 search_q "Assistant replied:" "$HOOK_VAULT/setup/codex-activity-log.md"
 search_q "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md"
+search_q "^# Active Tasks$" "$HOOK_REPO/tasks/todo.md"
+search_q "^# Lessons Learned$" "$HOOK_REPO/tasks/lessons.md"
+
+codex_workspace_payload="$(jq -cn --arg cwd "$HOOK_WORKSPACE" '{
+  "type":"agent-turn-complete",
+  "thread-id":"thread-workspace-1234567890",
+  "cwd":$cwd,
+  "input-messages":["plain question in non-repo workspace"],
+  "last-assistant-message":"Captured workspace-scoped planning files."
+}')"
+
+OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_workspace_payload" >/dev/null
+
+test -f "$HOOK_WORKSPACE/tasks/todo.md"
+test -f "$HOOK_WORKSPACE/tasks/lessons.md"
+test ! -f "$HOOK_VAULT/tasks.md"
+test ! -f "$HOOK_VAULT/learning/lessons.md"
+search_q "^# Active Tasks$" "$HOOK_WORKSPACE/tasks/todo.md"
+search_q "^# Lessons Learned$" "$HOOK_WORKSPACE/tasks/lessons.md"
 
 # Ensure achievements are not captured from every prompt:
 # only latest explicit marker is captured and duplicates are suppressed.
-codex_non_achievement_payload="$(jq -cn --arg cwd "$ROOT_DIR" '{
+codex_non_achievement_payload="$(jq -cn --arg cwd "$HOOK_REPO_WORKDIR" '{
   "type":"agent-turn-complete",
   "thread-id":"thread-abcdef1234567890",
   "cwd":$cwd,

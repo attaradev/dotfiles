@@ -14,8 +14,6 @@ from typing import Any
 VAULT_DIR = Path(
     os.environ.get("OBSIDIAN_VAULT_DIR", str(Path.home() / ".knowledge"))
 ).expanduser()
-TASKS_FILE = VAULT_DIR / "tasks.md"
-LESSONS_FILE = VAULT_DIR / "learning" / "lessons.md"
 ACHIEVEMENTS_FILE = VAULT_DIR / "career" / "achievement-log.md"
 ACHIEVEMENT_INBOX_FILE = VAULT_DIR / "career" / "achievement-inbox.md"
 ACTIVITY_LOG_FILE = VAULT_DIR / "setup" / "claude-activity-log.md"
@@ -23,8 +21,8 @@ CODEX_ACTIVITY_LOG_FILE = VAULT_DIR / "setup" / "codex-activity-log.md"
 DEFAULT_ACTIVITY_LOG = """# Claude Activity Log
 
 Auto-generated from Claude hooks as a human-readable session report stream.
-Promote meaningful outcomes into `tasks.md`, `learning/lessons.md`, and
-`career/achievement-log.md`.
+Promote meaningful outcomes into repo-scoped `tasks/todo.md` and
+`tasks/lessons.md`, plus `career/achievement-log.md`.
 
 Entry format:
 - `YYYY-MM-DD HH:MM UTC — <Event> [session/thread]: <summary>`
@@ -34,11 +32,56 @@ Entry format:
 DEFAULT_CODEX_ACTIVITY_LOG = """# Codex Activity Log
 
 Auto-generated from Codex notifications as a human-readable turn report stream.
-Promote meaningful outcomes into `tasks.md`, `learning/lessons.md`, and
-`career/achievement-log.md`.
+Promote meaningful outcomes into repo-scoped `tasks/todo.md` and
+`tasks/lessons.md`, plus `career/achievement-log.md`.
 
 Entry format:
 - `YYYY-MM-DD HH:MM UTC — <Event> [session/thread]: <summary>`
+
+## Entries
+"""
+DEFAULT_REPO_TASKS_FILE = """# Active Tasks
+
+Track active execution for this repository.
+
+## In Progress
+
+### YYYY-MM-DD | Context | Objective
+
+- Status: planned | in_progress | blocked | done
+- Scope:
+- Checklist:
+  - [ ] Item 1
+  - [ ] Item 2
+  - [ ] Item 3
+- Verification:
+  - Commands/tests run:
+  - Expected behavior:
+  - Actual behavior:
+- Notes:
+
+## Completed
+
+### YYYY-MM-DD | Context | Objective
+
+- Outcome:
+- Verification summary:
+- Follow-ups:
+"""
+DEFAULT_REPO_LESSONS_FILE = """# Lessons Learned
+
+Capture repeatable lessons from repository-specific mistakes and rework.
+
+## Entry Template
+
+```md
+### YYYY-MM-DD | Context
+- Mistake:
+- Signal:
+- Root cause:
+- New rule:
+- Enforcement check:
+```
 
 ## Entries
 """
@@ -178,6 +221,78 @@ def short_path(path: Path) -> str:
         return str(candidate)
 
 
+def workspace_root_for_cwd(cwd_hint: str | None = None) -> Path:
+    candidates = candidate_work_dirs(cwd_hint)
+    if candidates:
+        return candidates[0]
+    return Path.home()
+
+def candidate_work_dirs(cwd_hint: str | None = None) -> list[Path]:
+    candidates: list[Path] = []
+    raw_values: list[str] = []
+    try:
+        current_dir = Path.cwd()
+    except OSError:
+        current_dir = Path.home()
+
+    if cwd_hint and cwd_hint.strip():
+        raw_values.append(cwd_hint.strip())
+    else:
+        env_pwd = os.environ.get("PWD")
+        if env_pwd and env_pwd.strip():
+            raw_values.append(env_pwd.strip())
+        raw_values.append(str(current_dir))
+
+    seen: set[str] = set()
+    for raw in raw_values:
+        if raw in seen:
+            continue
+        seen.add(raw)
+        path = Path(raw).expanduser()
+        if not path.is_absolute():
+            path = current_dir / path
+        try:
+            path = path.resolve()
+        except OSError:
+            path = path.absolute()
+        if path.is_file():
+            path = path.parent
+        candidates.append(path)
+
+    return candidates
+
+
+def repo_root_for_cwd(cwd_hint: str | None = None) -> Path | None:
+    for candidate in candidate_work_dirs(cwd_hint):
+        for parent in (candidate, *candidate.parents):
+            git_marker = parent / ".git"
+            if git_marker.exists():
+                return parent
+    return None
+
+
+def workflow_root_for_cwd(cwd_hint: str | None = None) -> tuple[Path, bool]:
+    repo_root = repo_root_for_cwd(cwd_hint)
+    if repo_root is not None:
+        return repo_root, True
+    return workspace_root_for_cwd(cwd_hint), False
+
+
+def workflow_files_for_cwd(
+    cwd_hint: str | None = None,
+    create_repo_files: bool = False,
+) -> tuple[Path, Path, Path, bool]:
+    workflow_root, is_repo_root = workflow_root_for_cwd(cwd_hint)
+    tasks_file = workflow_root / "tasks" / "todo.md"
+    lessons_file = workflow_root / "tasks" / "lessons.md"
+
+    if create_repo_files:
+        ensure_markdown_log_exists(tasks_file, DEFAULT_REPO_TASKS_FILE)
+        ensure_markdown_log_exists(lessons_file, DEFAULT_REPO_LESSONS_FILE)
+
+    return tasks_file, lessons_file, workflow_root, is_repo_root
+
+
 def ensure_markdown_log_exists(path: Path, default_content: str) -> None:
     if path.exists():
         return
@@ -299,14 +414,19 @@ def latest_level3_heading(markdown: str) -> str:
     return ""
 
 
-def missing_required_files() -> list[Path]:
-    required = [TASKS_FILE, LESSONS_FILE, ACHIEVEMENTS_FILE]
+def missing_required_files(cwd_hint: str | None = None) -> list[Path]:
+    tasks_file, lessons_file, _, _ = workflow_files_for_cwd(cwd_hint)
+    required = [tasks_file, lessons_file, ACHIEVEMENTS_FILE]
     return [path for path in required if not path.exists()]
 
 
-def build_obsidian_context() -> str:
-    tasks_md = read_text(TASKS_FILE)
-    lessons_md = read_text(LESSONS_FILE)
+def build_obsidian_context(cwd_hint: str | None = None) -> str:
+    tasks_file, lessons_file, workflow_root, is_repo_root = workflow_files_for_cwd(
+        cwd_hint,
+        create_repo_files=True,
+    )
+    tasks_md = read_text(tasks_file)
+    lessons_md = read_text(lessons_file)
     achievements_md = read_text(ACHIEVEMENTS_FILE)
     recent_activity = recent_activity_entries(6)
     recent_codex_activity = recent_codex_activity_entries(4)
@@ -319,8 +439,12 @@ def build_obsidian_context() -> str:
         f"Obsidian vault path: {VAULT_DIR}",
         "Use Obsidian workflow notes for continuity across sessions.",
         (
+            "Project workflow root: "
+            f"{short_path(workflow_root)} ({'git repo' if is_repo_root else 'workspace'})"
+        ),
+        (
             "Primary files: "
-            f"{TASKS_FILE}, {LESSONS_FILE}, {ACHIEVEMENTS_FILE}"
+            f"{tasks_file}, {lessons_file}, {ACHIEVEMENTS_FILE}"
         ),
     ]
 
@@ -359,6 +483,7 @@ def extract_cwd(payload: dict[str, Any]) -> str | None:
 def emit_session_start(payload: dict[str, Any]) -> None:
     session_id = extract_session_id(payload)
     cwd = extract_cwd(payload)
+    workflow_files_for_cwd(cwd, create_repo_files=True)
     if cwd:
         append_activity_entry(
             "session_start",
@@ -368,9 +493,13 @@ def emit_session_start(payload: dict[str, Any]) -> None:
     else:
         append_activity_entry("session_start", "Session started.", session_id)
 
-    missing = missing_required_files()
+    missing = missing_required_files(cwd)
     if not VAULT_DIR.exists() or missing:
-        missing_label = ", ".join(str(path) for path in missing) if missing else str(VAULT_DIR)
+        missing_label = (
+            ", ".join(short_path(path) for path in missing)
+            if missing
+            else short_path(VAULT_DIR)
+        )
         print_json(
             {
                 "systemMessage": (
@@ -387,22 +516,25 @@ def emit_session_start(payload: dict[str, Any]) -> None:
             "suppressOutput": True,
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": build_obsidian_context(),
+                "additionalContext": build_obsidian_context(cwd),
             },
         }
     )
 
 
-def emit_pre_compact() -> None:
+def emit_pre_compact(payload: dict[str, Any]) -> None:
     if not VAULT_DIR.exists():
         return
+
+    cwd = extract_cwd(payload)
+    workflow_files_for_cwd(cwd, create_repo_files=True)
 
     print_json(
         {
             "suppressOutput": True,
             "hookSpecificOutput": {
                 "hookEventName": "PreCompact",
-                "additionalContext": build_obsidian_context(),
+                "additionalContext": build_obsidian_context(cwd),
             },
         }
     )
@@ -414,12 +546,16 @@ def emit_session_end(payload: dict[str, Any]) -> None:
     if not VAULT_DIR.exists():
         return
 
+    cwd = extract_cwd(payload)
+    tasks_file, lessons_file, _, _ = workflow_files_for_cwd(cwd, create_repo_files=True)
+
     print_json(
             {
                 "systemMessage": (
                     "Before ending, add a concise human-readable report to "
-                    "~/.knowledge/tasks.md (outcome, verification, follow-ups) and "
-                    "capture any new rules in ~/.knowledge/learning/lessons.md."
+                    f"{short_path(tasks_file)} (outcome, verification, follow-ups) "
+                    "and capture any new rules in "
+                    f"{short_path(lessons_file)}."
                 ),
                 "suppressOutput": True,
             }
@@ -686,6 +822,7 @@ def emit_codex_notify(payload: dict[str, Any]) -> None:
     details_parts: list[str] = []
 
     cwd = extract_codex_string(payload, "cwd")
+    workflow_files_for_cwd(cwd, create_repo_files=True)
     if cwd:
         details_parts.append(f"Working directory: {short_path(Path(cwd))}.")
 
@@ -727,7 +864,7 @@ def main() -> int:
         emit_session_start(payload)
         return 0
     if event == "pre-compact":
-        emit_pre_compact()
+        emit_pre_compact(payload)
         return 0
     if event == "session-end":
         emit_session_end(payload)
