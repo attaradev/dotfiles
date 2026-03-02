@@ -46,6 +46,14 @@ Keep this file aligned with `claude/.claude/CLAUDE.md` so Claude and Codex behav
 3. **Document Results**: Summarize changes and verification in the task note.
 4. **Capture Learning**: Record lessons and meaningful wins when applicable.
 
+### Plan Persistence Rules
+
+- For non-trivial work, create/update an entry in `.agent/tasks.md` before implementation.
+- Keep status/checklist current whenever scope or approach changes.
+- Before final handoff, record outcome + verification summary in the same task entry.
+- Do not rely only on transient plan/checklist tools; the task file is the persisted source of truth.
+- If current mode/policy blocks file writes, include the full current plan in-chat and explicitly note that task-file update is deferred.
+
 ## Obsidian Workflow
 
 - Treat `~/.knowledge` as the human user's personal system of record (`hub.md` is the entry note). Agents may propose or apply updates, but must never treat it as agent-owned memory.

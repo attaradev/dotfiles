@@ -6,6 +6,7 @@ This repository manages development runtimes and language tooling with `mise`.
 
 - Runtime versions are managed in local `~/.mise.toml`.
 - `scripts/setup-mise.sh` bootstraps `~/.mise.toml` from tracked template `mise/.mise.toml` only when missing.
+- `scripts/setup-mise.sh` syncs `[tools]` tracks from `~/.mise.toml` into `~/.config/mise/config.toml` via `mise use -g` so global shims stay aligned.
 - `make mise` installs tools from `~/.mise.toml`.
 - `make update` runs `mise upgrade` to move installed tools within configured tracks.
 

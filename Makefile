@@ -341,9 +341,18 @@ lint-shell:
 ## lint-docs: Validate Markdown documentation formatting
 lint-docs:
 	@echo "📝 Linting Markdown docs..."
-	@command -v $(MARKDOWNLINT) >/dev/null 2>&1 || (echo "❌ markdownlint not found. Install with 'npm install -g markdownlint-cli'." && exit 1)
-	@docs=$$(find . -maxdepth 2 -type f -name '*.md' | sort); \
-	$(MARKDOWNLINT) $$docs
+	@if command -v $(MARKDOWNLINT) >/dev/null 2>&1 && $(MARKDOWNLINT) --version >/dev/null 2>&1; then \
+		docs=$$(find . -maxdepth 2 \( -path './.agent' -o -path './.claude' \) -prune -o -type f -name '*.md' -print | sort); \
+		$(MARKDOWNLINT) $$docs; \
+	elif command -v mise >/dev/null 2>&1; then \
+		echo "ℹ️  Falling back to 'mise x node -- npx --yes markdownlint-cli'."; \
+		docs=$$(find . -maxdepth 2 \( -path './.agent' -o -path './.claude' \) -prune -o -type f -name '*.md' -print | sort); \
+		mise x node -- npx --yes markdownlint-cli $$docs; \
+	else \
+		echo "❌ markdownlint is unavailable and mise fallback is not installed."; \
+		echo "   Install with 'npm install -g markdownlint-cli' or run 'make mise'."; \
+		exit 1; \
+	fi
 	@echo "✓ Markdown lint checks passed"
 
 ## check: Run local quality gate used by CI

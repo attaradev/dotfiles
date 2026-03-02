@@ -111,11 +111,69 @@ ensure_local_mise_config() {
   return 1
 }
 
+extract_mise_tool_tracks() {
+  local config_path="$1"
+  local in_tools=0
+  local line
+  local tool
+  local track
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ ^[[:space:]]*\[tools\][[:space:]]*$ ]]; then
+      in_tools=1
+      continue
+    fi
+
+    if [[ $in_tools -eq 1 && "$line" =~ ^[[:space:]]*\[[^]]+\][[:space:]]*$ ]]; then
+      break
+    fi
+
+    [[ $in_tools -eq 0 ]] && continue
+
+    if [[ "$line" =~ ^[[:space:]]*\"?([A-Za-z0-9:_-]+)\"?[[:space:]]*=[[:space:]]*\"([^\"]+)\" ]]; then
+      tool="${BASH_REMATCH[1]}"
+      track="${BASH_REMATCH[2]}"
+      printf '%s@%s\n' "$tool" "$track"
+    fi
+  done < "$config_path"
+}
+
+sync_global_mise_tracks() {
+  local config_path="$1"
+  local spec
+  local synced=0
+  local failed=0
+
+  if [[ ! -f "$config_path" ]]; then
+    return 0
+  fi
+
+  while IFS= read -r spec; do
+    [[ -z "$spec" ]] && continue
+
+    if mise use -g "$spec" >/dev/null 2>&1; then
+      synced=$((synced + 1))
+    else
+      failed=$((failed + 1))
+      echo "⚠️  Failed to sync global mise track: $spec"
+    fi
+  done < <(extract_mise_tool_tracks "$config_path")
+
+  if (( synced > 0 )); then
+    echo "✓ Synced $synced global mise tool track(s) from ~/.mise.toml"
+  fi
+  if (( failed > 0 )); then
+    echo "⚠️  Unable to sync $failed global mise tool track(s); continuing."
+  fi
+}
+
 echo ""
 echo "📦 Installing runtimes from local config (~/.mise.toml)..."
 ensure_local_mise_config || true
 
 if [[ -f "$LOCAL_MISE_CONFIG" ]]; then
+  sync_global_mise_tracks "$LOCAL_MISE_CONFIG"
+
   (
     cd "$HOME"
 
@@ -128,6 +186,7 @@ if [[ -f "$LOCAL_MISE_CONFIG" ]]; then
     export RUBY_CONFIGURE_OPTS="${RUBY_CONFIGURE_OPTS}${RUBY_CONFIGURE_OPTS_EXTRA}"
 
     mise install
+    mise reshim || true
   )
   echo "✓ Installed runtimes from ~/.mise.toml"
 else

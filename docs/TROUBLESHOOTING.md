@@ -127,19 +127,20 @@ rehash
 
 ## `make lint-docs` fails with `No version is set for shim: markdownlint`
 
-This usually means your current shell is not activated with a Node version for shims.
+This usually means global shim tracks and your active runtime config drifted.
 
 Fix:
 
 ```bash
 source ~/.zshrc
 make mise
+mise reshim
 ```
 
-If needed, set a global Node default for shim-based CLIs:
+Then retry:
 
 ```bash
-mise use -g node@25
+make lint-docs
 ```
 
 ## Icons look broken in terminal
