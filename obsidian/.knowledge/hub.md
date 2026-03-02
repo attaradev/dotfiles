@@ -1,6 +1,6 @@
 # Knowledge Hub
 
-Use this as the landing page in Obsidian. This hub is user-owned; agents can help update it, but it remains your personal system.
+Your personal dashboard for work, learning, and outcomes.
 
 ## Areas
 
