@@ -21,8 +21,8 @@ CODEX_ACTIVITY_LOG_FILE = VAULT_DIR / "setup" / "codex-activity-log.md"
 DEFAULT_ACTIVITY_LOG = """# Claude Activity Log
 
 Auto-generated from Claude hooks as a human-readable session report stream.
-Promote meaningful outcomes into repo-scoped `tasks/todo.md` and
-`tasks/lessons.md`, plus `career/achievement-log.md`.
+Promote meaningful outcomes into repo-scoped `.claude/tasks.md` and
+`.claude/lessons.md`, plus `career/achievement-log.md`.
 
 Entry format:
 - `YYYY-MM-DD HH:MM UTC — <Event> [session/thread]: <summary>`
@@ -32,8 +32,8 @@ Entry format:
 DEFAULT_CODEX_ACTIVITY_LOG = """# Codex Activity Log
 
 Auto-generated from Codex notifications as a human-readable turn report stream.
-Promote meaningful outcomes into repo-scoped `tasks/todo.md` and
-`tasks/lessons.md`, plus `career/achievement-log.md`.
+Promote meaningful outcomes into repo-scoped `.agent/tasks.md` and
+`.agent/lessons.md`, plus `career/achievement-log.md`.
 
 Entry format:
 - `YYYY-MM-DD HH:MM UTC — <Event> [session/thread]: <summary>`
@@ -282,9 +282,17 @@ def workflow_files_for_cwd(
     cwd_hint: str | None = None,
     create_repo_files: bool = False,
 ) -> tuple[Path, Path, Path, bool]:
+    return workflow_files_for_cwd_with_memory_dir(cwd_hint, ".agent", create_repo_files)
+
+
+def workflow_files_for_cwd_with_memory_dir(
+    cwd_hint: str | None = None,
+    memory_dir_name: str = ".agent",
+    create_repo_files: bool = False,
+) -> tuple[Path, Path, Path, bool]:
     workflow_root, is_repo_root = workflow_root_for_cwd(cwd_hint)
-    tasks_file = workflow_root / "tasks" / "todo.md"
-    lessons_file = workflow_root / "tasks" / "lessons.md"
+    tasks_file = workflow_root / memory_dir_name / "tasks.md"
+    lessons_file = workflow_root / memory_dir_name / "lessons.md"
 
     if create_repo_files:
         ensure_markdown_log_exists(tasks_file, DEFAULT_REPO_TASKS_FILE)
@@ -415,14 +423,18 @@ def latest_level3_heading(markdown: str) -> str:
 
 
 def missing_required_files(cwd_hint: str | None = None) -> list[Path]:
-    tasks_file, lessons_file, _, _ = workflow_files_for_cwd(cwd_hint)
+    tasks_file, lessons_file, _, _ = workflow_files_for_cwd_with_memory_dir(
+        cwd_hint,
+        ".claude",
+    )
     required = [tasks_file, lessons_file, ACHIEVEMENTS_FILE]
     return [path for path in required if not path.exists()]
 
 
 def build_obsidian_context(cwd_hint: str | None = None) -> str:
-    tasks_file, lessons_file, workflow_root, is_repo_root = workflow_files_for_cwd(
+    tasks_file, lessons_file, workflow_root, is_repo_root = workflow_files_for_cwd_with_memory_dir(
         cwd_hint,
+        ".claude",
         create_repo_files=True,
     )
     tasks_md = read_text(tasks_file)
@@ -483,7 +495,7 @@ def extract_cwd(payload: dict[str, Any]) -> str | None:
 def emit_session_start(payload: dict[str, Any]) -> None:
     session_id = extract_session_id(payload)
     cwd = extract_cwd(payload)
-    workflow_files_for_cwd(cwd, create_repo_files=True)
+    workflow_files_for_cwd_with_memory_dir(cwd, ".claude", create_repo_files=True)
     if cwd:
         append_activity_entry(
             "session_start",
@@ -527,7 +539,7 @@ def emit_pre_compact(payload: dict[str, Any]) -> None:
         return
 
     cwd = extract_cwd(payload)
-    workflow_files_for_cwd(cwd, create_repo_files=True)
+    workflow_files_for_cwd_with_memory_dir(cwd, ".claude", create_repo_files=True)
 
     print_json(
         {
@@ -547,7 +559,11 @@ def emit_session_end(payload: dict[str, Any]) -> None:
         return
 
     cwd = extract_cwd(payload)
-    tasks_file, lessons_file, _, _ = workflow_files_for_cwd(cwd, create_repo_files=True)
+    tasks_file, lessons_file, _, _ = workflow_files_for_cwd_with_memory_dir(
+        cwd,
+        ".claude",
+        create_repo_files=True,
+    )
 
     print_json(
             {
@@ -822,7 +838,7 @@ def emit_codex_notify(payload: dict[str, Any]) -> None:
     details_parts: list[str] = []
 
     cwd = extract_codex_string(payload, "cwd")
-    workflow_files_for_cwd(cwd, create_repo_files=True)
+    workflow_files_for_cwd_with_memory_dir(cwd, ".agent", create_repo_files=True)
     if cwd:
         details_parts.append(f"Working directory: {short_path(Path(cwd))}.")
 

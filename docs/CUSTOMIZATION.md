@@ -93,7 +93,7 @@ Notable defaults:
 
 Global Claude Code context/settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow.
 `claude/.claude/settings.json` includes Obsidian-oriented hooks (session start, pre-compact, session end, task completion, and note-write detection) backed by `scripts/claude-obsidian-hook.py`.
-Hook context resolves task planning files to the active project (`tasks/todo.md` and `tasks/lessons.md`) and auto-creates them when missing (repo root when available, otherwise the current workspace).
+Hook context resolves task planning files to the active project and auto-creates them when missing (repo root when available, otherwise the current workspace). Claude uses `.claude/tasks.md` and `.claude/lessons.md`; Codex uses `.agent/tasks.md` and `.agent/lessons.md`. These directories are intended as local agent working memory.
 Achievement candidates are intentionally low-noise: prefix Claude task-complete labels or Codex prompts with `achievement:`, `win:`, `impact:`, or `[achievement]` to capture only meaningful wins into `~/.knowledge/career/achievement-inbox.md`.
 Codex achievement capture is explicit-only: the marker must be in the latest user prompt, and duplicate candidates for the same source are ignored.
 Claude/Codex activity logs are local runtime artifacts (not tracked in git) and auto-create on first hook event.
@@ -105,7 +105,7 @@ Public Obsidian scaffold files are tracked in `obsidian/.knowledge/` (hub, plugi
 
 Obsidian vault files:
 
-Project execution files are localized to each project (`tasks/todo.md`, `tasks/lessons.md`); the files below are vault-wide references and trackers.
+Project execution files are localized to each project (`.claude/tasks.md`, `.claude/lessons.md`, `.agent/tasks.md`, `.agent/lessons.md`); the files below are vault-wide references and trackers.
 
 - `~/.knowledge/hub.md`
 - `~/.knowledge/setup/obsidian-plugins.md`

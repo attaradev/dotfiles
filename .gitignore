@@ -57,6 +57,8 @@ Brewfile.lock.json
 # ============================================
 # Temporary & Backup Files
 # ============================================
+/.agent/
+/.claude/
 *.swp
 *.swo
 *.bak

@@ -15,7 +15,7 @@
 
 ### 3. Self-Improvement Loop
 
-- After corrections, record lessons in the active project's `tasks/lessons.md` (create it if it does not exist).
+- After corrections, record lessons in the active project's `.claude/lessons.md` (create it if it does not exist).
 - Review relevant lessons before starting similar work.
 
 ### 4. Verification Before Done
@@ -39,7 +39,7 @@
 
 ## Task Management
 
-1. **Plan First**: Keep a checkable plan in the active project's `tasks/todo.md` (create it if it does not exist).
+1. **Plan First**: Keep a checkable plan in the active project's `.claude/tasks.md` (create it if it does not exist).
 2. **Track Progress**: Keep plan status current while working.
 3. **Document Results**: Summarize changes and verification in the task note.
 4. **Capture Learning**: Record lessons and meaningful wins when applicable.
@@ -47,6 +47,7 @@
 ## Obsidian Workflow
 
 - Treat `~/.knowledge` as the human user's personal system of record (`hub.md` is the entry note). Agents may propose or apply updates, but must never treat it as agent-owned memory.
+- Treat `.claude/` in the active project as Claude's ephemeral working memory (`.claude/tasks.md`, `.claude/lessons.md`).
 - Keep tasks, lessons, and achievements current when relevant.
 - Use templates in `~/.knowledge/_templates` for structured notes.
 - Write notes as human-readable reports: summarize outcome first, include verification evidence, and capture achievements with clear impact.
