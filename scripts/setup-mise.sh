@@ -155,10 +155,12 @@ sync_global_mise_tracks() {
     return 0
   fi
 
-  if mise use -g "${specs[@]}" >/dev/null 2>&1; then
+  local batch_output
+  if batch_output=$(mise use -g "${specs[@]}" 2>&1); then
     echo "✓ Synced ${#specs[@]} global mise tool track(s) from ~/.mise.toml"
   else
     echo "⚠️  Batch sync failed; falling back to per-tool sync."
+    [[ -n "$batch_output" ]] && echo "    $batch_output"
     local synced=0 failed=0
     for spec in "${specs[@]}"; do
       if mise use -g "$spec" >/dev/null 2>&1; then

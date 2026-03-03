@@ -283,7 +283,8 @@ MemoryDir = Literal[".claude", ".agent"]
 
 def workflow_files_for_cwd(
     cwd_hint: str | None = None,
-    memory_dir: MemoryDir = ".agent",
+    *,
+    memory_dir: MemoryDir,
     create_repo_files: bool = False,
 ) -> tuple[Path, Path, Path, bool]:
     workflow_root, is_repo_root = workflow_root_for_cwd(cwd_hint)
@@ -295,6 +296,11 @@ def workflow_files_for_cwd(
         ensure_markdown_log_exists(lessons_file, DEFAULT_REPO_LESSONS_FILE)
 
     return tasks_file, lessons_file, workflow_root, is_repo_root
+
+
+def ensure_workflow_files(cwd_hint: str | None, memory_dir: MemoryDir) -> None:
+    """Create workflow files if they don't exist (side-effect only)."""
+    workflow_files_for_cwd(cwd_hint, memory_dir=memory_dir, create_repo_files=True)
 
 
 def ensure_markdown_log_exists(path: Path, default_content: str) -> None:
@@ -418,12 +424,16 @@ def latest_level3_heading(markdown: str) -> str:
     return ""
 
 
-def build_obsidian_context(cwd_hint: str | None = None) -> str:
-    tasks_file, lessons_file, workflow_root, is_repo_root = workflow_files_for_cwd(
-        cwd_hint,
-        ".claude",
-        create_repo_files=True,
-    )
+def build_obsidian_context(
+    cwd_hint: str | None = None,
+    *,
+    resolved: tuple[Path, Path, Path, bool] | None = None,
+) -> str:
+    if resolved is None:
+        resolved = workflow_files_for_cwd(
+            cwd_hint, memory_dir=".claude", create_repo_files=True,
+        )
+    tasks_file, lessons_file, workflow_root, is_repo_root = resolved
     tasks_md = read_text(tasks_file)
     lessons_md = read_text(lessons_file)
     achievements_md = read_text(ACHIEVEMENTS_FILE)
@@ -482,9 +492,8 @@ def extract_cwd(payload: dict[str, Any]) -> str | None:
 def emit_session_start(payload: dict[str, Any]) -> None:
     session_id = extract_session_id(payload)
     cwd = extract_cwd(payload)
-    tasks_file, lessons_file, _, _ = workflow_files_for_cwd(
-        cwd, ".claude", create_repo_files=True,
-    )
+    resolved = workflow_files_for_cwd(cwd, memory_dir=".claude", create_repo_files=True)
+    tasks_file, lessons_file, _, _ = resolved
     if cwd:
         append_activity_entry(
             "session_start",
@@ -518,7 +527,7 @@ def emit_session_start(payload: dict[str, Any]) -> None:
             "suppressOutput": True,
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": build_obsidian_context(cwd),
+                "additionalContext": build_obsidian_context(cwd, resolved=resolved),
             },
         }
     )
@@ -529,6 +538,7 @@ def emit_pre_compact(payload: dict[str, Any]) -> None:
         return
 
     cwd = extract_cwd(payload)
+    # build_obsidian_context ensures workflow files exist via create_repo_files=True.
     print_json(
         {
             "suppressOutput": True,
@@ -548,9 +558,7 @@ def emit_session_end(payload: dict[str, Any]) -> None:
 
     cwd = extract_cwd(payload)
     tasks_file, lessons_file, _, _ = workflow_files_for_cwd(
-        cwd,
-        ".claude",
-        create_repo_files=True,
+        cwd, memory_dir=".claude",
     )
 
     print_json(
@@ -826,7 +834,7 @@ def emit_codex_notify(payload: dict[str, Any]) -> None:
     details_parts: list[str] = []
 
     cwd = extract_codex_string(payload, "cwd")
-    workflow_files_for_cwd(cwd, ".agent", create_repo_files=True)
+    ensure_workflow_files(cwd, ".agent")
     if cwd:
         details_parts.append(f"Working directory: {short_path(Path(cwd))}.")
 
