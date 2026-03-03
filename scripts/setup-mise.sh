@@ -140,30 +140,36 @@ extract_mise_tool_tracks() {
 
 sync_global_mise_tracks() {
   local config_path="$1"
-  local spec
-  local synced=0
-  local failed=0
 
   if [[ ! -f "$config_path" ]]; then
     return 0
   fi
 
+  local specs=()
+  local spec
   while IFS= read -r spec; do
-    [[ -z "$spec" ]] && continue
-
-    if mise use -g "$spec" >/dev/null 2>&1; then
-      synced=$((synced + 1))
-    else
-      failed=$((failed + 1))
-      echo "⚠️  Failed to sync global mise track: $spec"
-    fi
+    [[ -n "$spec" ]] && specs+=("$spec")
   done < <(extract_mise_tool_tracks "$config_path")
 
-  if (( synced > 0 )); then
-    echo "✓ Synced $synced global mise tool track(s) from ~/.mise.toml"
+  if (( ${#specs[@]} == 0 )); then
+    return 0
   fi
-  if (( failed > 0 )); then
-    echo "⚠️  Unable to sync $failed global mise tool track(s); continuing."
+
+  if mise use -g "${specs[@]}" >/dev/null 2>&1; then
+    echo "✓ Synced ${#specs[@]} global mise tool track(s) from ~/.mise.toml"
+  else
+    echo "⚠️  Batch sync failed; falling back to per-tool sync."
+    local synced=0 failed=0
+    for spec in "${specs[@]}"; do
+      if mise use -g "$spec" >/dev/null 2>&1; then
+        synced=$((synced + 1))
+      else
+        failed=$((failed + 1))
+        echo "⚠️  Failed to sync global mise track: $spec"
+      fi
+    done
+    (( synced > 0 )) && echo "✓ Synced $synced global mise tool track(s) from ~/.mise.toml"
+    (( failed > 0 )) && echo "⚠️  Unable to sync $failed global mise tool track(s); continuing."
   fi
 }
 
