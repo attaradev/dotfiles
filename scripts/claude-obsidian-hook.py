@@ -279,6 +279,148 @@ def workflow_root_for_cwd(cwd_hint: str | None = None) -> tuple[Path, bool]:
 
 
 MemoryDir = Literal[".claude", ".agent"]
+WORKFLOW_FILE_DEFAULTS: dict[str, str] = {
+    "tasks.md": DEFAULT_REPO_TASKS_FILE,
+    "lessons.md": DEFAULT_REPO_LESSONS_FILE,
+}
+
+
+def read_text_optional(path: Path) -> str | None:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+
+def write_text(path: Path, content: str) -> None:
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    except OSError:
+        return
+
+
+def file_mtime_ns(path: Path) -> int:
+    try:
+        return path.stat().st_mtime_ns
+    except OSError:
+        return -1
+
+
+def remove_file_like(path: Path) -> bool:
+    if not path.exists() and not path.is_symlink():
+        return True
+    if path.is_dir() and not path.is_symlink():
+        return False
+    try:
+        path.unlink()
+    except OSError:
+        return False
+    return True
+
+
+def create_relative_symlink(link_path: Path, target_path: Path) -> bool:
+    try:
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        relative_target = os.path.relpath(target_path, start=link_path.parent)
+    except OSError:
+        return False
+
+    if link_path.is_symlink():
+        try:
+            if os.readlink(link_path) == relative_target:
+                return True
+        except OSError:
+            pass
+
+    if not remove_file_like(link_path):
+        return False
+
+    try:
+        link_path.symlink_to(relative_target)
+    except OSError:
+        return False
+    return True
+
+
+def files_share_target(left: Path, right: Path) -> bool:
+    try:
+        return left.is_file() and right.is_file() and left.samefile(right)
+    except OSError:
+        return False
+
+
+def choose_source_markdown(
+    primary: Path,
+    secondary: Path,
+    default_content: str,
+) -> tuple[Path, str]:
+    primary_exists = primary.is_file()
+    secondary_exists = secondary.is_file()
+
+    if not primary_exists and not secondary_exists:
+        return primary, default_content
+
+    if primary_exists and not secondary_exists:
+        return primary, read_text_optional(primary) or default_content
+
+    if secondary_exists and not primary_exists:
+        return secondary, read_text_optional(secondary) or default_content
+
+    primary_content = read_text_optional(primary)
+    secondary_content = read_text_optional(secondary)
+    if primary_content is None and secondary_content is None:
+        return primary, default_content
+    if primary_content is None:
+        return secondary, secondary_content or default_content
+    if secondary_content is None:
+        return primary, primary_content
+    if primary_content == secondary_content:
+        return primary, primary_content
+
+    if file_mtime_ns(primary) >= file_mtime_ns(secondary):
+        return primary, primary_content
+    return secondary, secondary_content
+
+
+def sync_markdown_pair(primary: Path, secondary: Path, default_content: str) -> None:
+    for path in (primary, secondary):
+        if path.is_symlink() and not path.exists():
+            remove_file_like(path)
+
+    if files_share_target(primary, secondary):
+        return
+
+    source_path, source_content = choose_source_markdown(primary, secondary, default_content)
+    mirror_path = secondary if source_path == primary else primary
+
+    if source_path.is_symlink():
+        if not remove_file_like(source_path):
+            return
+    write_text(source_path, source_content)
+
+    if files_share_target(source_path, mirror_path):
+        return
+
+    if create_relative_symlink(mirror_path, source_path):
+        return
+
+    if mirror_path.is_symlink() and not remove_file_like(mirror_path):
+        return
+    write_text(mirror_path, source_content)
+
+
+def sync_workflow_memory_dirs(workflow_root: Path, *, preferred_memory_dir: MemoryDir) -> None:
+    secondary_memory_dir: MemoryDir
+    if preferred_memory_dir == ".claude":
+        secondary_memory_dir = ".agent"
+    else:
+        secondary_memory_dir = ".claude"
+
+    for filename, default_content in WORKFLOW_FILE_DEFAULTS.items():
+        preferred_file = workflow_root / preferred_memory_dir / filename
+        secondary_file = workflow_root / secondary_memory_dir / filename
+        sync_markdown_pair(preferred_file, secondary_file, default_content)
 
 
 def workflow_files_for_cwd(
@@ -292,8 +434,7 @@ def workflow_files_for_cwd(
     lessons_file = workflow_root / memory_dir / "lessons.md"
 
     if create_repo_files:
-        ensure_markdown_log_exists(tasks_file, DEFAULT_REPO_TASKS_FILE)
-        ensure_markdown_log_exists(lessons_file, DEFAULT_REPO_LESSONS_FILE)
+        sync_workflow_memory_dirs(workflow_root, preferred_memory_dir=memory_dir)
 
     return tasks_file, lessons_file, workflow_root, is_repo_root
 

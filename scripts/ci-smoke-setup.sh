@@ -57,6 +57,21 @@ search_count() {
   fi
 }
 
+assert_symlink_pair() {
+  local left="$1"
+  local right="$2"
+
+  if [[ -L "$left" || -L "$right" ]]; then
+    return 0
+  fi
+
+  echo "❌ Expected one of these files to be a symlink:"
+  echo "   $left"
+  echo "   $right"
+  ls -l "$left" "$right" 2>/dev/null || true
+  exit 1
+}
+
 write_mock xcode-select <<'EOF'
 #!/usr/bin/env bash
 if [[ "${1:-}" == "-p" ]]; then
@@ -442,8 +457,18 @@ test -f "$HOOK_CLAUDE_REPO/.claude/tasks.md"
 test -f "$HOOK_CLAUDE_REPO/.claude/lessons.md"
 test -f "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md"
 test -f "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md"
-test ! -f "$HOOK_CLAUDE_REPO/.agent/tasks.md"
-test ! -f "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
+test -f "$HOOK_CLAUDE_REPO/.agent/tasks.md"
+test -f "$HOOK_CLAUDE_REPO/.agent/lessons.md"
+test -f "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
+test -f "$HOOK_CLAUDE_WORKSPACE/.agent/lessons.md"
+cmp -s "$HOOK_CLAUDE_REPO/.claude/tasks.md" "$HOOK_CLAUDE_REPO/.agent/tasks.md"
+cmp -s "$HOOK_CLAUDE_REPO/.claude/lessons.md" "$HOOK_CLAUDE_REPO/.agent/lessons.md"
+cmp -s "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md" "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
+cmp -s "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md" "$HOOK_CLAUDE_WORKSPACE/.agent/lessons.md"
+assert_symlink_pair "$HOOK_CLAUDE_REPO/.claude/tasks.md" "$HOOK_CLAUDE_REPO/.agent/tasks.md"
+assert_symlink_pair "$HOOK_CLAUDE_REPO/.claude/lessons.md" "$HOOK_CLAUDE_REPO/.agent/lessons.md"
+assert_symlink_pair "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md" "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
+assert_symlink_pair "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md" "$HOOK_CLAUDE_WORKSPACE/.agent/lessons.md"
 search_q "^# Active Tasks$" "$HOOK_CLAUDE_REPO/.claude/tasks.md"
 search_q "^# Lessons Learned$" "$HOOK_CLAUDE_REPO/.claude/lessons.md"
 search_q "^# Active Tasks$" "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md"
@@ -462,6 +487,12 @@ OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex
 test -f "$HOOK_VAULT/setup/codex-activity-log.md"
 test -f "$HOOK_REPO/.agent/tasks.md"
 test -f "$HOOK_REPO/.agent/lessons.md"
+test -f "$HOOK_REPO/.claude/tasks.md"
+test -f "$HOOK_REPO/.claude/lessons.md"
+cmp -s "$HOOK_REPO/.agent/tasks.md" "$HOOK_REPO/.claude/tasks.md"
+cmp -s "$HOOK_REPO/.agent/lessons.md" "$HOOK_REPO/.claude/lessons.md"
+assert_symlink_pair "$HOOK_REPO/.agent/tasks.md" "$HOOK_REPO/.claude/tasks.md"
+assert_symlink_pair "$HOOK_REPO/.agent/lessons.md" "$HOOK_REPO/.claude/lessons.md"
 search_q "Agent turn complete" "$HOOK_VAULT/setup/codex-activity-log.md"
 search_q "User asked:" "$HOOK_VAULT/setup/codex-activity-log.md"
 search_q "Assistant replied:" "$HOOK_VAULT/setup/codex-activity-log.md"
@@ -481,6 +512,12 @@ OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex
 
 test -f "$HOOK_WORKSPACE/.agent/tasks.md"
 test -f "$HOOK_WORKSPACE/.agent/lessons.md"
+test -f "$HOOK_WORKSPACE/.claude/tasks.md"
+test -f "$HOOK_WORKSPACE/.claude/lessons.md"
+cmp -s "$HOOK_WORKSPACE/.agent/tasks.md" "$HOOK_WORKSPACE/.claude/tasks.md"
+cmp -s "$HOOK_WORKSPACE/.agent/lessons.md" "$HOOK_WORKSPACE/.claude/lessons.md"
+assert_symlink_pair "$HOOK_WORKSPACE/.agent/tasks.md" "$HOOK_WORKSPACE/.claude/tasks.md"
+assert_symlink_pair "$HOOK_WORKSPACE/.agent/lessons.md" "$HOOK_WORKSPACE/.claude/lessons.md"
 test ! -f "$HOOK_VAULT/tasks.md"
 test ! -f "$HOOK_VAULT/learning/lessons.md"
 search_q "^# Active Tasks$" "$HOOK_WORKSPACE/.agent/tasks.md"
