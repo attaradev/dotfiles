@@ -6,67 +6,66 @@ Keep this file aligned with `claude/.claude/CLAUDE.md` so Claude and Codex behav
 
 ### 1. Plan Mode Default
 
-- Use plan mode for non-trivial tasks (multi-step work, risky edits, or design decisions).
-- If execution diverges, stop and re-plan.
-- Use planning for both implementation and verification.
+- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions).
+- If something goes sideways, STOP and re-plan immediately. Do not keep pushing.
+- Use plan mode for verification steps, not just building.
+- Write detailed specs up front to reduce ambiguity.
 
 ### 2. Subagent Strategy
 
-- Use subagents for parallel research or execution on complex tasks.
+- Use subagents liberally to keep the main context window clean.
+- Offload research, exploration, and parallel analysis to subagents.
+- For complex problems, throw more compute at them via subagents.
 - Keep one clear objective per subagent.
 
 ### 3. Self-Improvement Loop
 
-- After corrections, record lessons in the active project's `.agent/lessons.md` (create it if it does not exist).
-- Review relevant lessons before starting similar work.
+- After ANY correction from the user, capture the lesson and apply it immediately.
+- Turn lessons into rules that prevent the same mistake.
+- Ruthlessly iterate on those rules until the mistake rate drops.
+- Do not create or rely on repo lesson files unless the user explicitly asks for them.
 
 ### 4. Verification Before Done
 
-- Do not mark work complete without validation.
-- For code changes, add or update tests that cover expected behavior and edge cases.
-- Run tests/checks and verify behavior changes when relevant.
-- Ensure final solutions can pass a senior/staff-level review.
-- State what you verified and what you could not verify.
+- Never mark a task complete without proving it works.
+- Diff behavior between the baseline and your changes when relevant.
+- Ask yourself: "Would a staff engineer approve this?"
+- Run tests, check logs, and demonstrate correctness.
 
 ### 5. Demand Elegance (Balanced)
 
-- Prefer clean, maintainable solutions for non-trivial changes.
-- For simple tasks, avoid over-engineering.
+- For non-trivial changes, pause and ask: "Is there a more elegant way?"
+- If a fix feels hacky, step back and implement the elegant solution.
+- Skip this for simple, obvious fixes. Do not over-engineer.
 - Challenge your own work before presenting it.
 
 ### 6. Autonomous Bug Fixing
 
-- Drive bug reports to root cause and fix end-to-end.
-- Use logs, errors, and failing tests as primary evidence.
+- When given a bug report, just fix it. Do not ask for hand-holding.
+- Point at logs, errors, and failing tests, then resolve them.
+- Require zero context switching from the user.
+- Go fix failing CI tests without being told how.
 
 ## Task Management
 
-1. **Plan First**: Keep a checkable plan in the active project's `.agent/tasks.md` (create it if it does not exist).
-2. **Track Progress**: Keep plan status current while working.
-3. **Document Results**: Summarize changes and verification in the task note.
-4. **Capture Learning**: Record lessons and meaningful wins when applicable.
+1. **Plan First**: Write a checkable plan in-chat or in planning tooling.
+2. **Verify Plan**: Sanity-check the approach before implementation.
+3. **Track Progress**: Mark plan items complete as you go.
+4. **Explain Changes**: Give a high-level summary as work progresses.
+5. **Document Results**: End with a short review and verification summary.
+6. **Avoid Task Files**: Do not create, load, or maintain repo task-list or lesson files unless the user explicitly asks.
 
-### Plan Persistence Rules
+### Planning Rules
 
-- For non-trivial work, create/update an entry in `.agent/tasks.md` before implementation.
-- Keep status/checklist current whenever scope or approach changes.
-- Before final handoff, record outcome + verification summary in the same task entry.
-- Do not rely only on transient plan/checklist tools; the task file is the persisted source of truth.
-- If current mode/policy blocks file writes, include the full current plan in-chat and explicitly note that task-file update is deferred.
-
-## Obsidian Workflow
-
-- Treat `~/.knowledge` as the human user's personal system of record (`hub.md` is the entry note). Agents may propose or apply updates, but must never treat it as agent-owned memory.
-- Treat `.agent/` in the active project as ephemeral agent working memory (`.agent/tasks.md`, `.agent/lessons.md`).
-- Keep tasks, lessons, and achievements current when relevant.
-- Use templates in `~/.knowledge/_templates` for structured notes.
-- Write notes as human-readable reports: summarize outcome first, include verification evidence, and capture achievements with clear impact.
+- Re-state or refresh the plan whenever scope or approach changes.
+- Treat the in-chat plan or planning tool state as the working source of truth.
+- Model domain like a staff engineer
 
 ## Core Principles
 
-- **Simplicity First**: Keep changes as simple and focused as possible.
-- **Root Cause Over Patch**: Favor durable fixes over temporary workarounds.
-- **Minimal Impact**: Touch only what is necessary and avoid regressions.
+- **Simplicity First**: Make every change as simple as possible. Touch the minimum code necessary.
+- **No Laziness**: Find root causes. Do not ship temporary fixes. Hold work to senior-engineer standards.
+- **Minimal Impact**: Change only what is necessary and avoid introducing bugs.
 
 ## Safety and Git Rules
 
