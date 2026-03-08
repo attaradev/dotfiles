@@ -86,7 +86,7 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 - GPG configuration via `scripts/setup-gnupg.sh` with `pinentry-mac` and non-destructive defaults
 - VSCode extensions via `scripts/setup-vscode.sh` (when `code` CLI is present, unless skipped)
 - Claude Code global context/settings via `~/.claude/CLAUDE.md` and `~/.claude/settings.json`
-- Codex CLI defaults/notifications via `~/.codex/config.toml` (Obsidian activity logging)
+- Codex CLI defaults via `~/.codex/config.toml`
 - Codex user instructions via `~/.codex/AGENTS.md` (tracked at `codex/.codex/AGENTS.md`)
 
 ## Managed Runtime and Tooling Tracks

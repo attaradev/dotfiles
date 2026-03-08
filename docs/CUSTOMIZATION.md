@@ -92,14 +92,8 @@ Notable defaults:
 ## Claude and Codex Context
 
 Global Claude Code context/settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow.
-`claude/.claude/settings.json` includes Obsidian-oriented hooks (session start, pre-compact, session end, task completion, and note-write detection) backed by `scripts/claude-obsidian-hook.py`.
-Hook context resolves task planning files to the active project and auto-creates them when missing (repo root when available, otherwise the current workspace). Claude uses `.claude/tasks.md` and `.claude/lessons.md`; Codex uses `.agent/tasks.md` and `.agent/lessons.md`. The hook keeps these pairs synced (`tasks.md`, `lessons.md`) using relative symlinks when possible, with copy fallback when symlinks are unavailable. These directories are intended as local agent working memory.
 Plan persistence: Claude persists plans in `.claude/tasks.md` and Codex persists plans in `.agent/tasks.md`. Agents should update those files at plan start, on material plan changes, and at completion with verification notes. If writes are restricted in a given mode, the plan should be shown in-chat and persisted once writable.
-Achievement candidates are intentionally low-noise: prefix Claude task-complete labels or Codex prompts with `achievement:`, `win:`, `impact:`, or `[achievement]` to capture only meaningful wins into `~/.knowledge/career/achievement-inbox.md`.
-Codex achievement capture is explicit-only: the marker must be in the latest user prompt, and duplicate candidates for the same source are ignored.
-Claude/Codex activity logs are local runtime artifacts (not tracked in git) and auto-create on first hook event.
-Codex CLI defaults/notifications are tracked at `codex/.codex/config.toml`, then symlinked to `~/.codex/config.toml` by stow.
-`codex/.codex/config.toml` uses Codex `notify` to call `scripts/claude-obsidian-hook.py codex-notify`, which appends human-readable turn reports to Obsidian.
+Codex CLI defaults are tracked at `codex/.codex/config.toml`, then symlinked to `~/.codex/config.toml` by stow.
 Codex user behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in `~/.codex/config.toml`.
 `~/.codex/AGENTS.md` mirrors `claude/.claude/CLAUDE.md` so both agents follow the same workflow expectations.
 Public Obsidian scaffold files are tracked in `obsidian/.knowledge/` (hub, plugin note, templates). Personal vault content stays local in `~/.knowledge` and is not tracked in git.
@@ -117,14 +111,8 @@ Project execution files are localized to each project (`.claude/tasks.md`, `.cla
 - `~/.knowledge/learning/courses.md`
 - `~/.knowledge/learning/studies.md`
 - `~/.knowledge/learning/lessons.md`
-- `~/.knowledge/career/achievement-inbox.md`
 - `~/.knowledge/career/achievement-log.md`
 - `~/.knowledge/_templates/*.md`
-
-Auto-generated local-only files:
-
-- `~/.knowledge/setup/claude-activity-log.md`
-- `~/.knowledge/setup/codex-activity-log.md`
 
 Initialize missing local vault files with:
 

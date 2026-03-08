@@ -306,7 +306,6 @@ Use this as the landing page in Obsidian.
 - [Books Tracker](reading/books.md)
 - [Articles Tracker](reading/articles.md)
 - [Lessons Learned](learning/lessons.md)
-- [Achievement Inbox](career/achievement-inbox.md)
 - [Achievement Log](career/achievement-log.md)
 - [Plugin Setup](setup/obsidian-plugins.md)
 EOF
@@ -558,26 +557,6 @@ Capture repeatable lessons from mistakes, regressions, and rework.
 - New rule:
 - Enforcement check:
 ```
-
-## Entries
-EOF
-
-  write_if_missing "$VAULT_DIR/career/achievement-inbox.md" <<'EOF'
-# Achievement Inbox
-
-Auto-captured achievement candidates from Claude task completion events and
-Codex notify events.
-Keep this as an intake queue and promote polished entries into
-`achievement-log.md`.
-Hook-generated entries are structured for quick review and easy promotion.
-
-## How To Use
-
-- Capture only intentional wins by prefixing task-complete titles with
-  `achievement:`, `win:`, or `impact:`.
-- Keep entries concise and outcome-first.
-- Promote final, evidence-backed entries to `achievement-log.md`.
-- Prune stale or low-value candidates during weekly review.
 
 ## Entries
 EOF

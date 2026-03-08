@@ -5,69 +5,7 @@
     ]
   },
   "enabledPlugins": {
-    "gopls-lsp@claude-plugins-official": true
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.dotfiles/scripts/claude-obsidian-hook.py session-start",
-            "timeout": 15,
-            "statusMessage": "Loading Obsidian workflow context"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "matcher": "manual|auto",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.dotfiles/scripts/claude-obsidian-hook.py pre-compact",
-            "timeout": 15,
-            "statusMessage": "Refreshing Obsidian compact context"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.dotfiles/scripts/claude-obsidian-hook.py session-end",
-            "timeout": 10,
-            "statusMessage": "Finalizing Obsidian workflow reminders"
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.dotfiles/scripts/claude-obsidian-hook.py task-completed",
-            "timeout": 10,
-            "statusMessage": "Recording task completion in Obsidian"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.dotfiles/scripts/claude-obsidian-hook.py post-tool-write-edit",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
+    "gopls-lsp@claude-plugins-official": true,
+    "modern-go-guidelines@goland-claude-marketplace": true
   }
 }

@@ -148,7 +148,6 @@ test -e ~/.knowledge/reading/articles.md
 test -e ~/.knowledge/learning/courses.md
 test -e ~/.knowledge/learning/studies.md
 test -e ~/.knowledge/learning/lessons.md
-test -e ~/.knowledge/career/achievement-inbox.md
 test -e ~/.knowledge/career/achievement-log.md
 test -e ~/.knowledge/.obsidian/core-plugins.json
 test -e ~/.knowledge/.obsidian/community-plugins.json
@@ -170,11 +169,4 @@ ruby -v
 java -version
 rustc --version
 cargo --version
-```
-
-After first Claude/Codex hook events, verify local activity logs exist:
-
-```bash
-test -e ~/.knowledge/setup/claude-activity-log.md
-test -e ~/.knowledge/setup/codex-activity-log.md
 ```

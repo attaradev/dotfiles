@@ -11,11 +11,8 @@ Your personal dashboard for work, learning, and outcomes.
 - [Books Tracker](reading/books.md)
 - [Articles Tracker](reading/articles.md)
 - [Lessons Learned](learning/lessons.md)
-- [Achievement Inbox](career/achievement-inbox.md)
 - [Achievement Log](career/achievement-log.md)
 - [Plugin Setup](setup/obsidian-plugins.md)
-- [Claude Activity Log](setup/claude-activity-log.md) (auto-generated)
-- [Codex Activity Log](setup/codex-activity-log.md) (auto-generated)
 
 ## Weekly Workflow
 

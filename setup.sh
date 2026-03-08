@@ -543,7 +543,6 @@ verify_obsidian_setup() {
     "$HOME/.knowledge/learning/courses.md"
     "$HOME/.knowledge/learning/studies.md"
     "$HOME/.knowledge/learning/lessons.md"
-    "$HOME/.knowledge/career/achievement-inbox.md"
     "$HOME/.knowledge/career/achievement-log.md"
   )
 

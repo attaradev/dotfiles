@@ -35,7 +35,6 @@ BACKUP_ARTIFACTS = \
 	$(HOME)/.knowledge/learning/courses.md.backup \
 	$(HOME)/.knowledge/learning/studies.md.backup \
 	$(HOME)/.knowledge/learning/lessons.md.backup \
-	$(HOME)/.knowledge/career/achievement-inbox.md.backup \
 	$(HOME)/.knowledge/career/achievement-log.md.backup \
 	$(HOME)/.knowledge/setup/obsidian-plugins.md.backup \
 	$(HOME)/.knowledge/_templates/*.md.backup \

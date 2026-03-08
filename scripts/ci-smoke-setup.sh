@@ -46,32 +46,6 @@ search_q() {
   fi
 }
 
-search_count() {
-  local pattern="$1"
-  local file="$2"
-
-  if command -v rg >/dev/null 2>&1; then
-    rg -c -- "$pattern" "$file" || true
-  else
-    grep -Ec -- "$pattern" "$file" || true
-  fi
-}
-
-assert_symlink_pair() {
-  local left="$1"
-  local right="$2"
-
-  if [[ -L "$left" || -L "$right" ]]; then
-    return 0
-  fi
-
-  echo "❌ Expected one of these files to be a symlink:"
-  echo "   $left"
-  echo "   $right"
-  ls -l "$left" "$right" 2>/dev/null || true
-  exit 1
-}
-
 write_mock xcode-select <<'EOF'
 #!/usr/bin/env bash
 if [[ "${1:-}" == "-p" ]]; then
@@ -255,11 +229,24 @@ if [[ -L "$TEST_HOME/.mise.toml" ]]; then
   echo "❌ Expected ~/.mise.toml to be a local file, not a symlink"
   exit 1
 fi
+test -f "$TEST_HOME/.claude/settings.json"
 test -f "$TEST_HOME/.codex/config.toml"
 test -f "$TEST_HOME/.codex/AGENTS.md"
 test -f "$TEST_HOME/.knowledge/hub.md"
 test -f "$TEST_HOME/.knowledge/tasks.md"
 test -f "$TEST_HOME/.knowledge/career/achievement-log.md"
+
+if search_q '"hooks"' "$TEST_HOME/.claude/settings.json"; then
+  echo "❌ Expected ~/.claude/settings.json to ship without Claude hooks"
+  cat "$TEST_HOME/.claude/settings.json"
+  exit 1
+fi
+
+if search_q '^notify\\s*=' "$TEST_HOME/.codex/config.toml"; then
+  echo "❌ Expected ~/.codex/config.toml to ship without Codex notify hooks"
+  cat "$TEST_HOME/.codex/config.toml"
+  exit 1
+fi
 
 OPTIONAL_CASK_ENV_FILE="$TMP_DIR/optional-casks.env"
 cat > "$OPTIONAL_CASK_ENV_FILE" <<'EOF'
@@ -411,141 +398,6 @@ done
 if ! cmp -s "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER"; then
   echo "❌ Obsidian setup is not idempotent; file metadata changed on second run"
   diff -u "$OBS_STATE_BEFORE" "$OBS_STATE_AFTER" || true
-  exit 1
-fi
-
-# Validate human-readable hook output for activity reports and achievements.
-HOOK_VAULT="$TMP_DIR/hook-vault"
-mkdir -p "$HOOK_VAULT"
-HOOK_CLAUDE_REPO="$TMP_DIR/hook-claude-repo"
-HOOK_CLAUDE_REPO_WORKDIR="$HOOK_CLAUDE_REPO/src/app"
-HOOK_CLAUDE_WORKSPACE="$TMP_DIR/hook-claude-workspace"
-HOOK_REPO="$TMP_DIR/hook-repo"
-HOOK_REPO_WORKDIR="$HOOK_REPO/src/app"
-HOOK_WORKSPACE="$TMP_DIR/hook-workspace"
-
-mkdir -p "$HOOK_CLAUDE_REPO_WORKDIR"
-mkdir -p "$HOOK_CLAUDE_WORKSPACE"
-mkdir -p "$HOOK_REPO_WORKDIR"
-mkdir -p "$HOOK_WORKSPACE"
-git -C "$HOOK_CLAUDE_REPO" init -q
-git -C "$HOOK_REPO" init -q
-
-printf '{"task":"achievement: Wrote a clearer deployment report for teammates","session_id":"session-1234567890"}' \
-  | OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py task-completed >/dev/null
-
-test -f "$HOOK_VAULT/setup/claude-activity-log.md"
-test -f "$HOOK_VAULT/career/achievement-inbox.md"
-search_q "Task completed" "$HOOK_VAULT/setup/claude-activity-log.md"
-search_q "^### .*\\| Candidate Achievement$" "$HOOK_VAULT/career/achievement-inbox.md"
-search_q "^- Outcome: Wrote a clearer deployment report for teammates$" "$HOOK_VAULT/career/achievement-inbox.md"
-search_q "^- Source: Claude task completed" "$HOOK_VAULT/career/achievement-inbox.md"
-
-if search_q "event=" "$HOOK_VAULT/setup/claude-activity-log.md"; then
-  echo "❌ Claude activity log still contains machine-style event fields"
-  cat "$HOOK_VAULT/setup/claude-activity-log.md"
-  exit 1
-fi
-
-printf '{"cwd":"%s","session_id":"session-claude-repo-1234567890"}' "$HOOK_CLAUDE_REPO_WORKDIR" \
-  | OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py session-start >/dev/null
-
-printf '{"cwd":"%s","session_id":"session-claude-workspace-1234567890"}' "$HOOK_CLAUDE_WORKSPACE" \
-  | OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py session-start >/dev/null
-
-test -f "$HOOK_CLAUDE_REPO/.claude/tasks.md"
-test -f "$HOOK_CLAUDE_REPO/.claude/lessons.md"
-test -f "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md"
-test -f "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md"
-test -f "$HOOK_CLAUDE_REPO/.agent/tasks.md"
-test -f "$HOOK_CLAUDE_REPO/.agent/lessons.md"
-test -f "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
-test -f "$HOOK_CLAUDE_WORKSPACE/.agent/lessons.md"
-cmp -s "$HOOK_CLAUDE_REPO/.claude/tasks.md" "$HOOK_CLAUDE_REPO/.agent/tasks.md"
-cmp -s "$HOOK_CLAUDE_REPO/.claude/lessons.md" "$HOOK_CLAUDE_REPO/.agent/lessons.md"
-cmp -s "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md" "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
-cmp -s "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md" "$HOOK_CLAUDE_WORKSPACE/.agent/lessons.md"
-assert_symlink_pair "$HOOK_CLAUDE_REPO/.claude/tasks.md" "$HOOK_CLAUDE_REPO/.agent/tasks.md"
-assert_symlink_pair "$HOOK_CLAUDE_REPO/.claude/lessons.md" "$HOOK_CLAUDE_REPO/.agent/lessons.md"
-assert_symlink_pair "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md" "$HOOK_CLAUDE_WORKSPACE/.agent/tasks.md"
-assert_symlink_pair "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md" "$HOOK_CLAUDE_WORKSPACE/.agent/lessons.md"
-search_q "^# Active Tasks$" "$HOOK_CLAUDE_REPO/.claude/tasks.md"
-search_q "^# Lessons Learned$" "$HOOK_CLAUDE_REPO/.claude/lessons.md"
-search_q "^# Active Tasks$" "$HOOK_CLAUDE_WORKSPACE/.claude/tasks.md"
-search_q "^# Lessons Learned$" "$HOOK_CLAUDE_WORKSPACE/.claude/lessons.md"
-
-codex_payload="$(jq -cn --arg cwd "$HOOK_REPO_WORKDIR" '{
-  "type":"agent-turn-complete",
-  "thread-id":"thread-abcdef1234567890",
-  "cwd":$cwd,
-  "input-messages":["impact: Reduced CI rerun rate with clearer reports"],
-  "last-assistant-message":"Added a concise summary section and evidence bullets."
-}')"
-
-OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
-
-test -f "$HOOK_VAULT/setup/codex-activity-log.md"
-test -f "$HOOK_REPO/.agent/tasks.md"
-test -f "$HOOK_REPO/.agent/lessons.md"
-test -f "$HOOK_REPO/.claude/tasks.md"
-test -f "$HOOK_REPO/.claude/lessons.md"
-cmp -s "$HOOK_REPO/.agent/tasks.md" "$HOOK_REPO/.claude/tasks.md"
-cmp -s "$HOOK_REPO/.agent/lessons.md" "$HOOK_REPO/.claude/lessons.md"
-assert_symlink_pair "$HOOK_REPO/.agent/tasks.md" "$HOOK_REPO/.claude/tasks.md"
-assert_symlink_pair "$HOOK_REPO/.agent/lessons.md" "$HOOK_REPO/.claude/lessons.md"
-search_q "Agent turn complete" "$HOOK_VAULT/setup/codex-activity-log.md"
-search_q "User asked:" "$HOOK_VAULT/setup/codex-activity-log.md"
-search_q "Assistant replied:" "$HOOK_VAULT/setup/codex-activity-log.md"
-search_q "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md"
-search_q "^# Active Tasks$" "$HOOK_REPO/.agent/tasks.md"
-search_q "^# Lessons Learned$" "$HOOK_REPO/.agent/lessons.md"
-
-codex_workspace_payload="$(jq -cn --arg cwd "$HOOK_WORKSPACE" '{
-  "type":"agent-turn-complete",
-  "thread-id":"thread-workspace-1234567890",
-  "cwd":$cwd,
-  "input-messages":["plain question in non-repo workspace"],
-  "last-assistant-message":"Captured workspace-scoped planning files."
-}')"
-
-OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_workspace_payload" >/dev/null
-
-test -f "$HOOK_WORKSPACE/.agent/tasks.md"
-test -f "$HOOK_WORKSPACE/.agent/lessons.md"
-test -f "$HOOK_WORKSPACE/.claude/tasks.md"
-test -f "$HOOK_WORKSPACE/.claude/lessons.md"
-cmp -s "$HOOK_WORKSPACE/.agent/tasks.md" "$HOOK_WORKSPACE/.claude/tasks.md"
-cmp -s "$HOOK_WORKSPACE/.agent/lessons.md" "$HOOK_WORKSPACE/.claude/lessons.md"
-assert_symlink_pair "$HOOK_WORKSPACE/.agent/tasks.md" "$HOOK_WORKSPACE/.claude/tasks.md"
-assert_symlink_pair "$HOOK_WORKSPACE/.agent/lessons.md" "$HOOK_WORKSPACE/.claude/lessons.md"
-test ! -f "$HOOK_VAULT/tasks.md"
-test ! -f "$HOOK_VAULT/learning/lessons.md"
-search_q "^# Active Tasks$" "$HOOK_WORKSPACE/.agent/tasks.md"
-search_q "^# Lessons Learned$" "$HOOK_WORKSPACE/.agent/lessons.md"
-
-# Ensure achievements are not captured from every prompt:
-# only latest explicit marker is captured and duplicates are suppressed.
-codex_non_achievement_payload="$(jq -cn --arg cwd "$HOOK_REPO_WORKDIR" '{
-  "type":"agent-turn-complete",
-  "thread-id":"thread-abcdef1234567890",
-  "cwd":$cwd,
-  "input-messages":["achievement: old marker from previous turn","plain follow-up question"],
-  "last-assistant-message":"No achievement marker here."
-}')"
-
-OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_non_achievement_payload" >/dev/null
-OBSIDIAN_VAULT_DIR="$HOOK_VAULT" python3 ./scripts/claude-obsidian-hook.py codex-notify "$codex_payload" >/dev/null
-
-codex_achievement_count="$(search_count "^- Source: Codex notify" "$HOOK_VAULT/career/achievement-inbox.md")"
-if [[ "$codex_achievement_count" != "1" ]]; then
-  echo "❌ Codex achievement capture should be explicit and de-duplicated; expected 1 entry, got $codex_achievement_count"
-  cat "$HOOK_VAULT/career/achievement-inbox.md"
-  exit 1
-fi
-
-if search_q "user=|assistant=|event=" "$HOOK_VAULT/setup/codex-activity-log.md"; then
-  echo "❌ Codex activity log still contains machine-style telemetry fields"
-  cat "$HOOK_VAULT/setup/codex-activity-log.md"
   exit 1
 fi
 
