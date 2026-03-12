@@ -139,7 +139,7 @@ cask "claude-code"                  # AI-powered coding assistant with CLI integ
 cask "codex"                        # AI-powered coding assistant
 cask "antigravity" if optional_enabled?("ANTIGRAVITY")    # AI coding agent IDE
 cask "postman"                      # API development and testing platform
-cask "postgres-unofficial"          # PostgreSQL database (Postgres.app) - supports multiple versions
+cask "postgres-app"                 # PostgreSQL database (Postgres.app) - supports multiple versions
 
 # --- Containers & Virtualization ---
 cask "docker-desktop"               # Containerization platform (includes Docker CLI and daemon)
