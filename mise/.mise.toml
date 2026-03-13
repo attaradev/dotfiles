@@ -6,6 +6,7 @@ go = "1.26"
 ruby = "4.0"
 pnpm = "10"
 npm = "11"
+claude-code = "latest"
 
 [env]
 npm_config_user_agent = "pnpm"
