@@ -2,6 +2,9 @@
 
 This repository keeps only shareable configuration in version control. Secrets and machine-specific credentials stay local.
 
+When in doubt, prefer the local override file for that tool over editing a
+tracked dotfile.
+
 ## Never Commit Sensitive Files
 
 The following must stay out of git history:
@@ -20,6 +23,7 @@ These patterns are covered by [.gitignore](.gitignore).
 ### Git configuration (`git/.gitconfig`)
 
 - Includes local overrides from `~/.gitconfig.local`
+- Keeps user identity, signing, and other machine-specific Git settings out of the tracked file
 - Uses macOS Keychain credential helper (`osxkeychain`)
 - Enforces fast-forward pulls (`pull.ff=only`)
 - Enables transfer and receive object checks (`fsckObjects=true`)
@@ -51,7 +55,7 @@ This means signing is conditional, not universally forced.
 - Sets agent cache timeout defaults
 - Enables key retrieval and fingerprint-friendly output in `gpg.conf`
 
-### Obsidian plugin installer (`scripts/setup-obsidian.sh`)
+### Obsidian plugin installer (`scripts/obsidian.sh setup`)
 
 - Installs community plugins from pinned lock data in `obsidian/community-plugin-lock.json`
 - Verifies SHA-256 checksums for each downloaded plugin asset before install
@@ -61,6 +65,7 @@ This means signing is conditional, not universally forced.
 
 - `npm/.npmrc` avoids hardcoded tokens (use `~/.npmrc.local`)
 - `zsh/.zshrc` sets safer shell defaults (`NO_CLOBBER`, history filtering, strict umask)
+- Machine-specific shell aliases, exports, and PATH changes belong in `~/.zshrc.local` or `~/.zshrc.local.d/*.zsh`
 
 ## Verify Your Local Security State
 

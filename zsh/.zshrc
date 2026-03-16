@@ -5,8 +5,8 @@
 # Performance: disable auto-update checks
 DISABLE_AUTO_UPDATE="true"
 
-# Keep PATH entries unique while preserving the first occurrence.
-typeset -U path PATH
+# Keep PATH and completion search paths unique while preserving the first occurrence.
+typeset -U path PATH fpath FPATH
 
 # ============================================
 # Homebrew Setup
@@ -16,6 +16,53 @@ if [[ -f "/opt/homebrew/bin/brew" ]]; then
 elif [[ -f "/usr/local/bin/brew" ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
+
+# Resolve Homebrew paths once so plugins and helpers can reuse the prefix.
+if command -v brew &> /dev/null; then
+  BREW_PREFIX="$(brew --prefix 2>/dev/null || true)"
+fi
+
+# Keep Homebrew binaries ahead of mise-managed binaries (for tools like Tilt.dev).
+prioritize_homebrew_path() {
+  if [[ -d "/opt/homebrew/bin" ]]; then
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+  elif [[ -d "/usr/local/bin" ]]; then
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+  fi
+}
+prioritize_homebrew_path
+
+# Docker Desktop may append its own completion block to ~/.zshrc. Strip it on
+# the next shell start so the portable stanza below stays the canonical source.
+_dotfiles_sanitize_docker_desktop_block() {
+  if (( ${_DOTFILES_DOCKER_SANITIZE_DONE:-0} )); then return 0; fi
+  typeset -g _DOTFILES_DOCKER_SANITIZE_DONE=1
+
+  local zshrc_path="${ZDOTDIR:-$HOME}/.zshrc"
+  local marker='# The following lines have been added by Docker Desktop to enable Docker CLI completions.'
+  [[ -e "$zshrc_path" ]] || return 0
+  grep -Fq "$marker" "$zshrc_path" 2>/dev/null || return 0
+
+  local target_path="${zshrc_path:A}"
+  [[ -f "$target_path" ]] || return 0
+
+  local tmp_file
+  tmp_file="$(mktemp "${target_path:h}/.docker-zshrc-sanitize.XXXXXX")" || return 0
+
+  local _awk_rc=0
+  awk -v start="$marker" -v end='# End of Docker CLI completions' '
+    $0 == start { skip=1; next }
+    skip { if ($0 == end) skip=0; next }
+    { print }
+  ' "$target_path" >"$tmp_file" || _awk_rc=$?
+
+  if (( _awk_rc == 0 )) && ! cmp -s "$target_path" "$tmp_file"; then
+    mv "$tmp_file" "$target_path"
+  else
+    rm -f "$tmp_file"
+  fi
+}
+_dotfiles_sanitize_docker_desktop_block
 
 # ============================================
 # History Configuration
@@ -46,20 +93,52 @@ setopt INTERACTIVE_COMMENTS # allow # comments in interactive shells
 # ============================================
 # Completion System
 # ============================================
-# Include Docker CLI completions when available.
-if [[ -d "$HOME/.docker/completions" ]]; then
-  fpath=("$HOME/.docker/completions" $fpath)
+# Include Docker CLI completions. Docker Desktop populates ~/.docker/completions
+# automatically; for plain docker CLI installs, generate and cache completions on
+# first run. Use `~` so Docker Desktop can detect the portable stanza.
+if [[ ! -d ~/.docker/completions ]] && command -v docker &>/dev/null; then
+  mkdir -p ~/.docker/completions
+  docker completion zsh >~/.docker/completions/_docker 2>/dev/null \
+    || { rm -f ~/.docker/completions/_docker; rmdir ~/.docker/completions 2>/dev/null || true; }
+fi
+if [[ -d ~/.docker/completions ]]; then
+  fpath=(~/.docker/completions $fpath)
 fi
 
 autoload -Uz compinit
 # Only check compinit once a day for performance
 ZCOMPDUMP_FILE="${ZDOTDIR:-$HOME}/.zcompdump"
 zcompdump_stale=(${ZCOMPDUMP_FILE}(N.mh+24))
-if (( ${#zcompdump_stale[@]} > 0 )) || [[ ! -f "$ZCOMPDUMP_FILE" ]]; then
-  compinit
-else
-  compinit -C
-fi
+dotfiles_run_compinit_once() {
+  local _rc
+
+  if (( ${_DOTFILES_COMPINIT_RAN:-0} )); then
+    return 0
+  fi
+
+  typeset -g _DOTFILES_COMPINIT_RAN=1
+  unalias compinit 2>/dev/null || true
+
+  if (( $# > 0 )); then
+    compinit "$@"
+  elif (( ${#zcompdump_stale[@]} > 0 )) || [[ ! -f "$ZCOMPDUMP_FILE" ]]; then
+    compinit
+  else
+    compinit -C
+  fi
+  _rc=$?
+
+  if (( _rc == 0 )); then
+    alias compinit=':'
+    return 0
+  fi
+
+  typeset -g _DOTFILES_COMPINIT_RAN=0
+  alias compinit='dotfiles_run_compinit_once'
+  return "$_rc"
+}
+alias compinit='dotfiles_run_compinit_once'
+compinit
 
 # Case-insensitive completion
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
@@ -78,28 +157,11 @@ if command -v mise &> /dev/null; then
     export PATH="$MISE_SHIMS_DIR:$PATH"
   fi
 
-  # Setup pnpm path if installed via mise
-  export PNPM_HOME="$HOME/.local/share/mise/installs/pnpm/latest/bin"
-  if [[ -d "$PNPM_HOME" ]]; then
-    export PATH="$PNPM_HOME:$PATH"
-  fi
 fi
-
-# Keep Homebrew binaries ahead of mise-managed binaries (for tools like Tilt.dev).
-prioritize_homebrew_path() {
-  if [[ -d "/opt/homebrew/bin" ]]; then
-    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-  elif [[ -d "/usr/local/bin" ]]; then
-    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
-  fi
-}
-prioritize_homebrew_path
 
 # Prefer Tilt.dev over Ruby gem `tilt` executable when both are present.
 if [[ -x "/opt/homebrew/bin/tilt" ]]; then
   alias tilt='/opt/homebrew/bin/tilt'
-elif [[ -x "/usr/local/bin/tilt" ]]; then
-  alias tilt='/usr/local/bin/tilt'
 fi
 
 # ============================================
@@ -126,10 +188,6 @@ fi
 # ============================================
 # ZSH Plugins (via Homebrew)
 # ============================================
-if command -v brew &> /dev/null; then
-  BREW_PREFIX="$(brew --prefix 2>/dev/null || true)"
-fi
-
 # Fast syntax highlighting (loaded via Homebrew)
 if [[ -n "${BREW_PREFIX:-}" && -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
   source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
@@ -143,6 +201,39 @@ if [[ -n "${BREW_PREFIX:-}" && -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-au
   # Suggest from history only
   ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 fi
+
+# ============================================
+# Shell Functions
+# ============================================
+# Reusable commands that are clearer as functions than aliases.
+
+# Homebrew
+brewup() {
+  local dotfiles_dir
+  dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+  bash "$dotfiles_dir/scripts/brew.sh" upgrade "$@"
+}
+
+# Docker
+dstop() {
+  local -a container_ids
+  container_ids=("${(@f)$(docker ps -q)}")
+  if (( ${#container_ids[@]} == 0 )); then
+    echo "No running containers."
+    return 0
+  fi
+  docker stop "${container_ids[@]}"
+}
+
+drm() {
+  local -a container_ids
+  container_ids=("${(@f)$(docker ps -aq)}")
+  if (( ${#container_ids[@]} == 0 )); then
+    echo "No containers to remove."
+    return 0
+  fi
+  docker rm "${container_ids[@]}"
+}
 
 # ============================================
 # Aliases
@@ -199,7 +290,6 @@ alias zshconfig='code ~/.zshrc'
 alias dotfiles='cd ~/.dotfiles'
 
 # Homebrew
-alias brewup='brew upgrade --greedy && brew cleanup'
 alias brewdump='brew bundle dump --force --describe --file=~/.dotfiles/Brewfile'
 
 # pnpm (preferred over npm)
@@ -216,32 +306,33 @@ alias pnstart='pnpm start'
 alias pntest='pnpm test'
 
 # Docker
+# Base Docker
 alias dps='docker ps'
 alias dpsa='docker ps -a'
 alias di='docker images'
-dstop() {
-  local -a container_ids
-  container_ids=("${(@f)$(docker ps -q)}")
-  if (( ${#container_ids[@]} == 0 )); then
-    echo "No running containers."
-    return 0
-  fi
-  docker stop "${container_ids[@]}"
-}
-drm() {
-  local -a container_ids
-  container_ids=("${(@f)$(docker ps -aq)}")
-  if (( ${#container_ids[@]} == 0 )); then
-    echo "No containers to remove."
-    return 0
-  fi
-  docker rm "${container_ids[@]}"
-}
+alias dinspect='docker inspect'
+alias drun='docker run --rm -it'
 alias dprune='docker system prune -a'
 alias dbuild='docker build -t'
 alias dexec='docker exec -it'
 alias dlogs='docker logs'
+alias dlogsf='docker logs -f'
+alias dstart='docker start'
+alias drestart='docker restart'
+alias dpull='docker pull'
+alias dpush='docker push'
+
+# Docker Compose
+alias dc='docker compose'
+alias dcb='docker compose build'
+alias dce='docker compose exec'
+alias dcl='docker compose logs'
+alias dclf='docker compose logs -f'
+alias dcp='docker compose ps'
+alias dcr='docker compose run --rm'
 alias dcu='docker compose up'
+alias dcud='docker compose up -d'
+alias dcub='docker compose up --build -d'
 alias dcd='docker compose down'
 alias dcdv='docker compose down -v'
 
@@ -255,6 +346,11 @@ alias c='code .'
 # Editor
 export EDITOR='code'
 export VISUAL='code'
+
+# Local CLI installs
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
 
 # Better colors for ls
 export CLICOLOR=1
@@ -293,11 +389,6 @@ fi
 # Security: Verify SSH host keys
 export SSH_ASKPASS_REQUIRE=prefer
 
-# Add Antigravity CLI to PATH when installed locally.
-if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
-  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-fi
-
 # ============================================
 # Starship Prompt (must be at the end)
 # ============================================
@@ -307,6 +398,8 @@ fi
 
 # ============================================
 # Local customizations (not version controlled)
+# Put machine-specific aliases, exports, tokens, and host-only tweaks here
+# instead of editing the tracked zsh/.zshrc file.
 # ============================================
 if [[ -r "$HOME/.zshrc.local" ]]; then
   source "$HOME/.zshrc.local"

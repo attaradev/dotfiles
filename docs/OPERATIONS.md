@@ -38,6 +38,21 @@ cargo --version
 
 To add more runtimes or tools, add them to `~/.mise.toml` and rerun `make mise`.
 
+## Interactive Homebrew Helper
+
+For Homebrew-only updates from an interactive `zsh` session:
+
+```bash
+source ~/.zshrc
+brewup
+# or target a specific formula/cask:
+brewup docker-desktop
+```
+
+`brewup` is defined in `zsh/.zshrc`. It asks for your password once up front,
+then runs `brew upgrade --greedy` and `brew cleanup`. Use `make update` when
+you also want `mise`-managed runtimes and tools updated.
+
 To remove a previously added runtime/tool cleanly:
 
 ```bash
@@ -119,8 +134,7 @@ make smoke
 
 - `make lint-shell`
 - `make lint-docs`
-- `./scripts/check-readme-make-targets.sh`
-- `./scripts/check-no-absolute-host-paths.sh`
+- `./scripts/check.sh` (local-override enforcement, docs↔Makefile consistency, no absolute host paths)
 
 `make smoke` runs mocked end-to-end setup and validates Makefile wrapper paths (`make brew-check` and `make test`) propagate optional-cask env consistently.
 

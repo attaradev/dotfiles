@@ -10,16 +10,11 @@ PUBLIC_VAULT_SOURCE_DIR="$DOTFILES_DIR/obsidian/.knowledge"
 PLUGIN_LOCK_FILE="${DOTFILES_OBSIDIAN_PLUGIN_LOCK_FILE:-$DOTFILES_DIR/obsidian/community-plugin-lock.json}"
 TEMPLATES_FOLDER="_templates"
 VISIBLE_VAULT_ALIAS="${OBSIDIAN_VISIBLE_VAULT_ALIAS:-$HOME/Knowledge}"
+# shellcheck source=./lib.sh
+source "$DOTFILES_DIR/scripts/lib.sh"
 
-normalize_bool() {
-  local raw
-  raw="$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')"
-  case "$raw" in
-    1|y|yes|true|on) echo "1" ;;
-    0|n|no|false|off) echo "0" ;;
-    *) echo "0" ;;
-  esac
-}
+COMMAND="${1:-setup}"
+require_cmd jq
 
 print_info() {
   echo "ℹ $1"
@@ -315,7 +310,7 @@ EOF
   write_if_missing "$VAULT_DIR/setup/obsidian-plugins.md" <<'EOF'
 # Obsidian Plugin Operator Notes
 
-Plugin defaults are configured by `scripts/setup-obsidian.sh`.
+Plugin defaults are configured by `scripts/obsidian.sh`.
 EOF
 
   for template in \
@@ -578,14 +573,6 @@ Use this file to keep an evidence-backed record of high-impact outcomes.
 - Reusable bullet: One sentence suitable for review/resume packets.
 ```
 EOF
-}
-
-require_cmd() {
-  local cmd=$1
-  if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "❌ Missing required command: $cmd"
-    exit 1
-  fi
 }
 
 write_array_union() {
@@ -970,15 +957,18 @@ install_community_plugin() {
     return 1
   fi
 
-  repo="$(printf '%s' "$lock_entry" | jq -r '.repo // empty')"
-  tag_name="$(printf '%s' "$lock_entry" | jq -r '.tag // empty')"
-  release_id="$(printf '%s' "$lock_entry" | jq -r '.release_id // empty')"
-  manifest_url="$(printf '%s' "$lock_entry" | jq -r '.assets["manifest.json"].url // empty')"
-  manifest_sha="$(printf '%s' "$lock_entry" | jq -r '.assets["manifest.json"].sha256 // empty')"
-  main_url="$(printf '%s' "$lock_entry" | jq -r '.assets["main.js"].url // empty')"
-  main_sha="$(printf '%s' "$lock_entry" | jq -r '.assets["main.js"].sha256 // empty')"
-  styles_url="$(printf '%s' "$lock_entry" | jq -r '.assets["styles.css"].url // empty')"
-  styles_sha="$(printf '%s' "$lock_entry" | jq -r '.assets["styles.css"].sha256 // empty')"
+  IFS=$'\t' read -r repo tag_name release_id manifest_url manifest_sha main_url main_sha styles_url styles_sha \
+    < <(printf '%s' "$lock_entry" | jq -r '[
+        .repo // "",
+        .tag // "",
+        (.release_id | tostring? // ""),
+        .assets["manifest.json"].url // "",
+        .assets["manifest.json"].sha256 // "",
+        .assets["main.js"].url // "",
+        .assets["main.js"].sha256 // "",
+        .assets["styles.css"].url // "",
+        .assets["styles.css"].sha256 // ""
+      ] | @tsv')
 
   if [[ -z "$repo" || -z "$manifest_url" || -z "$manifest_sha" || -z "$main_url" || -z "$main_sha" ]]; then
     print_warning "Plugin lock entry incomplete for: $plugin_id"
@@ -1071,58 +1061,335 @@ install_community_plugins() {
   fi
 }
 
-require_cmd jq
-ensure_local_vault_directory
 
-seed_vault_files
-register_vault_with_obsidian_ui
+cmd_setup() {
+  ensure_local_vault_directory
 
-mkdir -p "$OBSIDIAN_CONFIG_DIR" "$PLUGINS_DIR"
+  seed_vault_files
+  register_vault_with_obsidian_ui
 
-CORE_PLUGINS=(
-  "file-explorer"
-  "global-search"
-  "switcher"
-  "templates"
-  "daily-notes"
-  "backlink"
-  "outgoing-link"
-  "tag-pane"
-  "bookmarks"
-  "command-palette"
-)
+  mkdir -p "$OBSIDIAN_CONFIG_DIR" "$PLUGINS_DIR"
 
-COMMUNITY_PLUGINS=(
-  "auto-classifier"
-  "quickadd"
-  "dataview"
-  "metadata-menu"
-  "obsidian-tasks-plugin"
-  "periodic-notes"
-  "calendar"
-  "obsidian-kanban"
-  "obsidian-linter"
-)
+  CORE_PLUGINS=(
+    "file-explorer"
+    "global-search"
+    "switcher"
+    "templates"
+    "daily-notes"
+    "backlink"
+    "outgoing-link"
+    "tag-pane"
+    "bookmarks"
+    "command-palette"
+  )
 
-CONFLICTING_COMMUNITY_PLUGINS=(
-  "templater-obsidian"
-  "omnisearch"
-)
+  COMMUNITY_PLUGINS=(
+    "auto-classifier"
+    "quickadd"
+    "dataview"
+    "metadata-menu"
+    "obsidian-tasks-plugin"
+    "periodic-notes"
+    "calendar"
+    "obsidian-kanban"
+    "obsidian-linter"
+  )
 
-configure_core_plugins "${CORE_PLUGINS[@]}"
-write_array_union "$OBSIDIAN_CONFIG_DIR/community-plugins.json" "${COMMUNITY_PLUGINS[@]}"
-write_array_without_values "$OBSIDIAN_CONFIG_DIR/community-plugins.json" "${CONFLICTING_COMMUNITY_PLUGINS[@]}"
-for plugin_id in "${CONFLICTING_COMMUNITY_PLUGINS[@]}"; do
-  remove_path_if_exists "$PLUGINS_DIR/$plugin_id"
-done
-configure_templates_settings
-install_community_plugins
-configure_dataview_plugin
-configure_metadata_menu_plugin
-configure_workspace_defaults
+  CONFLICTING_COMMUNITY_PLUGINS=(
+    "templater-obsidian"
+    "omnisearch"
+  )
 
-print_success "Obsidian vault configured at $VAULT_DIR"
-print_success "Knowledge vault files ensured at $VAULT_DIR"
-print_success "Core plugins enabled: ${CORE_PLUGINS[*]}"
-print_success "Community plugins enabled: ${COMMUNITY_PLUGINS[*]}"
-print_success "Community plugin assets verified using lock file: $PLUGIN_LOCK_FILE"
+  configure_core_plugins "${CORE_PLUGINS[@]}"
+  write_array_union "$OBSIDIAN_CONFIG_DIR/community-plugins.json" "${COMMUNITY_PLUGINS[@]}"
+  write_array_without_values "$OBSIDIAN_CONFIG_DIR/community-plugins.json" "${CONFLICTING_COMMUNITY_PLUGINS[@]}"
+  for plugin_id in "${CONFLICTING_COMMUNITY_PLUGINS[@]}"; do
+    remove_path_if_exists "$PLUGINS_DIR/$plugin_id"
+  done
+  configure_templates_settings
+  install_community_plugins
+  configure_dataview_plugin
+  configure_metadata_menu_plugin
+  configure_workspace_defaults
+
+  print_success "Obsidian vault configured at $VAULT_DIR"
+  print_success "Knowledge vault files ensured at $VAULT_DIR"
+  print_success "Core plugins enabled: ${CORE_PLUGINS[*]}"
+  print_success "Community plugins enabled: ${COMMUNITY_PLUGINS[*]}"
+  print_success "Community plugin assets verified using lock file: $PLUGIN_LOCK_FILE"
+}
+
+cmd_clean() {
+
+  if [[ ! -d "$PLUGINS_DIR" ]]; then
+    echo "ℹ No Obsidian plugin directory found at $PLUGINS_DIR"
+    exit 0
+  fi
+
+  if [[ ! -f "$PLUGIN_LOCK_FILE" ]]; then
+    echo "❌ Missing Obsidian plugin lock file: $PLUGIN_LOCK_FILE"
+    exit 1
+  fi
+
+  if ! jq -e '.schema_version == 1 and (.plugins | type == "object")' "$PLUGIN_LOCK_FILE" >/dev/null 2>&1; then
+    echo "❌ Invalid Obsidian plugin lock file format: $PLUGIN_LOCK_FILE"
+    exit 1
+  fi
+
+  keep_ids_json="$(jq -c '.plugins | keys' "$PLUGIN_LOCK_FILE")"
+  dry_run="$(normalize_bool "${DOTFILES_OBSIDIAN_CLEAN_DRY_RUN:-0}")"
+
+  removed=0
+  kept=0
+
+  shopt -s nullglob
+  for path in "$PLUGINS_DIR"/*; do
+    if [[ ! -d "$path" && ! -L "$path" ]]; then
+      continue
+    fi
+
+    plugin_id="$(basename "$path")"
+    if jq -n -e --arg id "$plugin_id" --argjson keep "$keep_ids_json" '$keep | index($id) != null' >/dev/null; then
+      kept=$((kept + 1))
+      continue
+    fi
+
+    if [[ "$dry_run" == "1" ]]; then
+      echo "ℹ Would remove unmanaged plugin: $plugin_id"
+    else
+      rm -rf "$path"
+      echo "✓ Removed unmanaged plugin: $plugin_id"
+    fi
+    removed=$((removed + 1))
+  done
+
+  if [[ "$dry_run" == "1" ]]; then
+    echo "ℹ Obsidian plugin cleanup dry-run complete (removed=$removed kept=$kept)."
+  else
+    echo "✓ Obsidian plugin cleanup complete (removed=$removed kept=$kept)."
+  fi
+}
+
+# Lock subcommand globals (checked by cleanup trap)
+_lock_auth_config_file=""
+_lock_tmp_lock_file=""
+_lock_cleanup() {
+  [[ -n "$_lock_auth_config_file" ]] && rm -f "$_lock_auth_config_file"
+  [[ -n "$_lock_tmp_lock_file" ]] && rm -f "$_lock_tmp_lock_file" "${_lock_tmp_lock_file}.new"
+  true
+}
+trap _lock_cleanup EXIT
+
+cmd_lock() {
+  plugins=(
+    "auto-classifier|HyeonseoNam/auto-classifier"
+    "quickadd|chhoumann/quickadd"
+    "dataview|blacksmithgu/obsidian-dataview"
+    "metadata-menu|mdelobelle/metadatamenu"
+    "obsidian-tasks-plugin|obsidian-tasks-group/obsidian-tasks"
+    "periodic-notes|liamcain/obsidian-periodic-notes"
+    "calendar|liamcain/obsidian-calendar-plugin"
+    "obsidian-kanban|mgmeyers/obsidian-kanban"
+    "obsidian-linter|platers/obsidian-linter"
+  )
+
+  curl_common=(
+    --fail
+    --silent
+    --show-error
+    --location
+    --retry 3
+    --retry-delay 1
+    --retry-all-errors
+  )
+
+  _lock_auth_config_file=""
+  _lock_tmp_lock_file=""
+
+
+  resolve_github_token() {
+    if [[ -n "${GITHUB_TOKEN_FILE:-}" ]]; then
+      if [[ ! -r "$GITHUB_TOKEN_FILE" ]]; then
+        echo "❌ GITHUB_TOKEN_FILE is not readable: $GITHUB_TOKEN_FILE"
+        exit 1
+      fi
+      head -n 1 "$GITHUB_TOKEN_FILE"
+      return
+    fi
+
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+      printf '%s\n' "$GITHUB_TOKEN"
+    fi
+  }
+
+  configure_auth() {
+    local token
+    token="$(resolve_github_token || true)"
+    token="${token%%[[:space:]]*}"
+
+    if [[ -z "$token" ]]; then
+      return 0
+    fi
+
+    _lock_auth_config_file="$(mktemp)"
+    chmod 600 "$_lock_auth_config_file"
+    printf 'header = "Authorization: Bearer %s"\n' "$token" > "$_lock_auth_config_file"
+  }
+
+  curl_fetch() {
+    local url=$1
+    if [[ -n "$_lock_auth_config_file" ]]; then
+      curl "${curl_common[@]}" --config "$_lock_auth_config_file" "$url"
+    else
+      curl "${curl_common[@]}" "$url"
+    fi
+  }
+
+  select_release_json() {
+    local repo=$1
+    local releases_json release_json
+
+    releases_json="$(curl_fetch "https://api.github.com/repos/$repo/releases?per_page=100")"
+    release_json="$(printf '%s' "$releases_json" | jq -c '
+      map(select(.draft | not)) as $all
+      | (
+          $all
+          | map(select((.tag_name // "") | test("(?i)(alpha|beta|rc)") | not))
+          | first
+        )
+        // (
+          $all
+          | map(select(.prerelease | not))
+          | first
+        )
+        // ($all | first)
+    ')"
+
+    if [[ -z "$release_json" || "$release_json" == "null" ]]; then
+      return 1
+    fi
+
+    printf '%s\n' "$release_json"
+  }
+
+  download_to_file() {
+    local url=$1
+    local output=$2
+    if [[ -n "$_lock_auth_config_file" ]]; then
+      curl "${curl_common[@]}" --config "$_lock_auth_config_file" "$url" --output "$output"
+    else
+      curl "${curl_common[@]}" "$url" --output "$output"
+    fi
+  }
+
+  hash_url() {
+    local url=$1
+    local tmp_file
+    tmp_file="$(mktemp)"
+    download_to_file "$url" "$tmp_file"
+    shasum -a 256 "$tmp_file" | awk '{print tolower($1)}'
+    rm -f "$tmp_file"
+  }
+
+  configure_auth
+
+  _lock_tmp_lock_file="$(mktemp)"
+
+  jq -n '
+    {
+      schema_version: 1,
+      plugins: {}
+    }
+  ' > "$_lock_tmp_lock_file"
+
+  for spec in "${plugins[@]}"; do
+    IFS='|' read -r plugin_id repo <<< "$spec"
+    echo "🔒 Resolving lock entry for $plugin_id ($repo)..."
+
+    if ! release_json="$(select_release_json "$repo")"; then
+      echo "❌ Failed to resolve release metadata for $plugin_id ($repo)"
+      exit 1
+    fi
+
+    tag_name="$(printf '%s' "$release_json" | jq -r '.tag_name // empty')"
+    release_id="$(printf '%s' "$release_json" | jq -r '.id // empty')"
+
+    manifest_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="manifest.json") | .browser_download_url' | head -n1)"
+    main_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="main.js") | .browser_download_url' | head -n1)"
+    styles_url="$(printf '%s' "$release_json" | jq -r '.assets[]? | select(.name=="styles.css") | .browser_download_url' | head -n1)"
+
+    if [[ -z "$manifest_url" && -n "$tag_name" ]]; then
+      manifest_url="https://raw.githubusercontent.com/$repo/$tag_name/manifest.json"
+    fi
+    if [[ -z "$main_url" && -n "$tag_name" ]]; then
+      main_url="https://raw.githubusercontent.com/$repo/$tag_name/main.js"
+    fi
+
+    if [[ -z "$manifest_url" || -z "$main_url" ]]; then
+      echo "❌ Failed to resolve mandatory assets for $plugin_id ($repo)"
+      exit 1
+    fi
+
+    manifest_sha="$(hash_url "$manifest_url")"
+    main_sha="$(hash_url "$main_url")"
+
+    styles_sha=""
+    if [[ -n "$styles_url" ]]; then
+      styles_sha="$(hash_url "$styles_url")"
+    fi
+
+    entry_json="$(jq -n \
+      --arg repo "$repo" \
+      --arg tag "$tag_name" \
+      --arg release_id "$release_id" \
+      --arg manifest_url "$manifest_url" \
+      --arg manifest_sha "$manifest_sha" \
+      --arg main_url "$main_url" \
+      --arg main_sha "$main_sha" \
+      --arg styles_url "$styles_url" \
+      --arg styles_sha "$styles_sha" \
+      '
+        {
+          repo: $repo,
+          tag: $tag,
+          release_id: $release_id,
+          assets: {
+            "manifest.json": {
+              url: $manifest_url,
+              sha256: $manifest_sha
+            },
+            "main.js": {
+              url: $main_url,
+              sha256: $main_sha
+            }
+          }
+        }
+        | if ($styles_url | length) > 0 then
+            .assets["styles.css"] = {
+              url: $styles_url,
+              sha256: $styles_sha
+            }
+          else
+            .
+          end
+      ')"
+
+    jq --arg id "$plugin_id" --argjson entry "$entry_json" '.plugins[$id] = $entry' "$_lock_tmp_lock_file" > "${_lock_tmp_lock_file}.new"
+    mv "${_lock_tmp_lock_file}.new" "$_lock_tmp_lock_file"
+  done
+
+  mkdir -p "$(dirname "$PLUGIN_PLUGIN_LOCK_FILE")"
+  jq -S . "$_lock_tmp_lock_file" > "$PLUGIN_PLUGIN_LOCK_FILE"
+
+  echo "✅ Wrote Obsidian plugin lock file: $PLUGIN_LOCK_FILE"
+}
+
+case "$COMMAND" in
+  setup) cmd_setup ;;
+  clean) cmd_clean ;;
+  lock)  cmd_lock  ;;
+  *)
+    echo "Usage: $(basename \"$0\") [setup|clean|lock]" >&2
+    exit 1
+    ;;
+esac

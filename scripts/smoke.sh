@@ -78,7 +78,7 @@ case "$cmd" in
 export HOMEBREW_PREFIX="/opt/homebrew"
 export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
 export HOMEBREW_REPOSITORY="/opt/homebrew"
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH="$(dirname "$0"):/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 SHENV
     ;;
   --prefix)
@@ -208,6 +208,11 @@ esac
 exit 0
 EOF
 
+write_mock tty <<'EOF'
+#!/usr/bin/env bash
+echo "/dev/ttysmock"
+EOF
+
 PATH="$MOCK_BIN:$PATH" \
 HOME="$TEST_HOME" \
 OBSIDIAN_APP_CONFIG_DIR="$OBSIDIAN_APP_CONFIG_DIR" \
@@ -282,6 +287,70 @@ if grep '^bundle_check ' "$MOCK_BREW_LOG" | grep -vq 'HOMEBREW_BUNDLE_INSTALL_AN
   exit 1
 fi
 
+# Validate Docker Desktop completion cleanup and compinit deduping.
+DOCKER_ZSH_HOME="$TMP_DIR/docker-zsh-home"
+DOCKER_ZSHRC_COPY="$TMP_DIR/docker-zshrc"
+DOCKER_COMPINIT_MOCK_DIR="$TMP_DIR/docker-zsh-fpath"
+DOCKER_COMPINIT_LOG="$TMP_DIR/docker-compinit.log"
+DOCKER_FPATH_COUNT_FILE="$TMP_DIR/docker-fpath-count.txt"
+mkdir -p "$DOCKER_ZSH_HOME/.docker/completions" "$DOCKER_COMPINIT_MOCK_DIR"
+cp "zsh/.zshrc" "$DOCKER_ZSHRC_COPY"
+cat >> "$DOCKER_ZSHRC_COPY" <<'EOF'
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/user/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
+EOF
+ln -s "$DOCKER_ZSHRC_COPY" "$DOCKER_ZSH_HOME/.zshrc"
+
+cat > "$DOCKER_COMPINIT_MOCK_DIR/compinit" <<'EOF'
+#autoload
+print -r -- "${*:-<no-args>}" >> "${DOCKER_COMPINIT_LOG:?}"
+return 0
+EOF
+
+cat > "$TMP_DIR/docker-zsh-completion-check.zsh" <<'EOF'
+fpath=("$DOCKER_COMPINIT_MOCK_DIR" $fpath)
+source ~/.zshrc
+docker_completion_entries=(${(M)fpath:#$HOME/.docker/completions})
+print -r -- "${#docker_completion_entries[@]}" > "$DOCKER_FPATH_COUNT_FILE"
+EOF
+
+PATH="$MOCK_BIN:$PATH" \
+HOME="$DOCKER_ZSH_HOME" \
+DOTFILES_DIR="$ROOT_DIR" \
+DOCKER_COMPINIT_LOG="$DOCKER_COMPINIT_LOG" \
+DOCKER_COMPINIT_MOCK_DIR="$DOCKER_COMPINIT_MOCK_DIR" \
+DOCKER_FPATH_COUNT_FILE="$DOCKER_FPATH_COUNT_FILE" \
+zsh -f "$TMP_DIR/docker-zsh-completion-check.zsh"
+
+if search_q '^# The following lines have been added by Docker Desktop' "$DOCKER_ZSHRC_COPY"; then
+  echo "❌ Expected Docker Desktop completion block to be removed from ~/.zshrc"
+  cat "$DOCKER_ZSHRC_COPY"
+  exit 1
+fi
+
+canonical_docker_completion_count="$(grep -Fc '  fpath=(~/.docker/completions $fpath)' "$DOCKER_ZSHRC_COPY" || true)"
+if [[ "$canonical_docker_completion_count" != "1" ]]; then
+  echo "❌ Expected the canonical Docker completion stanza to remain exactly once"
+  cat "$DOCKER_ZSHRC_COPY"
+  exit 1
+fi
+
+docker_completion_fpath_count="$(cat "$DOCKER_FPATH_COUNT_FILE")"
+if [[ "$docker_completion_fpath_count" != "1" ]]; then
+  echo "❌ Expected one Docker completion directory in fpath, got: $docker_completion_fpath_count"
+  exit 1
+fi
+
+docker_compinit_count="$(wc -l < "$DOCKER_COMPINIT_LOG" | tr -d ' ')"
+if [[ "$docker_compinit_count" != "1" ]]; then
+  echo "❌ Expected compinit to run exactly once, got: $docker_compinit_count"
+  cat "$DOCKER_COMPINIT_LOG"
+  exit 1
+fi
+
 # Validate Obsidian setup mode that skips plugin downloads.
 OBSIDIAN_TEST_VAULT="$TMP_DIR/obsidian-vault"
 mkdir -p "$OBSIDIAN_TEST_VAULT"
@@ -297,7 +366,7 @@ HOME="$TEST_HOME" \
 OBSIDIAN_VAULT_DIR="$OBSIDIAN_TEST_VAULT" \
 OBSIDIAN_APP_CONFIG_DIR="$OBSIDIAN_APP_CONFIG_DIR" \
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
-bash ./scripts/setup-obsidian.sh
+bash ./scripts/obsidian.sh setup
 
 OBSIDIAN_APP_CONFIG_FILE="$TEST_HOME/Library/Application Support/obsidian/obsidian.json"
 OBSIDIAN_TEST_VAULT_REAL="$(cd "$OBSIDIAN_TEST_VAULT" && pwd -P)"
@@ -338,7 +407,7 @@ HOME="$TEST_HOME" \
 OBSIDIAN_VAULT_DIR="$OBSIDIAN_SYMLINK_VAULT" \
 OBSIDIAN_APP_CONFIG_DIR="$OBSIDIAN_APP_CONFIG_DIR" \
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
-bash ./scripts/setup-obsidian.sh
+bash ./scripts/obsidian.sh setup
 
 test ! -L "$OBSIDIAN_SYMLINK_VAULT"
 test -d "$OBSIDIAN_SYMLINK_VAULT"
@@ -383,7 +452,7 @@ HOME="$TEST_HOME" \
 OBSIDIAN_VAULT_DIR="$OBSIDIAN_TEST_VAULT" \
 OBSIDIAN_APP_CONFIG_DIR="$OBSIDIAN_APP_CONFIG_DIR" \
 DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
-bash ./scripts/setup-obsidian.sh
+bash ./scripts/obsidian.sh setup
 
 for file in \
   "$OBSIDIAN_APP_CONFIG_FILE" \

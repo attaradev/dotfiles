@@ -35,6 +35,55 @@ If Homebrew reports a lock conflict (another fetch/install in progress):
 make brew
 ```
 
+## `brewup` asks for your password before upgrading
+
+That is expected for interactive shells. Some casks require privileged cleanup
+during upgrade, so `brewup` asks for your password once up front instead of
+stopping later to prompt repeatedly during a cask update.
+
+If `brewup` is not available yet, reload your shell:
+
+```bash
+source ~/.zshrc
+type brewup
+```
+
+## `brewup` fails because `/Applications/Docker.app` is missing
+
+If Homebrew still tracks `docker-desktop` as installed but the app bundle has
+already been removed, upgrades can fail with:
+
+```text
+Error: docker-desktop: It seems the App source '/Applications/Docker.app' is not there.
+```
+
+Current `brewup` and `make update` runs repair that broken cask state before
+upgrading. Reload your shell after pulling the latest dotfiles, then retry:
+
+```bash
+source ~/.zshrc
+brewup docker-desktop
+```
+
+## Docker Desktop appends completion setup to `~/.zshrc`
+
+Docker Desktop may append its own completion block that re-adds
+`$HOME/.docker/completions` and reruns `compinit`. The tracked `zsh/.zshrc`
+already loads Docker completions from `$HOME/.docker/completions`, so the
+generated block is redundant.
+
+Current shells strip Docker Desktop's marker block on startup, keep `fpath`
+unique, and guard `compinit` so the extra block does not duplicate completion
+setup in the same shell load.
+
+If you still see the generated block after pulling the latest dotfiles, reload
+your shell:
+
+```bash
+source ~/.zshrc
+grep -n "Docker Desktop" ~/.zshrc
+```
+
 ## VSCode extensions skipped
 
 If `code` CLI is missing, setup skips extension install.

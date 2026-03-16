@@ -4,7 +4,7 @@ Plugin installation is automated. This file is an operator note, not the source 
 
 ## Source of Truth
 
-- Plugin IDs and mappings are defined in [`scripts/setup-obsidian.sh`](../../../scripts/setup-obsidian.sh):
+- Plugin IDs and mappings are defined in [`scripts/obsidian.sh setup`](../../../scripts/obsidian.sh setup):
   - `CORE_PLUGINS`
   - `COMMUNITY_PLUGINS`
   - `community_plugin_repo()`
@@ -12,9 +12,9 @@ Plugin installation is automated. This file is an operator note, not the source 
 ## Standard Commands
 
 - `make obsidian` to configure vault plugin settings and install/update plugin files.
-- `./scripts/setup-obsidian.sh` to run the plugin setup script directly.
+- `./scripts/obsidian.sh setup` to run the plugin setup script directly.
 - `DOTFILES_SETUP_OBSIDIAN_PLUGINS=0 ./setup.sh` to skip plugin installation in full setup.
-- `DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/setup-obsidian.sh` to write plugin config JSON without downloading plugin assets.
+- `DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/obsidian.sh setup` to write plugin config JSON without downloading plugin assets.
 
 ## Baseline Expectations
 
@@ -30,7 +30,7 @@ Plugin installation is automated. This file is an operator note, not the source 
   - `.obsidian/core-plugins.json`
   - `.obsidian/community-plugins.json`
 - Community plugin files are installed under `.obsidian/plugins/<plugin-id>/`.
-- Workspace defaults to a Files pane plus `hub.md`; `scripts/setup-obsidian.sh` can reset broken empty layouts.
+- Workspace defaults to a Files pane plus `hub.md`; `scripts/obsidian.sh setup` can reset broken empty layouts.
 
 ## Recovery Notes
 

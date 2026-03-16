@@ -42,12 +42,12 @@ make install
 
 1. Homebrew install/check
 2. `brew bundle install`
-3. `scripts/setup-mise.sh`
+3. `scripts/tools.sh mise`
 4. Git identity setup (`~/.gitconfig.local`)
-5. `scripts/setup-stow.sh`
-6. `scripts/setup-obsidian.sh` (core/community plugin config + pinned community plugin install with SHA-256 verification)
-7. `scripts/setup-gnupg.sh`
-8. `scripts/setup-vscode.sh` (if `code` CLI exists)
+5. `scripts/tools.sh stow`
+6. `scripts/obsidian.sh setup` (core/community plugin config + pinned community plugin install with SHA-256 verification)
+7. `scripts/tools.sh gnupg`
+8. `scripts/tools.sh vscode` (if `code` CLI exists)
 
 After pulling later dotfile changes, run `make setup` to re-apply idempotent setup tasks without running package upgrades.
 
@@ -94,7 +94,7 @@ DOTFILES_SETUP_OBSIDIAN_PLUGINS=0 ./setup.sh
 Skip community plugin asset downloads while still writing plugin enablement JSON:
 
 ```bash
-DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/setup-obsidian.sh
+DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/obsidian.sh setup
 ```
 
 By default, already installed community plugins are not re-downloaded on reruns.
@@ -133,6 +133,7 @@ Homebrew bundle equivalents are mirrored to `HOMEBREW_BUNDLE_INSTALL_*` automati
 
 ```bash
 source ~/.zshrc
+type brewup
 make doctor
 make status
 brew list --cask obsidian
@@ -170,3 +171,8 @@ java -version
 rustc --version
 cargo --version
 ```
+
+`brewup` is the interactive-shell helper for Homebrew-only upgrades. It asks
+for your password once up front before running `brew upgrade --greedy` and
+`brew cleanup`, which avoids repeated prompts for casks that need privileged
+cleanup.

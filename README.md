@@ -35,6 +35,10 @@ cd ~/.dotfiles
 Bootstrap is idempotent: rerunning it safely updates `~/.dotfiles` and reapplies setup.
 If Homebrew is missing, `setup.sh` installs it automatically via the official installer.
 
+Keep shareable defaults in this repo. Put machine-specific or secret customizations
+in local override files such as `~/.gitconfig.local`, `~/.zshrc.local`,
+`~/.npmrc.local`, and `~/.ssh/config.local`.
+
 ### 3. Verify setup
 
 ```bash
@@ -80,11 +84,11 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 ## What This Configures
 
 - Homebrew packages and casks from `Brewfile`
-- Language runtimes and tooling via `scripts/setup-mise.sh`, installed from local `~/.mise.toml` (bootstrapped from `mise/.mise.toml` when missing)
-- Dotfile symlinks via `scripts/setup-stow.sh` (GNU Stow)
-- Obsidian knowledge vault and plugin setup via `scripts/setup-obsidian.sh` using pinned plugin assets + SHA-256 verification (`obsidian/community-plugin-lock.json`)
-- GPG configuration via `scripts/setup-gnupg.sh` with `pinentry-mac` and non-destructive defaults
-- VSCode extensions via `scripts/setup-vscode.sh` (when `code` CLI is present, unless skipped)
+- Language runtimes and tooling via `scripts/tools.sh mise`, installed from local `~/.mise.toml` (bootstrapped from `mise/.mise.toml` when missing)
+- Dotfile symlinks via `scripts/tools.sh stow` (GNU Stow)
+- Obsidian knowledge vault and plugin setup via `scripts/obsidian.sh setup` using pinned plugin assets + SHA-256 verification (`obsidian/community-plugin-lock.json`)
+- GPG configuration via `scripts/tools.sh gnupg` with `pinentry-mac` and non-destructive defaults
+- VSCode extensions via `scripts/tools.sh vscode` (when `code` CLI is present, unless skipped)
 - Claude Code global context/settings via `~/.claude/CLAUDE.md` and `~/.claude/settings.json`
 - Codex CLI defaults via `~/.codex/config.toml`
 - Codex user instructions via `~/.codex/AGENTS.md` (tracked at `codex/.codex/AGENTS.md`)
@@ -118,11 +122,16 @@ make vscode         # Install VSCode extensions
 make backup         # Timestamped backup of key local config
 make backup-list    # Show backup files/directories from setup scripts
 make backup-clean   # Prompt to delete backups (or CONFIRM=1)
-make check          # Local quality gate (shell/docs/custom checks)
+make check          # Local quality gate (shell/docs/local override checks)
 make smoke          # Mocked smoke checks for setup + make wrapper paths
 make dump           # Re-generate Brewfile from current system
 make cleanup        # Remove packages not listed in Brewfile
 ```
+
+`make update` is the repo-level maintenance path: it refreshes both Homebrew and
+mise-managed tooling. For Homebrew-only work inside an interactive `zsh`
+session, use `brewup [formula|cask]`; it asks for your password once up front,
+then runs `brew upgrade --greedy` followed by `brew cleanup`.
 
 To update Obsidian community plugins safely: run `make obsidian-lock`, review `obsidian/community-plugin-lock.json`, then run `make obsidian`.
 To prune stale plugin directories not present in the lock file, run `make obsidian-clean`.

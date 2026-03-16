@@ -30,7 +30,6 @@ end
 # ============================================
 
 brew "gh"                           # GitHub CLI - Official GitHub command-line tool
-brew "git-flow"                     # Git extensions for Vincent Driessen's branching model
 
 # ============================================
 # Security & Encryption

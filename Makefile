@@ -13,7 +13,7 @@
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
-BREW_BUNDLE_WITH_OPTIONALS = OPTIONAL_CASK_ENV_FILE="$(BUNDLE_ENV_FILE)" ./scripts/run-brew-bundle.sh
+BREW_BUNDLE_WITH_OPTIONALS = OPTIONAL_CASK_ENV_FILE="$(BUNDLE_ENV_FILE)" ./scripts/brew.sh bundle
 STOW_PACKAGES = zsh git npm starship ssh gpg claude codex
 BACKUP_ARTIFACTS = \
 	$(HOME)/dotfiles-backup-* \
@@ -80,42 +80,42 @@ brew-check:
 ## mise: Setup mise and install language runtimes
 mise:
 	@echo "🔧 Setting up mise..."
-	@bash ./scripts/setup-mise.sh
+	@bash ./scripts/tools.sh mise
 
 ## stow: Create symlinks for dotfiles
 stow:
 	@echo "🔗 Creating dotfile symlinks..."
-	@bash ./scripts/setup-stow.sh
+	@bash ./scripts/tools.sh stow
 
 ## agents: Refresh Claude/Codex configs
 agents:
 	@echo "🤖 Refreshing Claude/Codex configs..."
-	@bash ./scripts/setup-stow.sh claude codex
+	@bash ./scripts/tools.sh stow claude codex
 
 ## obsidian: Setup Knowledge vault and install/update Obsidian plugins
 obsidian:
 	@echo "🧠 Setting up Knowledge vault and Obsidian plugins..."
-	@bash ./scripts/setup-obsidian.sh
+	@bash ./scripts/obsidian.sh setup
 
 ## obsidian-lock: Refresh pinned Obsidian plugin lock file with latest release hashes
 obsidian-lock:
 	@echo "🔒 Refreshing pinned Obsidian plugin lock file..."
-	@bash ./scripts/refresh-obsidian-plugin-lock.sh
+	@bash ./scripts/obsidian.sh lock
 
 ## obsidian-clean: Remove unmanaged Obsidian community plugin directories
 obsidian-clean:
 	@echo "🧹 Cleaning unmanaged Obsidian plugins..."
-	@bash ./scripts/cleanup-obsidian-plugins.sh
+	@bash ./scripts/obsidian.sh clean
 
 ## vscode: Install VSCode extensions
 vscode:
 	@echo "🎨 Installing VSCode extensions..."
-	@bash ./scripts/setup-vscode.sh
+	@bash ./scripts/tools.sh vscode
 
 ## gnupg: Setup GnuPG (GPG)
 gnupg:
 	@echo "🔐 Setting up GnuPG..."
-	@bash ./scripts/setup-gnupg.sh
+	@bash ./scripts/tools.sh gnupg
 
 # ============================================
 # Updates & Maintenance
@@ -127,10 +127,7 @@ update:
 	@echo ""
 	@echo "📦 Updating Homebrew..."
 	@brew update
-	@brew upgrade
-	@echo ""
-	@echo "🔧 Updating mise..."
-	@brew upgrade mise
+	@bash ./scripts/brew.sh upgrade
 	@echo ""
 	@echo "⚡ Upgrading mise-managed tools..."
 	@mise upgrade --exclude npm
@@ -140,9 +137,6 @@ update:
 	else \
 		echo "ℹ️  npm is not managed by mise in current config; skipping npm backend upgrade."; \
 	fi
-	@echo ""
-	@echo "🧹 Cleaning up..."
-	@brew cleanup
 	@echo ""
 	@echo "✅ Update complete!"
 
@@ -308,7 +302,7 @@ test:
 
 ## smoke: Run mocked end-to-end setup + Makefile smoke checks
 smoke:
-	@bash ./scripts/ci-smoke-setup.sh
+	@bash ./scripts/smoke.sh
 
 ## validate: Validate shell configuration
 validate:
@@ -355,9 +349,7 @@ lint-docs:
 
 ## check: Run local quality gate used by CI
 check: lint-shell lint-docs
-	@echo "🧪 Running repository quality checks..."
-	@./scripts/check-readme-make-targets.sh
-	@./scripts/check-no-absolute-host-paths.sh
+	@./scripts/check.sh
 	@echo "✅ All checks passed!"
 
 # ============================================

@@ -57,6 +57,8 @@
 [url "https://"]
 	insteadOf = git://
 
-# Keep local machine-specific overrides last so they take precedence.
+# Keep this tracked file shareable. Put user identity, signing, and other
+# machine-specific overrides in ~/.gitconfig.local, and keep that include last
+# so local values take precedence.
 [include]
 	path = ~/.gitconfig.local

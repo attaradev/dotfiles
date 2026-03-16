@@ -14,8 +14,8 @@
 set -e  # Exit on error
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=./scripts/optional-casks.sh
-source "$DOTFILES_DIR/scripts/optional-casks.sh"
+# shellcheck source=./scripts/lib.sh
+source "$DOTFILES_DIR/scripts/lib.sh"
 
 # Colors for output (auto-disable if not a TTY or NO_COLOR set)
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
@@ -59,10 +59,6 @@ print_warning() {
 
 print_info() {
   echo -e "${BLUE}ℹ${NC} $1"
-}
-
-print_note() {
-  echo -e "${CYAN}ℹ${NC} $1"
 }
 
 has_tty() {
@@ -115,15 +111,6 @@ prompt_with_default() {
   echo "$answer"
 }
 
-normalize_bool() {
-  local raw
-  raw="$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')"
-  case "$raw" in
-    1|y|yes|true|on) echo "1" ;;
-    0|n|no|false|off) echo "0" ;;
-    *) echo "0" ;;
-  esac
-}
 
 DOTFILES_NONINTERACTIVE="$(normalize_bool "${DOTFILES_NONINTERACTIVE:-0}")"
 export DOTFILES_NONINTERACTIVE
@@ -361,7 +348,7 @@ print_header "Step 2: Installing Packages from Brewfile"
 if [[ -f "$DOTFILES_DIR/Brewfile" ]]; then
   print_info "Running brew bundle install..."
   OPTIONAL_CASK_ENV_FILE="$OPTIONAL_CASK_ENV_FILE" \
-    "$DOTFILES_DIR/scripts/run-brew-bundle.sh" install --file="$DOTFILES_DIR/Brewfile" --verbose
+    "$DOTFILES_DIR/scripts/brew.sh" bundle install --file="$DOTFILES_DIR/Brewfile" --verbose
   print_success "All packages installed from Brewfile"
 else
   print_error "Brewfile not found at $DOTFILES_DIR/Brewfile"
@@ -374,10 +361,10 @@ fi
 
 print_header "Step 3: Setting up mise"
 
-if [[ -f "$DOTFILES_DIR/scripts/setup-mise.sh" ]]; then
-  bash "$DOTFILES_DIR/scripts/setup-mise.sh"
+if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
+  bash "$DOTFILES_DIR/scripts/tools.sh" mise
 else
-  print_warning "scripts/setup-mise.sh not found, skipping..."
+  print_warning "scripts/tools.sh not found, skipping..."
 fi
 
 # ============================================
@@ -385,6 +372,15 @@ fi
 # ============================================
 
 print_header "Step 4: Configuring Git Identity"
+
+_resolve_git_value() {
+  local file_val="$1" env_val="$2" existing_val="$3" default_val="$4"
+  if   [[ -n "$file_val"     ]]; then printf '%s' "$file_val"
+  elif [[ -n "$env_val"      ]]; then printf '%s' "$env_val"
+  elif [[ -n "$existing_val" ]]; then printf '%s' "$existing_val"
+  else                                printf '%s' "$default_val"
+  fi
+}
 
 configure_git_identity() {
   local env_name env_email env_signing env_signing_set
@@ -407,27 +403,9 @@ configure_git_identity() {
 
   # Prefer saved local config, then env overrides, then current global git, then hardcoded fallback.
   # Treat empty strings as unset.
-  local default_name
-  if [[ -n "${file_name:-}" ]]; then
-    default_name="$file_name"
-  elif [[ -n "${env_name:-}" ]]; then
-    default_name="$env_name"
-  elif [[ -n "${existing_name:-}" ]]; then
-    default_name="$existing_name"
-  else
-    default_name="$DEFAULT_GIT_NAME"
-  fi
-
-  local default_email
-  if [[ -n "${file_email:-}" ]]; then
-    default_email="$file_email"
-  elif [[ -n "${env_email:-}" ]]; then
-    default_email="$env_email"
-  elif [[ -n "${existing_email:-}" ]]; then
-    default_email="$existing_email"
-  else
-    default_email="$DEFAULT_GIT_EMAIL"
-  fi
+  local default_name default_email
+  default_name="$(_resolve_git_value "${file_name:-}" "${env_name:-}" "${existing_name:-}" "$DEFAULT_GIT_NAME")"
+  default_email="$(_resolve_git_value "${file_email:-}" "${env_email:-}" "${existing_email:-}" "$DEFAULT_GIT_EMAIL")"
 
   local default_signing
   if [[ "$env_signing_set" == "set" ]]; then
@@ -518,10 +496,10 @@ configure_git_identity
 
 print_header "Step 5: Setting up Dotfiles with GNU Stow"
 
-if [[ -f "$DOTFILES_DIR/scripts/setup-stow.sh" ]]; then
-  bash "$DOTFILES_DIR/scripts/setup-stow.sh"
+if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
+  bash "$DOTFILES_DIR/scripts/tools.sh" stow
 else
-  print_warning "scripts/setup-stow.sh not found, skipping..."
+  print_warning "scripts/tools.sh not found, skipping..."
 fi
 
 verify_obsidian_setup() {
@@ -601,16 +579,16 @@ verify_obsidian_setup() {
 
 print_header "Step 6: Setting up Obsidian Vault and Plugins"
 
-if [[ -f "$DOTFILES_DIR/scripts/setup-obsidian.sh" ]]; then
+if [[ -f "$DOTFILES_DIR/scripts/obsidian.sh" ]]; then
   if [[ "$DOTFILES_SETUP_OBSIDIAN_PLUGINS" == "1" ]]; then
-    bash "$DOTFILES_DIR/scripts/setup-obsidian.sh"
+    bash "$DOTFILES_DIR/scripts/obsidian.sh" setup
   else
     print_info "Skipping Obsidian plugin downloads (DOTFILES_SETUP_OBSIDIAN_PLUGINS=0)"
     DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 \
-      bash "$DOTFILES_DIR/scripts/setup-obsidian.sh"
+      bash "$DOTFILES_DIR/scripts/obsidian.sh" setup
   fi
 else
-  print_warning "scripts/setup-obsidian.sh not found, skipping Obsidian setup..."
+  print_warning "scripts/obsidian.sh not found, skipping Obsidian setup..."
 fi
 
 verify_obsidian_setup
@@ -621,10 +599,10 @@ verify_obsidian_setup
 
 print_header "Step 7: Setting up GnuPG"
 
-if [[ -f "$DOTFILES_DIR/scripts/setup-gnupg.sh" ]]; then
-  bash "$DOTFILES_DIR/scripts/setup-gnupg.sh"
+if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
+  bash "$DOTFILES_DIR/scripts/tools.sh" gnupg
 else
-  print_warning "scripts/setup-gnupg.sh not found, skipping..."
+  print_warning "scripts/tools.sh not found, skipping..."
 fi
 
 # ============================================
@@ -638,10 +616,10 @@ if [[ "${SKIP_VSCODE_EXTENSIONS:-0}" == "1" ]]; then
   print_info "Skipping VSCode extensions setup (SKIP_VSCODE_EXTENSIONS=1)"
 elif ! command -v code >/dev/null 2>&1; then
   print_warning "VSCode CLI 'code' not found. Install VSCode and run: make vscode"
-elif [[ -f "$DOTFILES_DIR/scripts/setup-vscode.sh" ]]; then
-  bash "$DOTFILES_DIR/scripts/setup-vscode.sh"
+elif [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
+  bash "$DOTFILES_DIR/scripts/tools.sh" vscode
 else
-  print_warning "scripts/setup-vscode.sh not found, skipping..."
+  print_warning "scripts/tools.sh not found, skipping..."
 fi
 
 # ============================================
@@ -677,7 +655,7 @@ echo ""
 echo "💡 Tips:"
 echo "   - Use 'z <dir>' for smart directory jumping"
 echo "   - Use 'fzf' with Ctrl+R for command history search"
-echo "   - Use 'brewup' alias to update all Homebrew packages"
+echo "   - Use 'brewup' in an interactive shell to update Homebrew packages"
 echo ""
 echo "📖 For more information, check the README.md"
 echo ""

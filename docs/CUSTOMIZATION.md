@@ -14,6 +14,16 @@ Use local override files for secrets and machine-specific settings:
 
 These overrides are optional: they load when present and are skipped when missing.
 
+If a change is personal, secret, or machine-specific, put it in the matching
+local override file instead of editing the tracked dotfile directly.
+
+Common mappings:
+
+- Git identity, signing, or credential rewrites: `~/.gitconfig.local`
+- Shell aliases, exports, PATH tweaks, and one-off functions: `~/.zshrc.local` or `~/.zshrc.local.d/*.zsh`
+- npm tokens and registry auth: `~/.npmrc.local`
+- SSH host overrides, identities, and host-specific options: `~/.ssh/config.local` or `~/.ssh/config.local.d/*.conf`
+
 ## Add or Remove Packages
 
 Edit `Brewfile`, then apply:
@@ -82,11 +92,25 @@ See [RUNTIMES.md](RUNTIMES.md) for runtime policies and update workflows.
 
 Main shell config lives at `zsh/.zshrc`.
 
+It is organized into sections for Homebrew bootstrap, completions, `mise`,
+plugin loading, reusable shell functions, aliases, environment variables,
+security defaults, and local overrides.
+
+Keep machine-specific shell changes in `~/.zshrc.local` or
+`~/.zshrc.local.d/*.zsh` so the tracked `zsh/.zshrc` remains portable.
+
 Notable defaults:
 
 - `l`, `ll`, `la` use `eza`
 - `cat` is aliased to `bat`
 - `z` uses `zoxide`
+- `brewup` is a shell function for Homebrew-only upgrades; it prompts for
+  your password once up front, then runs `brew upgrade --greedy` and
+  `brew cleanup`
+- `dstop` and `drm` are Docker helper functions for stopping or removing all
+  containers
+- Docker aliases include `dc`/`dcud`/`dcub` for Compose, `dclf` for following
+  Compose logs, and `drun`/`dexec` for common container workflows
 - prompt configured in `starship/.config/starship.toml`
 
 ## Claude and Codex Context
@@ -139,7 +163,7 @@ DOTFILES_SETUP_OBSIDIAN_PLUGINS=0 ./setup.sh
 Skip community plugin asset downloads while preserving plugin JSON settings with:
 
 ```bash
-DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/setup-obsidian.sh
+DOTFILES_OBSIDIAN_SKIP_PLUGIN_DOWNLOADS=1 ./scripts/obsidian.sh setup
 ```
 
 Re-check and re-apply versions pinned in `obsidian/community-plugin-lock.json` with:
@@ -163,7 +187,7 @@ containing a token before running `make obsidian-lock`.
 
 1. Create a package directory in repo root (example: `tmux/`).
 2. Place files using home-relative layout (example: `tmux/.tmux.conf`).
-3. Add package name in `scripts/setup-stow.sh` `PACKAGES` array.
+3. Add package name in `scripts/tools.sh` `default_packages` array (`cmd_stow`).
 4. Run:
 
 ```bash
