@@ -229,7 +229,6 @@ register_vault_with_obsidian_ui() {
 
   if [[ -n "${existing_id:-}" ]]; then
     if [[ "$existing_path" == "$ui_vault_path" ]]; then
-      print_info "Obsidian UI already includes vault path: $ui_vault_path"
       return 0
     fi
 
@@ -241,7 +240,7 @@ register_vault_with_obsidian_ui() {
     if replace_if_changed "$tmp_file" "$global_file"; then
       print_success "Updated Obsidian UI vault path: $existing_path -> $ui_vault_path"
     else
-      print_info "Obsidian UI vault registration already up to date: $ui_vault_path"
+      : # vault already registered
     fi
     return 0
   fi
@@ -995,7 +994,6 @@ install_community_plugin() {
   fi
 
   if [[ "$force_refresh" != "1" ]] && plugin_release_up_to_date "$plugin_dir" "$release_state" "$styles_required"; then
-    print_info "Plugin already up to date: $plugin_id"
     return 3
   fi
 
@@ -1040,20 +1038,24 @@ install_community_plugins() {
     print_info "Re-checking community plugins from pinned lock (refresh lock file to change versions)."
   fi
 
+  local installed_count=0 up_to_date_count=0
   for plugin_id in "${COMMUNITY_PLUGINS[@]}"; do
-    print_info "Installing Obsidian plugin from lock: $plugin_id"
     if install_community_plugin "$plugin_id" "$update_plugins"; then
       print_success "Installed: $plugin_id"
+      installed_count=$((installed_count + 1))
     else
       status=$?
       if [[ "$status" -eq 3 ]]; then
-        print_info "Verified existing install: $plugin_id"
+        up_to_date_count=$((up_to_date_count + 1))
         continue
       fi
       print_warning "Failed: $plugin_id"
       failures+=("$plugin_id")
     fi
   done
+  if (( up_to_date_count > 0 )); then
+    print_success "$up_to_date_count plugin(s) already up to date"
+  fi
 
   if [[ ${#failures[@]} -gt 0 ]]; then
     echo "❌ Obsidian plugin install failures: ${failures[*]}"
@@ -1113,10 +1115,6 @@ cmd_setup() {
   configure_workspace_defaults
 
   print_success "Obsidian vault configured at $VAULT_DIR"
-  print_success "Knowledge vault files ensured at $VAULT_DIR"
-  print_success "Core plugins enabled: ${CORE_PLUGINS[*]}"
-  print_success "Community plugins enabled: ${COMMUNITY_PLUGINS[*]}"
-  print_success "Community plugin assets verified using lock file: $PLUGIN_LOCK_FILE"
 }
 
 cmd_clean() {

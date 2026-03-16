@@ -503,10 +503,8 @@ else
 fi
 
 verify_obsidian_setup() {
-  print_info "Verifying Obsidian installation and knowledge vault setup..."
-
   if brew list --cask obsidian >/dev/null 2>&1; then
-    print_success "Obsidian cask is installed"
+    : # installed
   else
     print_warning "Obsidian cask not detected. Run: brew install --cask obsidian"
   fi
@@ -550,9 +548,7 @@ verify_obsidian_setup() {
     fi
   done
 
-  if [[ ${#missing[@]} -eq 0 ]]; then
-    print_success "Obsidian knowledge vault is configured at ~/.knowledge"
-  else
+  if [[ ${#missing[@]} -gt 0 ]]; then
     local missing_vault_files=0
     local missing_plugin_files=0
 
