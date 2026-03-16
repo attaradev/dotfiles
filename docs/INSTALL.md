@@ -42,12 +42,12 @@ make install
 
 1. Homebrew install/check
 2. `brew bundle install`
-3. `scripts/tools.sh mise`
+3. Runtime and tooling setup via `mise` (bootstraps `~/.mise.toml` from template when missing)
 4. Git identity setup (`~/.gitconfig.local`)
-5. `scripts/tools.sh stow`
-6. `scripts/obsidian.sh setup` (core/community plugin config + pinned community plugin install with SHA-256 verification)
-7. `scripts/tools.sh gnupg`
-8. `scripts/tools.sh vscode` (if `code` CLI exists)
+5. Dotfile symlinks via GNU Stow
+6. Obsidian vault scaffold and community plugins with SHA-256 verification
+7. GPG agent configuration with `pinentry-mac`
+8. VSCode extensions (if `code` CLI is present)
 
 After pulling later dotfile changes, run `make setup` to re-apply idempotent setup tasks without running package upgrades.
 
@@ -133,46 +133,21 @@ Homebrew bundle equivalents are mirrored to `HOMEBREW_BUNDLE_INSTALL_*` automati
 
 ```bash
 source ~/.zshrc
-type brewup
 make doctor
 make status
-brew list --cask obsidian
-test -e ~/.codex/config.toml
-test -e ~/.codex/AGENTS.md
-test -e ~/.knowledge/hub.md
-test -L ~/Knowledge
-test -e ~/.knowledge/setup/obsidian-plugins.md
-test -e ~/.knowledge/tasks.md
-test -e ~/.knowledge/projects/projects.md
-test -e ~/.knowledge/reading/books.md
-test -e ~/.knowledge/reading/articles.md
-test -e ~/.knowledge/learning/courses.md
-test -e ~/.knowledge/learning/studies.md
-test -e ~/.knowledge/learning/lessons.md
-test -e ~/.knowledge/career/achievement-log.md
-test -e ~/.knowledge/.obsidian/core-plugins.json
-test -e ~/.knowledge/.obsidian/community-plugins.json
-test -e ~/.knowledge/.obsidian/plugins/auto-classifier/manifest.json
-test -e ~/.knowledge/.obsidian/plugins/dataview/manifest.json
-test -e ~/.knowledge/.obsidian/plugins/obsidian-tasks-plugin/manifest.json
-jq -e 'if type=="object" then .["file-explorer"] == true else index("file-explorer") != null end' ~/.knowledge/.obsidian/core-plugins.json
-jq -e '.enableDataviewJs == true and .enableInlineDataviewJs == true' ~/.knowledge/.obsidian/plugins/dataview/data.json
-jq -e '[.. | objects | select(.type? == "file-explorer")] | length > 0' ~/.knowledge/.obsidian/workspace.json
+
+# Runtimes
 mise list
-node -v
-npm -v
-pnpm -v
-python --version
-uv --version
+node -v && npm -v && pnpm -v
+python --version && uv --version
 go version
 ruby -v
-# Additional runtimes you added in ~/.mise.toml:
-java -version
-rustc --version
-cargo --version
+
+# Dotfiles and vault
+test -L ~/.zshrc && echo "zshrc symlinked"
+test -L ~/Knowledge && echo "Knowledge alias present"
+test -e ~/.knowledge/hub.md && echo "vault seeded"
+test -e ~/.codex/config.toml && echo "codex config present"
 ```
 
-`brewup` is the interactive-shell helper for Homebrew-only upgrades. It asks
-for your password once up front before running `brew upgrade --greedy` and
-`brew cleanup`, which avoids repeated prompts for casks that need privileged
-cleanup.
+For additional runtimes you added to `~/.mise.toml` (e.g. `java`, `rust`), verify with `java -version` or `rustc --version` after running `make mise`.

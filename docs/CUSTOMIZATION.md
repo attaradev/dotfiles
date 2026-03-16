@@ -115,20 +115,25 @@ Notable defaults:
 
 ## Claude and Codex Context
 
-Global Claude Code context/settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow.
-Plan persistence: Claude persists plans in `.claude/tasks.md` and Codex persists plans in `.agent/tasks.md`. Agents should update those files at plan start, on material plan changes, and at completion with verification notes. If writes are restricted in a given mode, the plan should be shown in-chat and persisted once writable.
-Codex CLI defaults are tracked at `codex/.codex/config.toml`, then symlinked to `~/.codex/config.toml` by stow.
-Codex user behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in `~/.codex/config.toml`.
-`~/.codex/AGENTS.md` mirrors `claude/.claude/CLAUDE.md` so both agents follow the same workflow expectations.
-Public Obsidian scaffold files are tracked in `obsidian/.knowledge/` (hub, plugin note, templates). Personal vault content stays local in `~/.knowledge` and is not tracked in git.
+Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow.
 
-Obsidian vault files:
+Codex CLI defaults are tracked at `codex/.codex/config.toml`, symlinked to `~/.codex/config.toml`. Behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in the config.
 
-Project execution files are localized to each project (`.claude/tasks.md`, `.claude/lessons.md`, `.agent/tasks.md`, `.agent/lessons.md`); the files below are vault-wide references and trackers.
+To refresh both after pulling changes:
+
+```bash
+make agents
+```
+
+## Obsidian Knowledge Vault
+
+Scaffold files (`hub.md`, plugin note, templates) are tracked in `obsidian/.knowledge/` and seeded into `~/.knowledge` on setup. Personal vault content stays local and is not tracked in git.
+
+Vault-wide files created by setup:
 
 - `~/.knowledge/hub.md`
-- `~/.knowledge/setup/obsidian-plugins.md`
 - `~/.knowledge/tasks.md`
+- `~/.knowledge/setup/obsidian-plugins.md`
 - `~/.knowledge/projects/projects.md`
 - `~/.knowledge/reading/books.md`
 - `~/.knowledge/reading/articles.md`
@@ -138,21 +143,13 @@ Project execution files are localized to each project (`.claude/tasks.md`, `.cla
 - `~/.knowledge/career/achievement-log.md`
 - `~/.knowledge/_templates/*.md`
 
-Initialize missing local vault files with:
+To seed missing vault files, install community plugins, and register the vault with Obsidian:
 
 ```bash
 make obsidian
 ```
 
-Configure Obsidian plugin defaults and install the recommended community plugins with:
-
-```bash
-make obsidian
-```
-
-`make obsidian` is safe to rerun. It can repair a degraded workspace layout (for example, if Obsidian opens with empty tabs and no Files pane) by resetting to a `hub.md` + File Explorer default.
-It also creates a visible `~/Knowledge` alias (if available) and registers the vault in Obsidian app config so it shows in the UI picker.
-Reruns also skip re-downloading community plugins that are already installed.
+`make obsidian` is safe to rerun. It repairs a degraded workspace layout (e.g. Obsidian opens with empty tabs and no Files pane), creates the `~/Knowledge` alias, and skips re-downloading plugins that are already installed.
 
 Skip community plugin installation for constrained environments with:
 

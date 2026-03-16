@@ -1,4 +1,10 @@
-# Dotfiles Setup for macOS
+<div align="center">
+  <h1>💻 macOS Dev Environment</h1>
+
+  [![Quality](https://github.com/attaradev/dotfiles/actions/workflows/quality.yml/badge.svg)](https://github.com/attaradev/dotfiles/actions/workflows/quality.yml)
+  [![macOS](https://img.shields.io/badge/macOS-Apple%20Silicon%20%7C%20Intel-000000?logo=apple)](https://www.apple.com/macos/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+</div>
 
 Personal macOS development environment focused on reproducible installs, security-conscious defaults, and fast daily workflows.
 
@@ -83,15 +89,14 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 
 ## What This Configures
 
-- Homebrew packages and casks from `Brewfile`
-- Language runtimes and tooling via `scripts/tools.sh mise`, installed from local `~/.mise.toml` (bootstrapped from `mise/.mise.toml` when missing)
-- Dotfile symlinks via `scripts/tools.sh stow` (GNU Stow)
-- Obsidian knowledge vault and plugin setup via `scripts/obsidian.sh setup` using pinned plugin assets + SHA-256 verification (`obsidian/community-plugin-lock.json`)
-- GPG configuration via `scripts/tools.sh gnupg` with `pinentry-mac` and non-destructive defaults
-- VSCode extensions via `scripts/tools.sh vscode` (when `code` CLI is present, unless skipped)
-- Claude Code global context/settings via `~/.claude/CLAUDE.md` and `~/.claude/settings.json`
-- Codex CLI defaults via `~/.codex/config.toml`
-- Codex user instructions via `~/.codex/AGENTS.md` (tracked at `codex/.codex/AGENTS.md`)
+- **Homebrew** — packages and casks from `Brewfile`
+- **Language runtimes** — Node.js, Python, Go, Ruby, npm, pnpm, uv via `mise`, sourced from `~/.mise.toml`
+- **Dotfiles** — symlinks managed by GNU Stow (`zsh`, `git`, `npm`, `ssh`, `gpg`, `starship`, `claude`, `codex`)
+- **Obsidian** — knowledge vault scaffold, pinned community plugins with SHA-256 verification, and `~/Knowledge` alias
+- **GPG** — `gpg-agent.conf` and `gpg.conf` with `pinentry-mac`, non-destructive (preserves existing local values)
+- **VSCode** — extensions installed when the `code` CLI is present (skippable)
+- **Claude Code** — global context and settings at `~/.claude/CLAUDE.md` and `~/.claude/settings.json`
+- **Codex CLI** — defaults at `~/.codex/config.toml` and instructions at `~/.codex/AGENTS.md`
 
 ## Managed Runtime and Tooling Tracks
 
@@ -110,8 +115,7 @@ make install        # Full setup
 make setup          # Re-apply idempotent setup after pulling config changes
 make update         # Upgrade brew + mise-managed packages
 make doctor         # Health checks for Homebrew and mise
-make mise           # Install runtimes from ~/.mise.toml
-# Add/remove tools in ~/.mise.toml as needed, then rerun make mise
+make mise           # Install runtimes from ~/.mise.toml (edit ~/.mise.toml to add/remove tools)
 make stow           # Apply dotfile symlinks with GNU Stow
 make agents         # Refresh Claude/Codex global config symlinks
 make obsidian       # Setup vault + create ~/Knowledge alias + register in Obsidian UI + plugins
