@@ -70,7 +70,7 @@ setup:
 ## brew: Install/update packages from Brewfile
 brew:
 	@echo "📦 Installing packages from Brewfile..."
-	@$(BREW_BUNDLE_WITH_OPTIONALS) install --verbose
+	@$(BREW_BUNDLE_WITH_OPTIONALS) install
 
 ## brew-check: Verify all Brewfile packages are installed
 brew-check:
