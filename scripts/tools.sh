@@ -152,14 +152,20 @@ _mise_sync_global_tracks() {
 # gnupg helpers
 # ===========================================================================
 
-_gpg_backup_file() {
-  local file="$1"
-  if [[ -e "$file" && ! -L "$file" ]]; then
-    local ts; ts=$(date +%Y%m%d%H%M%S)
-    local backup="${file}.bak.${ts}"
-    cp "$file" "$backup"
-    echo "📦 Backed up existing $(basename "$file") to $(basename "$backup")"
+_gpg_backup_if_changed() {
+  # Call before modifying $file. Pass a snapshot taken before changes.
+  # If the file differs from the snapshot, rename snapshot to .bak.TIMESTAMP.
+  # If unchanged, discard snapshot. Returns 0 either way.
+  local file="$1" snapshot="$2"
+  [[ -f "$snapshot" ]] || return 0
+  if cmp -s "$file" "$snapshot"; then
+    rm -f "$snapshot"
+    return 0
   fi
+  local ts; ts=$(date +%Y%m%d%H%M%S)
+  local backup="${file}.bak.${ts}"
+  mv "$snapshot" "$backup"
+  echo "📦 Backed up $(basename "$file") to $(basename "$backup")"
 }
 
 _gpg_materialize_local_file() {
@@ -398,8 +404,6 @@ cmd_mise() {
   echo "  make mise"
   echo "  mise list             - Show installed versions"
   echo "  mise ls-remote node   - Show available Node versions"
-  echo "  mise ls-remote java   - Show available Java versions"
-  echo "  mise ls-remote rust   - Show available Rust versions"
   echo "  mise upgrade          - Upgrade installed tools within configured constraints"
   echo ""
 }
@@ -430,23 +434,31 @@ cmd_gnupg() {
   _gpg_materialize_local_file "$gpg_agent_conf"
   touch "$gpg_agent_conf"
 
-  local -a agent_settings=(
-    "^[[:space:]]*default-cache-ttl([[:space:]]+|$)|default-cache-ttl 3600"
-    "^[[:space:]]*max-cache-ttl([[:space:]]+|$)|max-cache-ttl 86400"
-    "^[[:space:]]*pinentry-program([[:space:]]+|$)|pinentry-program $pinentry_bin"
+  local -a agent_patterns=(
+    "^[[:space:]]*default-cache-ttl([[:space:]]+|$)"
+    "^[[:space:]]*max-cache-ttl([[:space:]]+|$)"
+    "^[[:space:]]*pinentry-program[[:space:]]+$pinentry_bin[[:space:]]*$"
   )
-  local needs_update=0 pattern setting entry
-  for entry in "${agent_settings[@]}"; do
-    IFS='|' read -r pattern _ <<< "$entry"
-    grep -Eq "$pattern" "$gpg_agent_conf" || needs_update=1
+  local -a agent_lines=(
+    "default-cache-ttl 3600"
+    "max-cache-ttl 86400"
+    "pinentry-program $pinentry_bin"
+  )
+  local needs_update=0 i
+  for (( i=0; i<${#agent_patterns[@]}; i++ )); do
+    grep -Eq "${agent_patterns[$i]}" "$gpg_agent_conf" || needs_update=1
   done
 
   if (( needs_update == 1 )); then
-    _gpg_backup_file "$gpg_agent_conf"
-    for entry in "${agent_settings[@]}"; do
-      IFS='|' read -r pattern setting <<< "$entry"
-      _gpg_append_setting_if_missing "$gpg_agent_conf" "$pattern" "$setting" && echo "✓ Added ${setting%% *} to gpg-agent.conf"
+    local agent_snapshot; agent_snapshot="$(mktemp)"
+    cp "$gpg_agent_conf" "$agent_snapshot"
+    # Remove stale pinentry-program line so the correct path gets written
+    sed -i '' '/^[[:space:]]*pinentry-program/d' "$gpg_agent_conf" || true
+    for (( i=0; i<${#agent_patterns[@]}; i++ )); do
+      _gpg_append_setting_if_missing "$gpg_agent_conf" "${agent_patterns[$i]}" "${agent_lines[$i]}" \
+        && echo "✓ Added ${agent_lines[$i]%% *} to gpg-agent.conf"
     done
+    _gpg_backup_if_changed "$gpg_agent_conf" "$agent_snapshot"
   else
     echo "✓ Preserving existing gpg-agent.conf settings"
   fi
@@ -458,24 +470,31 @@ cmd_gnupg() {
   _gpg_materialize_local_file "$gpg_conf"
   touch "$gpg_conf"
 
-  local -a gpg_settings=(
-    "^[[:space:]]*keyid-format([[:space:]]+|$)|keyid-format 0xlong"
-    "^[[:space:]]*with-fingerprint([[:space:]]+|$)|with-fingerprint"
-    "^[[:space:]]*auto-key-retrieve([[:space:]]+|$)|auto-key-retrieve"
-    "^[[:space:]]*use-agent([[:space:]]+|$)|use-agent"
+  local -a gpg_patterns=(
+    "^[[:space:]]*keyid-format([[:space:]]+|$)"
+    "^[[:space:]]*with-fingerprint([[:space:]]+|$)"
+    "^[[:space:]]*auto-key-retrieve([[:space:]]+|$)"
+    "^[[:space:]]*use-agent([[:space:]]+|$)"
+  )
+  local -a gpg_lines=(
+    "keyid-format 0xlong"
+    "with-fingerprint"
+    "auto-key-retrieve"
+    "use-agent"
   )
   needs_update=0
-  for entry in "${gpg_settings[@]}"; do
-    IFS='|' read -r pattern _ <<< "$entry"
-    grep -Eq "$pattern" "$gpg_conf" || needs_update=1
+  for (( i=0; i<${#gpg_patterns[@]}; i++ )); do
+    grep -Eq "${gpg_patterns[$i]}" "$gpg_conf" || needs_update=1
   done
 
   if (( needs_update == 1 )); then
-    _gpg_backup_file "$gpg_conf"
-    for entry in "${gpg_settings[@]}"; do
-      IFS='|' read -r pattern setting <<< "$entry"
-      _gpg_append_setting_if_missing "$gpg_conf" "$pattern" "$setting" && echo "✓ Added ${setting%% *} to gpg.conf"
+    local gpg_snapshot; gpg_snapshot="$(mktemp)"
+    cp "$gpg_conf" "$gpg_snapshot"
+    for (( i=0; i<${#gpg_patterns[@]}; i++ )); do
+      _gpg_append_setting_if_missing "$gpg_conf" "${gpg_patterns[$i]}" "${gpg_lines[$i]}" \
+        && echo "✓ Added ${gpg_lines[$i]%% *} to gpg.conf"
     done
+    _gpg_backup_if_changed "$gpg_conf" "$gpg_snapshot"
   else
     echo "✓ Preserving existing gpg.conf settings"
   fi

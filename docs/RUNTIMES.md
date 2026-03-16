@@ -92,8 +92,6 @@ mise ls-remote node
 mise ls-remote python
 mise ls-remote go
 mise ls-remote ruby
-mise ls-remote java
-mise ls-remote rust
 ```
 
 ## Change a Track Intentionally
