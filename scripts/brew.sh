@@ -103,6 +103,7 @@ EOF
 _brewup_prepare_sudo() {
   if [[ ! -t 0 || ! -t 1 ]]; then return 0; fi
   if ! command -v sudo >/dev/null 2>&1; then return 0; fi
+  if sudo -n -v 2>/dev/null; then return 0; fi
   _brewup_setup_askpass
 }
 
