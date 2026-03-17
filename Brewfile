@@ -79,7 +79,6 @@ brew "tilt"                         # Local development environment orchestratio
 # ============================================
 
 brew "libpq"                        # PostgreSQL C API library (for psql CLI)
-brew "sqlite"                       # Lightweight embedded SQL database engine
 brew "sqlc"                         # Generate type-safe code from SQL queries
 
 # ============================================
