@@ -1,0 +1,32 @@
+name: Setup Canary
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: setup-canary
+  cancel-in-progress: false
+
+jobs:
+  setup-canary:
+    runs-on: macos-26
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Run real setup canary
+        env:
+          DOTFILES_NONINTERACTIVE: '1'
+          DOTFILES_SETUP_OBSIDIAN_PLUGINS: '0'
+          SKIP_VSCODE_EXTENSIONS: '1'
+        run: |
+          export HOME="$RUNNER_TEMP/setup-canary-home"
+          mkdir -p "$HOME"
+          ./setup.sh
