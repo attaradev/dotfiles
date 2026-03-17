@@ -28,7 +28,7 @@ cd ~/.dotfiles
 Bootstrap will clone to `~/.dotfiles` (or pull latest if already cloned) and run `./setup.sh`.
 Bootstrap is idempotent and safe to rerun; it refreshes the repo and reapplies setup.
 If Homebrew is missing, `setup.sh` installs it automatically via the official installer.
-All `make` targets are defined in `~/.dotfiles/Makefile`; run them from `~/.dotfiles` or run `make` with `-C ~/.dotfiles`.
+All `make` targets are defined in `~/.dotfiles/Makefile`; run them from `~/.dotfiles`, run `make -C ~/.dotfiles help` for the full catalog, or run `make help` from within the repo.
 
 ## Manual Installation
 
@@ -51,13 +51,7 @@ make install
 
 After pulling later dotfile changes, run `make setup` to re-apply idempotent setup tasks without running package upgrades.
 
-Runtime and tooling versions are sourced from local `~/.mise.toml` (created from `mise/.mise.toml` template when missing):
-
-- Core runtimes: `node = "25"`, `python = "3.14"`, `go = "1.26"`, `ruby = "4.0"`
-- Package managers/tooling: `npm = "11"`, `pnpm = "10"`, `uv = "0.10"`
-- Add additional runtimes as needed by adding tracks to `~/.mise.toml` (for example `java = "21"` or `rust = "1.93"`), then run `make mise`
-
-See [RUNTIMES.md](RUNTIMES.md) for version policy and update workflows.
+Runtime and tooling versions are sourced from local `~/.mise.toml` (created from `mise/.mise.toml` template when missing); see [RUNTIMES.md](RUNTIMES.md) for the tracked defaults and update workflows.
 
 ## Non-Interactive Installation
 

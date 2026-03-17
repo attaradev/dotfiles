@@ -16,82 +16,12 @@ source "$DOTFILES_DIR/scripts/lib.sh"
 COMMAND="${1:-setup}"
 require_cmd jq
 
-print_info() {
-  echo "ℹ $1"
-}
-
-print_success() {
-  echo "✓ $1"
-}
-
-print_warning() {
-  echo "⚠ $1"
-}
-
-write_if_missing() {
-  local file=$1
-  detach_if_symlink "$file"
-  if [[ -e "$file" ]]; then
-    return 0
-  fi
-
-  mkdir -p "$(dirname "$file")"
-  cat >"$file"
-}
-
-copy_if_missing() {
-  local target=$1
-  local source=$2
-
-  detach_if_symlink "$target"
-  if [[ -e "$target" ]]; then
-    return 0
-  fi
-
-  if [[ -f "$source" ]]; then
-    mkdir -p "$(dirname "$target")"
-    cp "$source" "$target"
-  fi
-}
-
-replace_if_changed() {
-  local tmp_file=$1
-  local target=$2
-
-  detach_if_symlink "$target"
-  mkdir -p "$(dirname "$target")"
-
-  if [[ -f "$target" ]] && cmp -s "$tmp_file" "$target"; then
-    rm -f "$tmp_file"
-    return 1
-  fi
-
-  mv "$tmp_file" "$target"
-  return 0
-}
-
 remove_path_if_exists() {
   local target=$1
   if [[ ! -e "$target" ]]; then
     return 0
   fi
   rm -rf "$target"
-}
-
-detach_if_symlink() {
-  local file=$1
-  local tmp_file
-
-  if [[ ! -L "$file" ]]; then
-    return 0
-  fi
-
-  tmp_file="$(mktemp)"
-  cat "$file" >"$tmp_file" 2>/dev/null || true
-  rm -f "$file"
-  mkdir -p "$(dirname "$file")"
-  cp "$tmp_file" "$file"
-  rm -f "$tmp_file"
 }
 
 ensure_local_vault_directory() {
@@ -237,7 +167,7 @@ register_vault_with_obsidian_ui() {
       '.vaults = (.vaults // {}) | .vaults[$id].path = $path' \
       "$global_file" >"$tmp_file"
 
-    if replace_if_changed "$tmp_file" "$global_file"; then
+    if replace_file_if_changed "$tmp_file" "$global_file"; then
       print_success "Updated Obsidian UI vault path: $existing_path -> $ui_vault_path"
     else
       : # vault already registered
@@ -266,312 +196,32 @@ register_vault_with_obsidian_ui() {
       '{vaults: {($id): {path: $path, ts: $ts}}}' >"$tmp_file"
   fi
 
-  if replace_if_changed "$tmp_file" "$global_file"; then
+  if replace_file_if_changed "$tmp_file" "$global_file"; then
     print_success "Registered Knowledge vault in Obsidian UI list: $ui_vault_path"
   else
     print_info "Obsidian UI vault registration already up to date: $ui_vault_path"
   fi
 }
 
+seed_public_vault_file_if_missing() {
+  local rel_path="$1"
+  copy_file_if_missing "$VAULT_DIR/$rel_path" "$PUBLIC_VAULT_SOURCE_DIR/$rel_path"
+}
+
 seed_vault_files() {
-  local template
-
-  mkdir -p \
-    "$VAULT_DIR" \
-    "$VAULT_DIR/setup" \
-    "$VAULT_DIR/projects" \
-    "$VAULT_DIR/reading" \
-    "$VAULT_DIR/learning" \
-    "$VAULT_DIR/career" \
-    "$VAULT_DIR/$TEMPLATES_FOLDER"
-
-  copy_if_missing "$VAULT_DIR/hub.md" "$PUBLIC_VAULT_SOURCE_DIR/hub.md"
-  write_if_missing "$VAULT_DIR/hub.md" <<'EOF'
-# Knowledge Hub
-
-Use this as the landing page in Obsidian.
-
-## Areas
-
-- [Active Tasks](tasks.md)
-- [Projects Tracker](projects/projects.md)
-- [Learning and Studies](learning/studies.md)
-- [Courses Tracker](learning/courses.md)
-- [Books Tracker](reading/books.md)
-- [Articles Tracker](reading/articles.md)
-- [Lessons Learned](learning/lessons.md)
-- [Achievement Log](career/achievement-log.md)
-- [Plugin Setup](setup/obsidian-plugins.md)
-EOF
-  copy_if_missing \
-    "$VAULT_DIR/setup/obsidian-plugins.md" \
-    "$PUBLIC_VAULT_SOURCE_DIR/setup/obsidian-plugins.md"
-  write_if_missing "$VAULT_DIR/setup/obsidian-plugins.md" <<'EOF'
-# Obsidian Plugin Operator Notes
-
-Plugin defaults are configured by `scripts/obsidian.sh`.
-EOF
-
-  for template in \
-    task-plan-template.md \
-    project-entry-template.md \
-    study-entry-template.md \
-    course-entry-template.md \
-    book-entry-template.md \
-    article-entry-template.md \
-    lesson-entry-template.md \
-    achievement-entry-template.md; do
-    copy_if_missing \
-      "$VAULT_DIR/$TEMPLATES_FOLDER/$template" \
-      "$PUBLIC_VAULT_SOURCE_DIR/$TEMPLATES_FOLDER/$template"
-  done
-
-  write_if_missing "$VAULT_DIR/tasks.md" <<'EOF'
-# Active Tasks
-
-Track active execution here when a repository does not provide its own task file.
-
-## In Progress
-
-### YYYY-MM-DD | Context | Objective
-
-- Status: planned | in_progress | blocked | done
-- Scope:
-- Checklist:
-  - [ ] Item 1
-  - [ ] Item 2
-  - [ ] Item 3
-- Verification:
-  - Commands/tests run:
-  - Expected behavior:
-  - Actual behavior:
-- Notes:
-
-## Completed
-
-### YYYY-MM-DD | Context | Objective
-
-- Outcome:
-- Verification summary:
-- Follow-ups:
-EOF
-
-  write_if_missing "$VAULT_DIR/projects/projects.md" <<'EOF'
-# Projects Tracker
-
-Track your work across all projects, not just Claude sessions.
-
-## Active Projects
-
-### Project Name
-
-- Status: ideation | active | blocked | maintenance | complete
-- Goal:
-- Current milestone:
-- Next milestone:
-- Risks:
-- Links: repo, board, docs, PRs
-- Last updated: YYYY-MM-DD
-
-## Backlog Ideas
-
-- Idea:
-- Why it matters:
-- First actionable step:
-
-## Completed Projects
-
-### Project Name | YYYY
-
-- Summary:
-- Outcome:
-- Evidence:
-- Key lesson:
-EOF
-
-  write_if_missing "$VAULT_DIR/reading/books.md" <<'EOF'
-# Books Tracker
-
-Track books you want to read, are actively reading, and completed.
-
-## Want To Read
-
-### Book Title | Author
-
-- Status: want_to_read
-- Why read:
-- Priority: low | medium | high
-- Next action:
-- Related lessons:
-
-## Reading Now
-
-### Book Title | Author
-
-- Status: reading
-- Started: YYYY-MM-DD
-- Focus:
-- Notes:
-- Related lessons:
-
-## Finished
-
-### Book Title | Author
-
-- Status: finished
-- Started: YYYY-MM-DD
-- Finished: YYYY-MM-DD
-- Key takeaways:
-- Related lessons:
-EOF
-
-  write_if_missing "$VAULT_DIR/reading/articles.md" <<'EOF'
-# Articles Tracker
-
-Track articles and papers you want to read, are reading, and completed.
-
-## Queue
-
-### Article Title | Author/Publisher
-
-- Status: queued
-- URL:
-- Why read:
-- Priority: low | medium | high
-- Next action:
-- Related lessons:
-
-## Reading Now
-
-### Article Title | Author/Publisher
-
-- Status: reading
-- URL:
-- Started: YYYY-MM-DD
-- Notes:
-- Related lessons:
-
-## Archived
-
-### Article Title | Author/Publisher
-
-- Status: archived
-- URL:
-- Finished: YYYY-MM-DD
-- Key takeaways:
-- Related lessons:
-EOF
-
-  write_if_missing "$VAULT_DIR/learning/courses.md" <<'EOF'
-# Courses Tracker
-
-Track courses you want to take, are currently taking, and completed.
-
-## Backlog
-
-### Course Title | Provider
-
-- Status: backlog
-- Link:
-- Why take:
-- Priority: low | medium | high
-- Target start: YYYY-MM-DD
-- Related lessons:
-
-## In Progress
-
-### Course Title | Provider
-
-- Status: in_progress
-- Link:
-- Started: YYYY-MM-DD
-- Current module:
-- Notes:
-- Next milestone:
-- Related lessons:
-
-## Completed
-
-### Course Title | Provider
-
-- Status: completed
-- Link:
-- Started: YYYY-MM-DD
-- Finished: YYYY-MM-DD
-- Completion proof: certificate, project, notes
-- Key takeaways:
-- Related lessons:
-EOF
-
-  write_if_missing "$VAULT_DIR/learning/studies.md" <<'EOF'
-# Learning and Studies Tracker
-
-Track intentional learning (courses, labs, certifications, experiments).
-
-## Active Focus Areas
-
-- Topic:
-- Why now:
-- Success criteria:
-- Time allocation:
-
-## Study Log
-
-### YYYY-MM-DD | Topic | Session Title
-
-- Source: course/book/article/lab/cert
-- Time spent:
-- What I learned:
-- What I practiced:
-- Open questions:
-- Next study action:
-- Related lessons:
-
-## Completed Learning Outcomes
-
-### Topic | YYYY-MM-DD
-
-- Outcome:
-- Proof: project, notes, cert, demo, assessment
-- Practical application:
-EOF
-
-  write_if_missing "$VAULT_DIR/learning/lessons.md" <<'EOF'
-# Lessons Learned
-
-Capture repeatable lessons from mistakes, regressions, and rework.
-
-## Entry Template
-
-```md
-### YYYY-MM-DD | Context
-- Mistake:
-- Signal:
-- Root cause:
-- New rule:
-- Enforcement check:
-```
-
-## Entries
-EOF
-
-  write_if_missing "$VAULT_DIR/career/achievement-log.md" <<'EOF'
-# Personal Achievement Log
-
-Use this file to keep an evidence-backed record of high-impact outcomes.
-
-## Entry Template
-
-```md
-### YYYY-MM-DD | Project | Short Win Title
-- Context: What problem or opportunity existed?
-- Actions: What did I specifically do?
-- Impact: What changed? Include numbers when possible.
-- Evidence: <link1>, <link2>, <link3>
-- Competencies: execution, ownership, leadership, reliability, product, mentoring
-- Reusable bullet: One sentence suitable for review/resume packets.
-```
-EOF
+  local source_file rel_path
+
+  if [[ ! -d "$PUBLIC_VAULT_SOURCE_DIR" ]]; then
+    print_warning "Public vault seed directory not found: $PUBLIC_VAULT_SOURCE_DIR"
+    return 1
+  fi
+
+  mkdir -p "$VAULT_DIR"
+
+  while IFS= read -r source_file; do
+    rel_path="${source_file#"$PUBLIC_VAULT_SOURCE_DIR/"}"
+    seed_public_vault_file_if_missing "$rel_path"
+  done < <(find "$PUBLIC_VAULT_SOURCE_DIR" -type f | sort)
 }
 
 write_array_union() {
@@ -592,7 +242,7 @@ write_array_union() {
     jq -n --argjson add "$values_json" '$add | unique' >"$tmp_file"
   fi
 
-  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 write_array_without_values() {
@@ -615,7 +265,7 @@ write_array_without_values() {
     jq -n '[]' >"$tmp_file"
   fi
 
-  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_core_plugins() {
@@ -641,7 +291,7 @@ configure_core_plugins() {
       'reduce $required[] as $id ({}; .[$id] = true)' >"$tmp_file"
   fi
 
-  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_templates_settings() {
@@ -656,7 +306,7 @@ configure_templates_settings() {
     jq -n --arg folder "$TEMPLATES_FOLDER" '{"folder": $folder}' >"$tmp_file"
   fi
 
-  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_dataview_plugin() {
@@ -671,7 +321,7 @@ configure_dataview_plugin() {
     jq -n '{"enableDataviewJs": true, "enableInlineDataviewJs": true}' >"$tmp_file"
   fi
 
-  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_metadata_menu_plugin() {
@@ -686,7 +336,7 @@ configure_metadata_menu_plugin() {
     jq -n '{"disableDataviewPrompt": true}' >"$tmp_file"
   fi
 
-  replace_if_changed "$tmp_file" "$file" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$file" >/dev/null || true
 }
 
 configure_workspace_defaults() {
@@ -940,7 +590,7 @@ record_plugin_release_state() {
 
   tmp_file="$(mktemp)"
   printf '%s\n' "$release_id" >"$tmp_file"
-  replace_if_changed "$tmp_file" "$plugin_dir/.dotfiles-release-id" >/dev/null || true
+  replace_file_if_changed "$tmp_file" "$plugin_dir/.dotfiles-release-id" >/dev/null || true
 }
 
 install_community_plugin() {

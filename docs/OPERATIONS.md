@@ -1,19 +1,16 @@
 # Operations
 
-All `make` commands below use `~/.dotfiles/Makefile`. Run from `~/.dotfiles`, or run `make` with `-C ~/.dotfiles` from any directory.
+Use `make help` (or `make -C ~/.dotfiles help`) for the full target catalog defined in `~/.dotfiles/Makefile`.
 
 ## Routine Commands
 
+Key workflows:
+
 ```bash
-make setup              # Re-apply idempotent setup after config changes
-make update             # Update Homebrew and mise-managed packages
-make doctor             # Homebrew + mise diagnostics
-make status             # Summary of key tool versions
-make list               # Installed mise runtimes
-make mise               # Install runtimes from ~/.mise.toml
-make obsidian           # Setup Knowledge vault and apply pinned plugin assets
-make obsidian-lock      # Refresh pinned Obsidian plugin lock
-make obsidian-clean     # Remove unmanaged Obsidian plugin directories
+make setup    # Re-apply idempotent setup after config changes
+make update   # Update Homebrew and mise-managed packages
+make obsidian # Configure the Knowledge vault and plugins
+make check    # Run lint and local quality checks
 ```
 
 ## Runtime and Tooling Updates

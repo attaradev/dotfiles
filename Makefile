@@ -14,7 +14,7 @@
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
 BREW_BUNDLE_WITH_OPTIONALS = OPTIONAL_CASK_ENV_FILE="$(BUNDLE_ENV_FILE)" ./scripts/brew.sh bundle
-STOW_PACKAGES = zsh git npm starship ssh gpg claude codex
+STOW_PACKAGES := $(strip $(shell tr '\n' ' ' < scripts/stow-packages.txt))
 BACKUP_ARTIFACTS = \
 	$(HOME)/dotfiles-backup-* \
 	$(HOME)/.zshrc.backup \
@@ -43,9 +43,7 @@ BACKUP_ARTIFACTS = \
 	$(HOME)/.gnupg/gpg-agent.conf.bak.* \
 	$(HOME)/.gnupg/gpg.conf.bak.*
 
-# ============================================
-# Setup & Installation
-# ============================================
+##@ Setup & Installation
 
 ## install: Full setup - install all packages, tools, and dotfiles
 install:
@@ -117,9 +115,7 @@ gnupg:
 	@echo "🔐 Setting up GnuPG..."
 	@bash ./scripts/tools.sh gnupg
 
-# ============================================
-# Updates & Maintenance
-# ============================================
+##@ Updates & Maintenance
 
 ## update: Update Homebrew and mise-managed packages
 update:
@@ -143,9 +139,7 @@ update:
 ## upgrade: Alias for update
 upgrade: update
 
-# ============================================
-# Diagnostics & Status
-# ============================================
+##@ Diagnostics & Status
 
 ## doctor: Run health checks on Homebrew and mise
 doctor:
@@ -205,9 +199,7 @@ list:
 		exit 1; \
 	fi
 
-# ============================================
-# Brewfile Management
-# ============================================
+##@ Brewfile Management
 
 ## dump: Generate Brewfile from currently installed packages
 dump:
@@ -224,9 +216,7 @@ cleanup:
 	@$(BREW_BUNDLE_WITH_OPTIONALS) cleanup --force --file=./Brewfile
 	@echo "✓ Cleanup complete!"
 
-# ============================================
-# Backup & Restore
-# ============================================
+##@ Backup & Restore
 
 ## backup: Create backup of current dotfiles
 backup:
@@ -287,9 +277,7 @@ backup-clean:
 		echo "✓ Backup artifacts removed"; \
 	fi
 
-# ============================================
-# Testing & Validation
-# ============================================
+##@ Testing & Validation
 
 ## test: Run idempotency test (safe to run multiple times)
 test:
@@ -352,9 +340,7 @@ check: lint-shell lint-docs
 	@./scripts/check.sh
 	@echo "✅ All checks passed!"
 
-# ============================================
-# Cleanup
-# ============================================
+##@ Cleanup
 
 ## clean: Clean up caches and temporary files
 clean:
@@ -371,57 +357,24 @@ uninstall-stow:
 	done
 	@echo "✓ Symlinks removed!"
 
-# ============================================
-# Help
-# ============================================
+##@ Help
 
 ## help: Show this help message
 help:
 	@echo "Dotfiles Management Commands"
 	@echo "════════════════════════════════════════════"
-	@echo ""
-	@echo "Setup & Installation:"
-	@echo "  make install       	- Full setup (first time)"
-	@echo "  make setup         	- Re-apply idempotent setup after config changes"
-	@echo "  make brew          	- Install packages from Brewfile"
-	@echo "  make brew-check    	- Verify Brewfile packages"
-	@echo "  make mise          	- Setup mise version manager"
-	@echo "  make stow          	- Create dotfile symlinks"
-	@echo "  make agents        	- Refresh Claude/Codex configs"
-	@echo "  make obsidian      	- Configure Obsidian vault + plugins"
-	@echo "  make obsidian-lock 	- Refresh pinned Obsidian plugin lock"
-	@echo "  make obsidian-clean	- Remove unmanaged Obsidian plugin dirs"
-	@echo "  make vscode        	- Install VSCode extensions"
-	@echo "  make gnupg         	- Setup GnuPG"
-	@echo ""
-	@echo "Updates & Maintenance:"
-	@echo "  make update        	- Update Homebrew and mise-managed packages"
-	@echo "  make upgrade       	- Alias for update"
-	@echo ""
-	@echo "Diagnostics & Status:"
-	@echo "  make doctor        	- Run health checks"
-	@echo "  make status        	- Show system status"
-	@echo "  make list          	- List mise tools"
-	@echo ""
-	@echo "Brewfile Management:"
-	@echo "  make dump          	- Generate Brewfile from system"
-	@echo "  make cleanup       	- Remove unlisted packages"
-	@echo ""
-	@echo "Backup & Testing:"
-	@echo "  make backup        	- Backup current dotfiles"
-	@echo "  make backup-list   	- Show backup files/directories"
-	@echo "  make backup-clean  	- Prompt to delete backups (or use CONFIRM=1)"
-	@echo "  make test          	- Test idempotency"
-	@echo "  make smoke         	- Run mocked smoke checks"
-	@echo "  make validate      	- Validate shell config"
-	@echo "  make lint-shell    	- Lint shell scripts"
-	@echo "  make lint-docs     	- Lint markdown docs"
-	@echo "  make check         	- Run all quality checks"
-	@echo ""
-	@echo "Cleanup:"
-	@echo "  make clean         	- Clean caches"
-	@echo "  make uninstall-stow 	- Remove symlinks"
-	@echo ""
-	@echo "Help:"
-	@echo "  make help          	- Show this message"
+	@awk '\
+		/^##@ / { \
+			printf "\n%s:\n", substr($$0, 5); \
+			next; \
+		} \
+		/^## [A-Za-z0-9_.-]+:/ { \
+			line = substr($$0, 4); \
+			target = line; \
+			sub(/:.*/, "", target); \
+			description = line; \
+			sub(/^[^:]+:[[:space:]]*/, "", description); \
+			printf "  make %-15s %s\n", target, description; \
+		} \
+	' $(MAKEFILE_LIST)
 	@echo ""

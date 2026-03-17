@@ -5,6 +5,62 @@
 # General utilities
 # ---------------------------------------------------------------------------
 
+# Initialize ANSI colors lazily so scripts can share consistent output helpers.
+setup_output_colors() {
+  if [[ "${_DOTFILES_OUTPUT_COLORS_INITIALIZED:-0}" == "1" ]]; then
+    return 0
+  fi
+
+  _DOTFILES_OUTPUT_COLORS_INITIALIZED=1
+
+  if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+    RED=$'\033[38;5;203m'
+    GREEN=$'\033[38;5;76m'
+    YELLOW=$'\033[38;5;220m'
+    BLUE=$'\033[38;5;69m'
+    MAGENTA=$'\033[38;5;171m'
+    CYAN=$'\033[38;5;45m'
+    NC=$'\033[0m'
+  else
+    RED=""
+    GREEN=""
+    YELLOW=""
+    BLUE=""
+    MAGENTA=""
+    CYAN=""
+    NC=""
+  fi
+}
+
+print_header() {
+  setup_output_colors
+  echo ""
+  echo -e "${MAGENTA}============================================${NC}"
+  echo -e "${MAGENTA}$1${NC}"
+  echo -e "${MAGENTA}============================================${NC}"
+  echo ""
+}
+
+print_success() {
+  setup_output_colors
+  echo -e "${GREEN}✓${NC} $1"
+}
+
+print_error() {
+  setup_output_colors
+  echo -e "${RED}✗${NC} $1"
+}
+
+print_warning() {
+  setup_output_colors
+  echo -e "${YELLOW}⚠${NC} $1"
+}
+
+print_info() {
+  setup_output_colors
+  echo -e "${BLUE}ℹ${NC} $1"
+}
+
 # Normalise a boolean-ish string to "1" or "0".
 normalize_bool() {
   local raw
@@ -37,6 +93,112 @@ resolve_mutable_target() {
   else
     printf '%s\n' "$primary"
   fi
+}
+
+activate_homebrew_shellenv() {
+  local brew_bin
+
+  for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [[ -x "$brew_bin" ]]; then
+      eval "$("$brew_bin" shellenv)"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+# Convert a symlinked file into a local regular file, preserving current
+# contents so future writes stay machine-local.
+materialize_local_file() {
+  local file="$1"
+  local tmp_file
+
+  if [[ ! -L "$file" ]]; then
+    return 1
+  fi
+
+  tmp_file="$(mktemp)"
+  cat "$file" >"$tmp_file" 2>/dev/null || true
+  rm -f "$file"
+  mkdir -p "$(dirname "$file")"
+  cp "$tmp_file" "$file"
+  rm -f "$tmp_file"
+}
+
+copy_file_if_missing() {
+  local target="$1"
+  local source="$2"
+
+  if materialize_local_file "$target"; then
+    :
+  fi
+
+  if [[ -e "$target" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$source" ]]; then
+    mkdir -p "$(dirname "$target")"
+    cp "$source" "$target"
+  fi
+}
+
+replace_file_if_changed() {
+  local tmp_file="$1"
+  local target="$2"
+
+  if materialize_local_file "$target"; then
+    :
+  fi
+
+  mkdir -p "$(dirname "$target")"
+
+  if [[ -f "$target" ]] && cmp -s "$tmp_file" "$target"; then
+    rm -f "$tmp_file"
+    return 1
+  fi
+
+  mv "$tmp_file" "$target"
+}
+
+mise_extract_tool_tracks() {
+  local config_path="$1"
+  local in_tools=0 line tool track
+
+  [[ -f "$config_path" ]] || return 0
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ ^[[:space:]]*\[tools\][[:space:]]*$ ]]; then
+      in_tools=1
+      continue
+    fi
+    if [[ $in_tools -eq 1 && "$line" =~ ^[[:space:]]*\[[^]]+\][[:space:]]*$ ]]; then
+      break
+    fi
+    [[ $in_tools -eq 0 ]] && continue
+
+    if [[ "$line" =~ ^[[:space:]]*\"?([A-Za-z0-9:_-]+)\"?[[:space:]]*=[[:space:]]*\"([^\"]+)\" ]]; then
+      tool="${BASH_REMATCH[1]}"
+      track="${BASH_REMATCH[2]}"
+      printf '%s\t%s\n' "$tool" "$track"
+    fi
+  done < "$config_path"
+}
+
+mise_get_tool_track() {
+  local config_path="$1"
+  local requested_tool="$2"
+  local tool track
+
+  while IFS=$'\t' read -r tool track; do
+    if [[ "$tool" == "$requested_tool" ]]; then
+      printf '%s\n' "$track"
+      return 0
+    fi
+  done < <(mise_extract_tool_tracks "$config_path")
+
+  return 1
 }
 
 # ---------------------------------------------------------------------------

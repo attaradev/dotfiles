@@ -16,50 +16,7 @@ set -e  # Exit on error
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=./scripts/lib.sh
 source "$DOTFILES_DIR/scripts/lib.sh"
-
-# Colors for output (auto-disable if not a TTY or NO_COLOR set)
-if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
-  RED=$'\033[38;5;203m'
-  GREEN=$'\033[38;5;76m'
-  YELLOW=$'\033[38;5;220m'
-  BLUE=$'\033[38;5;69m'
-  MAGENTA=$'\033[38;5;171m'
-  CYAN=$'\033[38;5;45m'
-  NC=$'\033[0m' # No Color
-else
-  RED=""
-  GREEN=""
-  YELLOW=""
-  BLUE=""
-  MAGENTA=""
-  CYAN=""
-  NC=""
-fi
-
-# Helper functions
-print_header() {
-  echo ""
-  echo -e "${MAGENTA}============================================${NC}"
-  echo -e "${MAGENTA}$1${NC}"
-  echo -e "${MAGENTA}============================================${NC}"
-  echo ""
-}
-
-print_success() {
-  echo -e "${GREEN}✓${NC} $1"
-}
-
-print_error() {
-  echo -e "${RED}✗${NC} $1"
-}
-
-print_warning() {
-  echo -e "${YELLOW}⚠${NC} $1"
-}
-
-print_info() {
-  echo -e "${BLUE}ℹ${NC} $1"
-}
+setup_output_colors
 
 has_tty() {
   [[ -t 0 || -t 1 || -t 2 ]]
@@ -156,17 +113,14 @@ write_optional_cask_env() {
     done
   } > "$tmp_file"
 
-  if [[ -f "$OPTIONAL_CASK_ENV_FILE" ]] && cmp -s "$tmp_file" "$OPTIONAL_CASK_ENV_FILE"; then
-    rm -f "$tmp_file"
+  if replace_file_if_changed "$tmp_file" "$OPTIONAL_CASK_ENV_FILE"; then
     chmod 600 "$OPTIONAL_CASK_ENV_FILE" 2>/dev/null || true
-    print_info "Optional cask preferences unchanged at $OPTIONAL_CASK_ENV_FILE"
+    print_success "Saved optional cask preferences to $OPTIONAL_CASK_ENV_FILE"
     return
   fi
 
-  mv "$tmp_file" "$OPTIONAL_CASK_ENV_FILE"
   chmod 600 "$OPTIONAL_CASK_ENV_FILE" 2>/dev/null || true
-
-  print_success "Saved optional cask preferences to $OPTIONAL_CASK_ENV_FILE"
+  print_info "Optional cask preferences unchanged at $OPTIONAL_CASK_ENV_FILE"
 }
 
 install_homebrew() {
@@ -198,11 +152,7 @@ install_homebrew() {
 
   rm -f "$installer_script"
 
-  if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x "/usr/local/bin/brew" ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+  activate_homebrew_shellenv || true
 
   if ! command -v brew >/dev/null 2>&1; then
     print_error "Homebrew installer completed, but 'brew' is still unavailable in PATH."
@@ -326,11 +276,7 @@ cd "$DOTFILES_DIR"
 print_header "Step 1: Homebrew Installation"
 
 if ! command -v brew &> /dev/null; then
-  if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x "/usr/local/bin/brew" ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+  activate_homebrew_shellenv || true
 fi
 
 if command -v brew &> /dev/null; then
@@ -509,38 +455,37 @@ verify_obsidian_setup() {
     print_warning "Obsidian cask not detected. Run: brew install --cask obsidian"
   fi
 
-  local required_files=(
-    "$HOME/.knowledge/hub.md"
-    "$HOME/.knowledge/setup/obsidian-plugins.md"
-    "$HOME/.knowledge/tasks.md"
-    "$HOME/.knowledge/projects/projects.md"
-    "$HOME/.knowledge/reading/books.md"
-    "$HOME/.knowledge/reading/articles.md"
-    "$HOME/.knowledge/learning/courses.md"
-    "$HOME/.knowledge/learning/studies.md"
-    "$HOME/.knowledge/learning/lessons.md"
-    "$HOME/.knowledge/career/achievement-log.md"
-  )
+  local required_files=()
+  local vault_seed_dir="$DOTFILES_DIR/obsidian/.knowledge"
+  local lock_file="$DOTFILES_DIR/obsidian/community-plugin-lock.json"
+  local file source_file rel_path
+
+  if [[ -d "$vault_seed_dir" ]]; then
+    while IFS= read -r source_file; do
+      rel_path="${source_file#"$vault_seed_dir/"}"
+      required_files+=("$HOME/.knowledge/$rel_path")
+    done < <(find "$vault_seed_dir" -type f | sort)
+  fi
 
   if [[ "$DOTFILES_SETUP_OBSIDIAN_PLUGINS" == "1" ]]; then
     required_files+=(
       "$HOME/.knowledge/.obsidian/core-plugins.json"
       "$HOME/.knowledge/.obsidian/templates.json"
       "$HOME/.knowledge/.obsidian/community-plugins.json"
-      "$HOME/.knowledge/.obsidian/plugins/auto-classifier/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/dataview/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/metadata-menu/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/obsidian-tasks-plugin/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/periodic-notes/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/quickadd/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/calendar/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/obsidian-kanban/manifest.json"
-      "$HOME/.knowledge/.obsidian/plugins/obsidian-linter/manifest.json"
     )
+
+    if [[ -f "$lock_file" ]] && command -v jq >/dev/null 2>&1; then
+      while IFS= read -r file; do
+        [[ -n "$file" ]] && required_files+=("$file")
+      done < <(
+        jq -r --arg home "$HOME" \
+          '.plugins | keys[] | "\($home)/.knowledge/.obsidian/plugins/\(.)/manifest.json"' \
+          "$lock_file"
+      )
+    fi
   fi
 
   local missing=()
-  local file
 
   for file in "${required_files[@]}"; do
     if [[ ! -e "$file" ]]; then
@@ -624,6 +569,23 @@ fi
 
 print_header "Setup Complete!"
 
+print_mise_track_example() {
+  local tool="$1"
+  local label="$2"
+  local config_path track
+
+  for config_path in "$HOME/.mise.toml" "$DOTFILES_DIR/mise/.mise.toml"; do
+    if track="$(mise_get_tool_track "$config_path" "$tool" 2>/dev/null)"; then
+      if [[ -n "$track" ]]; then
+        echo "   ${GREEN}mise use ${tool}@${track}${NC}  # Install ${label} ${track}"
+        return 0
+      fi
+    fi
+  done
+
+  echo "   ${GREEN}mise use ${tool}@<track>${NC}  # Install ${label}"
+}
+
 echo "Your development environment has been set up successfully!"
 echo ""
 echo "📋 Next Steps:"
@@ -637,9 +599,9 @@ echo "   ${GREEN}mise doctor${NC}          # Check mise health"
 echo "   ${GREEN}mise list${NC}            # Show installed versions"
 echo ""
 echo "3. Install additional language versions with mise:"
-echo "   ${GREEN}mise use node@25${NC}       # Install Node.js 25"
-echo "   ${GREEN}mise use python@3.14${NC}  # Install Python 3.14"
-echo "   ${GREEN}mise use uv@0.10${NC}      # Install uv 0.10"
+print_mise_track_example "node" "Node.js"
+print_mise_track_example "python" "Python"
+print_mise_track_example "uv" "uv"
 echo "   ${GREEN}# Edit ~/.mise.toml to add/remove tools, then:${NC}"
 echo "   ${GREEN}make mise${NC}"
 echo ""

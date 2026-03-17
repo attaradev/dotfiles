@@ -4,7 +4,8 @@ This repository manages development runtimes and language tooling with `mise`.
 
 ## Source of Truth
 
-- Runtime versions are managed in local `~/.mise.toml`.
+- Tracked default tracks live in `mise/.mise.toml`.
+- Local active tracks live in `~/.mise.toml`.
 - `scripts/tools.sh mise` bootstraps `~/.mise.toml` from tracked template `mise/.mise.toml` only when missing.
 - `scripts/tools.sh mise` syncs `[tools]` tracks from `~/.mise.toml` into `~/.config/mise/config.toml` via `mise use -g` so global shims stay aligned.
 - `make mise` installs tools from `~/.mise.toml`.
@@ -12,17 +13,14 @@ This repository manages development runtimes and language tooling with `mise`.
 
 ## Managed Tools and Version Policy
 
-| Tool | Default track in template (`mise/.mise.toml`) | Policy |
-| --- | --- | --- |
-| Node.js | `25` | Latest patch/minor within major 25 |
-| npm | `11` | Latest patch/minor within major 11 |
-| pnpm | `10` | Latest patch/minor within major 10 |
-| Python | `3.14` | Latest patch release within 3.14 |
-| uv | `0.10` | Latest patch release within 0.10 |
-| Go | `1.26` | Latest patch release within 1.26 |
-| Ruby | `4.0` | Latest patch release within 4.0 |
+Inspect `mise/.mise.toml` to see the current tracked defaults.
 
-This policy keeps tracked tools on explicit major/minor lines while allowing patch/minor updates inside each line.
+Policy:
+
+- Language runtimes such as Node.js, Python, Go, and Ruby stay on explicit major or major/minor lines.
+- Package managers and tooling such as npm, pnpm, and uv stay on explicit major or minor lines.
+- Local overrides belong in `~/.mise.toml`, not the tracked template.
+- Changes to tracked defaults should update `mise/.mise.toml` only; other docs should point back here or to that file rather than restating the numbers.
 
 ## Install and Verify
 

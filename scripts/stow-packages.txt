@@ -1,0 +1,8 @@
+zsh
+git
+npm
+starship
+ssh
+gpg
+claude
+codex

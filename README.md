@@ -91,7 +91,7 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 
 - **Homebrew** — packages and casks from `Brewfile`
 - **Language runtimes** — Node.js, Python, Go, Ruby, npm, pnpm, uv via `mise`, sourced from `~/.mise.toml`
-- **Dotfiles** — symlinks managed by GNU Stow (`zsh`, `git`, `npm`, `ssh`, `gpg`, `starship`, `claude`, `codex`)
+- **Dotfiles** — symlinks managed by GNU Stow for the packages listed in `scripts/stow-packages.txt`
 - **Obsidian** — knowledge vault scaffold, pinned community plugins with SHA-256 verification, and `~/Knowledge` alias
 - **GPG** — `gpg-agent.conf` and `gpg.conf` with `pinentry-mac`, non-destructive (preserves existing local values)
 - **VSCode** — extensions installed when the `code` CLI is present (skippable)
@@ -100,45 +100,25 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 
 ## Managed Runtime and Tooling Tracks
 
-- Core runtimes (tracked): Node.js `25`, Python `3.14`, Go `1.26`, Ruby `4.0`
-- Package managers/tooling (tracked): npm `11`, pnpm `10`, uv `0.10`
-- Add additional runtimes as needed by updating `~/.mise.toml` (for example, `java = "21"` or `rust = "1.93"`), then rerun `make mise`
+Tracked defaults live in `mise/.mise.toml` and are documented in [docs/RUNTIMES.md](docs/RUNTIMES.md), while your local active configuration is `~/.mise.toml`.
 
-For runtime policy and workflows, see [docs/RUNTIMES.md](docs/RUNTIMES.md).
+Add additional runtimes by editing `~/.mise.toml` with the track you want, then rerun `make mise`.
 
 ## Common Commands
 
-All `make` targets are defined in `~/.dotfiles/Makefile`. Run commands from `~/.dotfiles`, or run `make` with `-C ~/.dotfiles` from any directory.
+Run `make help` when you need the full target catalog. Practical workflows include:
 
 ```bash
 make install        # Full setup
-make setup          # Re-apply idempotent setup after pulling config changes
-make update         # Upgrade brew + mise-managed packages
-make doctor         # Health checks for Homebrew and mise
-make mise           # Install runtimes from ~/.mise.toml (edit ~/.mise.toml to add/remove tools)
+make update         # Update Homebrew and mise-managed packages
 make stow           # Apply dotfile symlinks with GNU Stow
-make agents         # Refresh Claude/Codex global config symlinks
-make obsidian       # Setup vault + create ~/Knowledge alias + register in Obsidian UI + plugins
-make obsidian-lock  # Refresh pinned Obsidian plugin lock (review diff before applying)
-make obsidian-clean # Remove unmanaged Obsidian plugin directories
-make gnupg          # Configure GnuPG and signing defaults
-make vscode         # Install VSCode extensions
-make backup         # Timestamped backup of key local config
-make backup-list    # Show backup files/directories from setup scripts
-make backup-clean   # Prompt to delete backups (or CONFIRM=1)
-make check          # Local quality gate (shell/docs/local override checks)
-make smoke          # Mocked smoke checks for setup + make wrapper paths
-make dump           # Re-generate Brewfile from current system
-make cleanup        # Remove packages not listed in Brewfile
+make obsidian       # Ensure the Knowledge vault and plugins are configured
+make check          # Run lint + local quality checks
 ```
 
-`make update` is the repo-level maintenance path: it refreshes both Homebrew and
-mise-managed tooling. For Homebrew-only work inside an interactive `zsh`
-session, use `brewup [formula|cask]`; it asks for your password once up front,
-then runs `brew upgrade --greedy` followed by `brew cleanup`.
+`make update` refreshes both Homebrew and mise-managed tooling; for Homebrew-only upgrades use the `brewup` helper defined in `zsh/.zshrc`.
 
-To update Obsidian community plugins safely: run `make obsidian-lock`, review `obsidian/community-plugin-lock.json`, then run `make obsidian`.
-To prune stale plugin directories not present in the lock file, run `make obsidian-clean`.
+Update Obsidian plugins safely by running `make obsidian-lock`, reviewing `obsidian/community-plugin-lock.json`, then re-running `make obsidian`. Prune stale plugin directories with `make obsidian-clean`.
 
 ## Documentation
 

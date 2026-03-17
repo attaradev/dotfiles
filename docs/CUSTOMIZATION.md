@@ -48,15 +48,12 @@ make mise
 
 Examples:
 
-- Keep Node.js in major line 25: `node = "25"`
-- Keep Python on 3.14 patch stream: `python = "3.14"`
-- Keep Go on 1.26 patch stream: `go = "1.26"`
-- Keep Ruby on 4.0 patch stream: `ruby = "4.0"`
-- Add Java when needed on LTS major line 21: `java = "21"`
-- Add Rust when needed on 1.93 patch stream: `rust = "1.93"`
-- Keep npm in major line 11: `npm = "11"`
-- Keep pnpm in major line 10: `pnpm = "10"`
-- Keep uv on 0.10 patch stream: `uv = "0.10"`
+- Keep Node.js on a single major line, e.g. `node = "<major>"`.
+- Keep Python on a major/minor line, e.g. `python = "<major.minor>"`.
+- Keep Go, Ruby, pnpm, npm, and uv pinned to their chosen patch/minor lines via `<major.minor>` strings.
+- Add new runtimes such as Java or Rust by declaring their tracks (e.g. `java = "<major>"`, `rust = "<major.minor>"`).
+
+See [RUNTIMES.md](RUNTIMES.md) for the tracked defaults that ship with the repo.
 
 After changes, verify:
 
@@ -74,8 +71,6 @@ mise uninstall --all <tool>
 mise prune --tools
 mise list
 ```
-
-See [RUNTIMES.md](RUNTIMES.md) for runtime policies and update workflows.
 
 ## Git Identity and Signing
 
@@ -184,7 +179,7 @@ containing a token before running `make obsidian-lock`.
 
 1. Create a package directory in repo root (example: `tmux/`).
 2. Place files using home-relative layout (example: `tmux/.tmux.conf`).
-3. Add package name in `scripts/tools.sh` `default_packages` array (`cmd_stow`).
+3. Add package name to `scripts/stow-packages.txt`.
 4. Run:
 
 ```bash

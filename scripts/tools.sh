@@ -4,6 +4,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+STOW_PACKAGES_FILE="$DOTFILES_DIR/scripts/stow-packages.txt"
 # shellcheck source=./lib.sh
 source "$DOTFILES_DIR/scripts/lib.sh"
 
@@ -109,26 +110,13 @@ _mise_ensure_local_config() {
   return 1
 }
 
-_mise_extract_tool_tracks() {
-  local config_path="$1"
-  local in_tools=0 line tool track
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    if [[ "$line" =~ ^[[:space:]]*\[tools\][[:space:]]*$ ]]; then in_tools=1; continue; fi
-    if [[ $in_tools -eq 1 && "$line" =~ ^[[:space:]]*\[[^]]+\][[:space:]]*$ ]]; then break; fi
-    [[ $in_tools -eq 0 ]] && continue
-    if [[ "$line" =~ ^[[:space:]]*\"?([A-Za-z0-9:_-]+)\"?[[:space:]]*=[[:space:]]*\"([^\"]+)\" ]]; then
-      tool="${BASH_REMATCH[1]}"; track="${BASH_REMATCH[2]}"
-      printf '%s@%s\n' "$tool" "$track"
-    fi
-  done < "$config_path"
-}
-
 _mise_sync_global_tracks() {
   local config_path="$1"
   if [[ ! -f "$config_path" ]]; then return 0; fi
-  local specs=() spec
-  while IFS= read -r spec; do [[ -n "$spec" ]] && specs+=("$spec"); done \
-    < <(_mise_extract_tool_tracks "$config_path")
+  local specs=() tool track
+  while IFS=$'\t' read -r tool track; do
+    [[ -n "$tool" && -n "$track" ]] && specs+=("${tool}@${track}")
+  done < <(mise_extract_tool_tracks "$config_path")
   if (( ${#specs[@]} == 0 )); then return 0; fi
   local batch_output
   if batch_output=$(mise use -g "${specs[@]}" 2>&1); then
@@ -165,16 +153,6 @@ _gpg_backup_if_changed() {
   local backup="${file}.bak.${ts}"
   mv "$snapshot" "$backup"
   echo "📦 Backed up $(basename "$file") to $(basename "$backup")"
-}
-
-_gpg_materialize_local_file() {
-  local file="$1"
-  if [[ -L "$file" ]]; then
-    local tmp; tmp="$(mktemp)"
-    cat "$file" > "$tmp"
-    echo "🔁 Replacing symlinked $(basename "$file") with a local machine-specific file"
-    rm "$file"; cat "$tmp" > "$file"; rm -f "$tmp"
-  fi
 }
 
 _gpg_append_setting_if_missing() {
@@ -228,7 +206,17 @@ cmd_stow() {
 
   cd "$DOTFILES_DIR"
 
-  local default_packages=("zsh" "git" "npm" "starship" "ssh" "gpg" "claude" "codex")
+  local default_packages=()
+  local package_name
+  if [[ -f "$STOW_PACKAGES_FILE" ]]; then
+    while IFS= read -r package_name || [[ -n "$package_name" ]]; do
+      [[ -n "$package_name" ]] && default_packages+=("$package_name")
+    done < "$STOW_PACKAGES_FILE"
+  fi
+  if (( ${#default_packages[@]} == 0 )); then
+    echo "❌ No stow packages configured in $STOW_PACKAGES_FILE"
+    exit 1
+  fi
   local packages full_run
   if [[ "$#" -gt 0 ]]; then
     packages=("$@"); full_run=0
@@ -364,7 +352,9 @@ cmd_gnupg() {
     echo "❌ pinentry-mac not found — run: brew install pinentry-mac"; exit 1
   fi
 
-  _gpg_materialize_local_file "$gpg_agent_conf"
+  if materialize_local_file "$gpg_agent_conf"; then
+    echo "🔁 Replacing symlinked $(basename "$gpg_agent_conf") with a local machine-specific file"
+  fi
   touch "$gpg_agent_conf"
 
   local -a agent_patterns=(
@@ -397,7 +387,9 @@ cmd_gnupg() {
   chmod 600 "$gpg_agent_conf"
 
   local gpg_conf="$gpg_dir/gpg.conf"
-  _gpg_materialize_local_file "$gpg_conf"
+  if materialize_local_file "$gpg_conf"; then
+    echo "🔁 Replacing symlinked $(basename "$gpg_conf") with a local machine-specific file"
+  fi
   touch "$gpg_conf"
 
   local -a gpg_patterns=(
