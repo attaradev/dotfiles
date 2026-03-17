@@ -175,7 +175,7 @@ cmd_upgrade() {
   _brewup_prepare_sudo
 
   _brewup_repair_broken_casks "$@"
-  brew upgrade --greedy --overwrite "$@"
+  brew upgrade --greedy "$@"
   brew cleanup
 }
 
