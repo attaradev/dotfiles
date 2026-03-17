@@ -68,16 +68,16 @@ brewup docker-desktop
 ## Docker Desktop appends completion setup to `~/.zshrc`
 
 Docker Desktop may append its own completion block that re-adds
-`$HOME/.docker/completions` and reruns `compinit`. The tracked `zsh/.zshrc`
-already loads Docker completions from `$HOME/.docker/completions`, so the
-generated block is redundant.
+an absolute Docker completion path and reruns `compinit`. The tracked
+`zsh/.zshrc` now uses Docker Desktop's marker block with
+`${HOME:A}/.docker/completions`, which resolves to an absolute path at runtime
+without committing a host-specific `/Users/...` path into git.
 
-Current shells strip Docker Desktop's marker block on startup, keep `fpath`
-unique, and guard `compinit` so the extra block does not duplicate completion
-setup in the same shell load.
-
-If you still see the generated block after pulling the latest dotfiles, reload
-your shell:
+Shell startup still keeps `fpath` unique and guards `compinit`, so even an
+older duplicate Docker Desktop block will not double-initialize completions in
+the same shell load. If Docker Desktop appended an extra block before you
+pulled this fix, remove the trailing duplicate block once and reload your
+shell. After reloading, you should only see one Docker Desktop block:
 
 ```bash
 source ~/.zshrc

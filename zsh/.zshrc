@@ -103,6 +103,7 @@ dotfiles_run_compinit_once() {
 }
 alias compinit='dotfiles_run_compinit_once'
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=("${HOME:A}/.docker/completions" $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions

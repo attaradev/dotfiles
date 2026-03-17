@@ -332,6 +332,12 @@ if ! search_q '^# The following lines have been added by Docker Desktop' "$DOCKE
   exit 1
 fi
 
+if ! grep -Fqx 'fpath=("${HOME:A}/.docker/completions" $fpath)' "$DOCKER_ZSHRC_COPY"; then
+  echo "❌ Expected canonical Docker completion block to use a runtime-absolute path"
+  cat "$DOCKER_ZSHRC_COPY"
+  exit 1
+fi
+
 docker_block_count="$(grep -Fc '# The following lines have been added by Docker Desktop to enable Docker CLI completions.' "$DOCKER_ZSHRC_COPY" || true)"
 if [[ "$docker_block_count" -gt 1 ]]; then
   echo "❌ Expected exactly one Docker Desktop completion block, got: $docker_block_count"
@@ -349,6 +355,43 @@ docker_compinit_count="$(wc -l < "$DOCKER_COMPINIT_LOG" | tr -d ' ')"
 if [[ "$docker_compinit_count" != "1" ]]; then
   echo "❌ Expected compinit to run exactly once, got: $docker_compinit_count"
   cat "$DOCKER_COMPINIT_LOG"
+  exit 1
+fi
+
+DOCKER_DUP_ZSH_HOME="$TMP_DIR/docker-zsh-home-dup"
+DOCKER_DUP_ZSHRC_COPY="$TMP_DIR/docker-zshrc-dup"
+DOCKER_DUP_COMPINIT_LOG="$TMP_DIR/docker-compinit-dup.log"
+DOCKER_DUP_FPATH_COUNT_FILE="$TMP_DIR/docker-fpath-count-dup.txt"
+mkdir -p "$DOCKER_DUP_ZSH_HOME/.docker/completions"
+cp "zsh/.zshrc" "$DOCKER_DUP_ZSHRC_COPY"
+cat >> "$DOCKER_DUP_ZSHRC_COPY" <<EOF
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=($DOCKER_DUP_ZSH_HOME/.docker/completions \$fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
+EOF
+ln -s "$DOCKER_DUP_ZSHRC_COPY" "$DOCKER_DUP_ZSH_HOME/.zshrc"
+ln -s "$ROOT_DIR/zsh/.zshenv" "$DOCKER_DUP_ZSH_HOME/.zshenv"
+
+PATH="$MOCK_BIN:$PATH" \
+HOME="$DOCKER_DUP_ZSH_HOME" \
+DOTFILES_DIR="$ROOT_DIR" \
+DOCKER_COMPINIT_LOG="$DOCKER_DUP_COMPINIT_LOG" \
+DOCKER_COMPINIT_MOCK_DIR="$DOCKER_COMPINIT_MOCK_DIR" \
+DOCKER_FPATH_COUNT_FILE="$DOCKER_DUP_FPATH_COUNT_FILE" \
+zsh -f "$TMP_DIR/docker-zsh-completion-check.zsh"
+
+docker_dup_completion_fpath_count="$(cat "$DOCKER_DUP_FPATH_COUNT_FILE")"
+if [[ "$docker_dup_completion_fpath_count" != "1" ]]; then
+  echo "❌ Expected duplicate Docker blocks to resolve to one completion directory in fpath, got: $docker_dup_completion_fpath_count"
+  exit 1
+fi
+
+docker_dup_compinit_count="$(wc -l < "$DOCKER_DUP_COMPINIT_LOG" | tr -d ' ')"
+if [[ "$docker_dup_compinit_count" != "1" ]]; then
+  echo "❌ Expected duplicate Docker blocks to run compinit exactly once, got: $docker_dup_compinit_count"
+  cat "$DOCKER_DUP_COMPINIT_LOG"
   exit 1
 fi
 

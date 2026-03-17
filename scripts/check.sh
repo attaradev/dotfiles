@@ -39,6 +39,9 @@ require_fixed_line "zsh/.zshrc" 'for zsh_local_snippet in "$HOME"/.zshrc.local.d
 require_fixed_line "zsh/.zshrc" '# The following lines have been added by Docker Desktop to enable Docker CLI completions.' \
   "zsh/.zshrc must include Docker Desktop's completion marker so Docker Desktop detects completions as installed."
 
+require_fixed_line "zsh/.zshrc" 'fpath=("${HOME:A}/.docker/completions" $fpath)' \
+  "zsh/.zshrc must include Docker Desktop's runtime-absolute completion path."
+
 git_violations="$(
   awk '
     /^[[:space:]]*#/ { next }
