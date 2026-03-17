@@ -157,7 +157,7 @@ _gpg_backup_if_changed() {
 
 _gpg_append_setting_if_missing() {
   local file="$1" pattern="$2" line="$3"
-  if grep -Eq "$pattern" "$file"; then return 1; fi
+  if grep -Eq "$pattern" "$file"; then return 0; fi
   printf '%s\n' "$line" >> "$file"
   return 0
 }

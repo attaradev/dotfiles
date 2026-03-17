@@ -25,6 +25,23 @@ write_mock() {
   chmod +x "$MOCK_BIN/$name"
 }
 
+require_file() {
+  local file="$1"
+
+  if [[ -f "$file" ]]; then
+    return 0
+  fi
+
+  echo "❌ Expected file missing: $file"
+  local parent_dir
+  parent_dir="$(dirname "$file")"
+  if [[ -d "$parent_dir" ]]; then
+    echo "Contents of $parent_dir:"
+    find "$parent_dir" -maxdepth 2 -mindepth 1 | sort || true
+  fi
+  exit 1
+}
+
 file_state() {
   local file="$1"
 
@@ -140,25 +157,13 @@ if [[ -n "${MOCK_STOW_LOG:-}" ]]; then
   printf 'stow %s\n' "$*" >> "$MOCK_STOW_LOG"
 fi
 
-case "$package" in
-  obsidian)
-    mkdir -p \
-      "$target/.knowledge/setup" \
-      "$target/.knowledge/projects" \
-      "$target/.knowledge/reading" \
-      "$target/.knowledge/learning" \
-      "$target/.knowledge/career" \
-      "$target/.knowledge/_templates"
-    ;;
-  claude)
-    mkdir -p "$target/.claude"
-    touch "$target/.claude/CLAUDE.md" "$target/.claude/settings.json"
-    ;;
-  codex)
-    mkdir -p "$target/.codex"
-    touch "$target/.codex/config.toml" "$target/.codex/AGENTS.md"
-    ;;
-esac
+if [[ -n "${ROOT_DIR:-}" && -d "${ROOT_DIR}/${package}" ]]; then
+  while IFS= read -r source_file; do
+    rel_path="${source_file#"${ROOT_DIR}/${package}/"}"
+    mkdir -p "$(dirname "$target/$rel_path")"
+    cp "$source_file" "$target/$rel_path"
+  done < <(find "${ROOT_DIR}/${package}" -type f | sort)
+fi
 
 exit 0
 EOF
@@ -217,29 +222,30 @@ PATH="$MOCK_BIN:$PATH" \
 HOME="$TEST_HOME" \
 OBSIDIAN_APP_CONFIG_DIR="$OBSIDIAN_APP_CONFIG_DIR" \
 MOCK_STOW_LOG="$TMP_DIR/mock-stow.log" \
+ROOT_DIR="$ROOT_DIR" \
 DOTFILES_NONINTERACTIVE=1 \
 DOTFILES_SETUP_OBSIDIAN_PLUGINS=0 \
 SKIP_VSCODE_EXTENSIONS=0 \
 OSTYPE=darwin \
 bash ./setup.sh
 
-test -f "$TEST_HOME/.config/dotfiles/brew-optional.env"
-test -f "$TEST_HOME/.gitconfig.local"
-test -f "$TEST_HOME/.gnupg/gpg-agent.conf"
-test -f "$TEST_HOME/.gnupg/gpg.conf"
-test -f "$TEST_HOME/.hushlogin.backup"
-test -f "$TEST_HOME/.config/starship.toml.backup"
-test -f "$TEST_HOME/.mise.toml"
+require_file "$TEST_HOME/.config/dotfiles/brew-optional.env"
+require_file "$TEST_HOME/.gitconfig.local"
+require_file "$TEST_HOME/.gnupg/gpg-agent.conf"
+require_file "$TEST_HOME/.gnupg/gpg.conf"
+require_file "$TEST_HOME/.hushlogin.backup"
+require_file "$TEST_HOME/.config/starship.toml.backup"
+require_file "$TEST_HOME/.mise.toml"
 if [[ -L "$TEST_HOME/.mise.toml" ]]; then
   echo "❌ Expected ~/.mise.toml to be a local file, not a symlink"
   exit 1
 fi
-test -f "$TEST_HOME/.claude/settings.json"
-test -f "$TEST_HOME/.codex/config.toml"
-test -f "$TEST_HOME/.codex/AGENTS.md"
-test -f "$TEST_HOME/.knowledge/hub.md"
-test -f "$TEST_HOME/.knowledge/tasks.md"
-test -f "$TEST_HOME/.knowledge/career/achievement-log.md"
+require_file "$TEST_HOME/.claude/settings.json"
+require_file "$TEST_HOME/.codex/config.toml"
+require_file "$TEST_HOME/.codex/AGENTS.md"
+require_file "$TEST_HOME/.knowledge/hub.md"
+require_file "$TEST_HOME/.knowledge/tasks.md"
+require_file "$TEST_HOME/.knowledge/career/achievement-log.md"
 
 if search_q '"hooks"' "$TEST_HOME/.claude/settings.json"; then
   echo "❌ Expected ~/.claude/settings.json to ship without Claude hooks"
