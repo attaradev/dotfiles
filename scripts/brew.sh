@@ -175,7 +175,7 @@ cmd_upgrade() {
   _brewup_prepare_sudo
 
   _brewup_repair_broken_casks "$@"
-  brew upgrade --greedy "$@"
+  brew upgrade --greedy --overwrite "$@" 2>&1 | grep -v 'Warning: Skipping sqlite:' || true
   brew cleanup
 }
 
