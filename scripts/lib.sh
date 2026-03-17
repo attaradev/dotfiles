@@ -162,6 +162,27 @@ replace_file_if_changed() {
   mv "$tmp_file" "$target"
 }
 
+remove_lines_matching_regex() {
+  local file="$1"
+  local pattern="$2"
+  local tmp_file rc=0
+
+  tmp_file="$(mktemp)"
+
+  if grep -Ev -- "$pattern" "$file" >"$tmp_file"; then
+    :
+  else
+    rc=$?
+    if [[ "$rc" -ne 1 ]]; then
+      rm -f "$tmp_file"
+      return "$rc"
+    fi
+    : >"$tmp_file"
+  fi
+
+  mv "$tmp_file" "$file"
+}
+
 mise_extract_tool_tracks() {
   local config_path="$1"
   local in_tools=0 line tool track

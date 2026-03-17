@@ -378,7 +378,7 @@ cmd_gnupg() {
     local agent_snapshot; agent_snapshot="$(mktemp)"
     cp "$gpg_agent_conf" "$agent_snapshot"
     # Remove stale pinentry-program line so the correct path gets written
-    sed -i '' '/^[[:space:]]*pinentry-program/d' "$gpg_agent_conf" || true
+    remove_lines_matching_regex "$gpg_agent_conf" '^[[:space:]]*pinentry-program([[:space:]]+|$)' || true
     for (( i=0; i<${#agent_patterns[@]}; i++ )); do
       _gpg_append_setting_if_missing "$gpg_agent_conf" "${agent_patterns[$i]}" "${agent_lines[$i]}"
     done

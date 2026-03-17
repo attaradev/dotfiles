@@ -31,5 +31,26 @@ jobs:
       - name: Run quality gate
         run: make check
 
+  smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-13
+          - macos-15
+          - macos-26
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install smoke prerequisites
+        run: |
+          if ! command -v jq >/dev/null 2>&1; then
+            brew install jq
+          fi
+
       - name: Run smoke checks
         run: make smoke
