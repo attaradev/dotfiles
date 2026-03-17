@@ -32,38 +32,6 @@ prioritize_homebrew_path() {
 }
 prioritize_homebrew_path
 
-# Docker Desktop may append its own completion block to ~/.zshrc. Strip it on
-# the next shell start so the portable stanza below stays the canonical source.
-_dotfiles_sanitize_docker_desktop_block() {
-  if (( ${_DOTFILES_DOCKER_SANITIZE_DONE:-0} )); then return 0; fi
-  typeset -g _DOTFILES_DOCKER_SANITIZE_DONE=1
-
-  local zshrc_path="${ZDOTDIR:-$HOME}/.zshrc"
-  local marker='# The following lines have been added by Docker Desktop to enable Docker CLI completions.'
-  [[ -e "$zshrc_path" ]] || return 0
-  grep -Fq "$marker" "$zshrc_path" 2>/dev/null || return 0
-
-  local target_path="${zshrc_path:A}"
-  [[ -f "$target_path" ]] || return 0
-
-  local tmp_file
-  tmp_file="$(mktemp "${target_path:h}/.docker-zshrc-sanitize.XXXXXX")" || return 0
-
-  local _awk_rc=0
-  awk -v start="$marker" -v end='# End of Docker CLI completions' '
-    $0 == start { skip=1; next }
-    skip { if ($0 == end) skip=0; next }
-    { print }
-  ' "$target_path" >"$tmp_file" || _awk_rc=$?
-
-  if (( _awk_rc == 0 )) && ! cmp -s "$target_path" "$tmp_file"; then
-    mv "$tmp_file" "$target_path"
-  else
-    rm -f "$tmp_file"
-  fi
-}
-_dotfiles_sanitize_docker_desktop_block
-
 # ============================================
 # History Configuration
 # ============================================
@@ -93,16 +61,12 @@ setopt INTERACTIVE_COMMENTS # allow # comments in interactive shells
 # ============================================
 # Completion System
 # ============================================
-# Include Docker CLI completions. Docker Desktop populates ~/.docker/completions
-# automatically; for plain docker CLI installs, generate and cache completions on
-# first run. Use `~` so Docker Desktop can detect the portable stanza.
-if [[ ! -d ~/.docker/completions ]] && command -v docker &>/dev/null; then
+# For plain docker CLI installs without Docker Desktop, generate the completion
+# file on first run. Docker Desktop populates it automatically.
+if [[ ! -f ~/.docker/completions/_docker ]] && command -v docker &>/dev/null; then
   mkdir -p ~/.docker/completions
   docker completion zsh >~/.docker/completions/_docker 2>/dev/null \
-    || { rm -f ~/.docker/completions/_docker; rmdir ~/.docker/completions 2>/dev/null || true; }
-fi
-if [[ -d ~/.docker/completions ]]; then
-  fpath=(~/.docker/completions $fpath)
+    || rm -f ~/.docker/completions/_docker
 fi
 
 autoload -Uz compinit
@@ -138,7 +102,10 @@ dotfiles_run_compinit_once() {
   return "$_rc"
 }
 alias compinit='dotfiles_run_compinit_once'
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+autoload -Uz compinit
 compinit
+# End of Docker CLI completions
 
 # Case-insensitive completion
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'

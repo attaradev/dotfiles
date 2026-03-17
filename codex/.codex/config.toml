@@ -5,3 +5,6 @@ instructions_file = "~/.codex/AGENTS.md"
 
 [notice.model_migrations]
 "gpt-5.1-codex-mini" = "gpt-5.1-codex-max"
+
+[features]
+multi_agent = true

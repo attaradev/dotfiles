@@ -36,12 +36,8 @@ require_fixed_line "zsh/.zshrc" 'if [[ -r "$HOME/.zshrc.local" ]]; then' \
 require_fixed_line "zsh/.zshrc" 'for zsh_local_snippet in "$HOME"/.zshrc.local.d/*.zsh(N); do' \
   "zsh/.zshrc must source ~/.zshrc.local.d/*.zsh snippets for machine-specific shell customizations."
 
-docker_completion_marker='# The following lines have been added by Docker Desktop to enable Docker CLI completions.'
-if grep -Fxq "$docker_completion_marker" "zsh/.zshrc"; then
-  echo "❌ zsh/.zshrc contains Docker Desktop's generated completion block."
-  echo "   Keep the portable \$HOME/.docker/completions stanza instead."
-  exit 1
-fi
+require_fixed_line "zsh/.zshrc" '# The following lines have been added by Docker Desktop to enable Docker CLI completions.' \
+  "zsh/.zshrc must include Docker Desktop's completion marker so Docker Desktop detects completions as installed."
 
 git_violations="$(
   awk '

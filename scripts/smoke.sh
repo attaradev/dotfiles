@@ -295,14 +295,8 @@ DOCKER_COMPINIT_LOG="$TMP_DIR/docker-compinit.log"
 DOCKER_FPATH_COUNT_FILE="$TMP_DIR/docker-fpath-count.txt"
 mkdir -p "$DOCKER_ZSH_HOME/.docker/completions" "$DOCKER_COMPINIT_MOCK_DIR"
 cp "zsh/.zshrc" "$DOCKER_ZSHRC_COPY"
-cat >> "$DOCKER_ZSHRC_COPY" <<'EOF'
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/user/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
-EOF
 ln -s "$DOCKER_ZSHRC_COPY" "$DOCKER_ZSH_HOME/.zshrc"
+ln -s "$ROOT_DIR/zsh/.zshenv" "$DOCKER_ZSH_HOME/.zshenv"
 
 cat > "$DOCKER_COMPINIT_MOCK_DIR/compinit" <<'EOF'
 #autoload
@@ -312,6 +306,7 @@ EOF
 
 cat > "$TMP_DIR/docker-zsh-completion-check.zsh" <<'EOF'
 fpath=("$DOCKER_COMPINIT_MOCK_DIR" $fpath)
+source ~/.zshenv
 source ~/.zshrc
 docker_completion_entries=(${(M)fpath:#$HOME/.docker/completions})
 print -r -- "${#docker_completion_entries[@]}" > "$DOCKER_FPATH_COUNT_FILE"
@@ -325,15 +320,15 @@ DOCKER_COMPINIT_MOCK_DIR="$DOCKER_COMPINIT_MOCK_DIR" \
 DOCKER_FPATH_COUNT_FILE="$DOCKER_FPATH_COUNT_FILE" \
 zsh -f "$TMP_DIR/docker-zsh-completion-check.zsh"
 
-if search_q '^# The following lines have been added by Docker Desktop' "$DOCKER_ZSHRC_COPY"; then
-  echo "❌ Expected Docker Desktop completion block to be removed from ~/.zshrc"
+if ! search_q '^# The following lines have been added by Docker Desktop' "$DOCKER_ZSHRC_COPY"; then
+  echo "❌ Expected Docker Desktop start marker to remain in ~/.zshrc"
   cat "$DOCKER_ZSHRC_COPY"
   exit 1
 fi
 
-canonical_docker_completion_count="$(grep -Fc '  fpath=(~/.docker/completions $fpath)' "$DOCKER_ZSHRC_COPY" || true)"
-if [[ "$canonical_docker_completion_count" != "1" ]]; then
-  echo "❌ Expected the canonical Docker completion stanza to remain exactly once"
+docker_block_count="$(grep -Fc '# The following lines have been added by Docker Desktop to enable Docker CLI completions.' "$DOCKER_ZSHRC_COPY" || true)"
+if [[ "$docker_block_count" -gt 1 ]]; then
+  echo "❌ Expected exactly one Docker Desktop completion block, got: $docker_block_count"
   cat "$DOCKER_ZSHRC_COPY"
   exit 1
 fi
