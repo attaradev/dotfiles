@@ -224,6 +224,71 @@ seed_vault_files() {
   done < <(find "$PUBLIC_VAULT_SOURCE_DIR" -type f | sort)
 }
 
+seed_local_vault_note_if_missing() {
+  local rel_path="$1"
+  local title="$2"
+  local description="$3"
+  local target="$VAULT_DIR/$rel_path"
+
+  if [[ -e "$target" ]]; then
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$target")"
+  cat >"$target" <<EOF
+# $title
+
+$description
+EOF
+}
+
+seed_local_vault_defaults() {
+  seed_local_vault_note_if_missing \
+    "tasks.md" \
+    "Active Tasks" \
+    "Capture current priorities, next actions, blockers, and follow-ups here."
+  seed_local_vault_note_if_missing \
+    "projects/projects.md" \
+    "Projects Tracker" \
+    "Track active projects, current status, and the next milestone for each effort."
+  seed_local_vault_note_if_missing \
+    "reading/books.md" \
+    "Books Tracker" \
+    "Track books to read, in progress, and finished reading notes."
+  seed_local_vault_note_if_missing \
+    "reading/articles.md" \
+    "Articles Tracker" \
+    "Capture articles to review, summarize, and revisit later."
+  seed_local_vault_note_if_missing \
+    "learning/courses.md" \
+    "Courses Tracker" \
+    "Track active courses, progress, and the next lesson to complete."
+  seed_local_vault_note_if_missing \
+    "learning/studies.md" \
+    "Study Log" \
+    "Capture focused study sessions, topics covered, and key takeaways."
+  seed_local_vault_note_if_missing \
+    "learning/lessons.md" \
+    "Lessons Learned" \
+    "Record mistakes, decisions, and rules to reuse in future work."
+  seed_local_vault_note_if_missing \
+    "career/achievement-log.md" \
+    "Achievement Log" \
+    "Capture outcomes, impact, and evidence for reviews, resumes, and retrospectives."
+  seed_local_vault_note_if_missing \
+    "career/achievement-inbox.md" \
+    "Achievement Inbox" \
+    "Capture raw wins, impact snippets, and metrics before promoting them to the log."
+  seed_local_vault_note_if_missing \
+    "setup/claude-activity-log.md" \
+    "Claude Activity Log" \
+    "Capture notable Claude sessions, outcomes, and follow-up items."
+  seed_local_vault_note_if_missing \
+    "setup/codex-activity-log.md" \
+    "Codex Activity Log" \
+    "Capture notable Codex sessions, outcomes, and follow-up items."
+}
+
 write_array_union() {
   local file=$1
   shift
@@ -718,6 +783,7 @@ cmd_setup() {
   ensure_local_vault_directory
 
   seed_vault_files
+  seed_local_vault_defaults
   register_vault_with_obsidian_ui
 
   mkdir -p "$OBSIDIAN_CONFIG_DIR" "$PLUGINS_DIR"
