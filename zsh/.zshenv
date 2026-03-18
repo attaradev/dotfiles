@@ -4,4 +4,4 @@
 # Docker Desktop detects completions via a non-interactive zsh that reads only
 # ~/.zshenv, not ~/.zshrc. Declaring the completion path here satisfies that
 # check while ~/.zshrc handles the full interactive setup.
-fpath=($HOME/.docker/completions $fpath)
+fpath=("${HOME:A}/.docker/completions" $fpath)

@@ -314,7 +314,7 @@ cat > "$TMP_DIR/docker-zsh-completion-check.zsh" <<'EOF'
 fpath=("$DOCKER_COMPINIT_MOCK_DIR" $fpath)
 source ~/.zshenv
 source ~/.zshrc
-docker_completion_entries=(${(M)fpath:#$HOME/.docker/completions})
+docker_completion_entries=(${(M)fpath:#${HOME:A}/.docker/completions})
 print -r -- "${#docker_completion_entries[@]}" > "$DOCKER_FPATH_COUNT_FILE"
 EOF
 
