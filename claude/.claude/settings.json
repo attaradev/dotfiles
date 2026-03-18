@@ -1,12 +1,32 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ruby:*)"
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(make *)",
+      "Bash(brew *)",
+      "Bash(mise *)",
+      "Bash(stow *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(pnpm *)",
+      "Bash(pnpx *)",
+      "Bash(node *)",
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(uv *)",
+      "Bash(go *)",
+      "Bash(ruby *)",
+      "Bash(docker *)"
     ]
   },
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "modern-go-guidelines@goland-claude-marketplace": true
   },
-  "model": "sonnet"
+  "model": "sonnet",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
 }
