@@ -127,11 +127,6 @@ if command -v mise &> /dev/null; then
 
 fi
 
-# Prefer Tilt.dev over Ruby gem `tilt` executable when both are present.
-if [[ -x "/opt/homebrew/bin/tilt" ]]; then
-  alias tilt='/opt/homebrew/bin/tilt'
-fi
-
 # ============================================
 # Zoxide (Smart cd)
 # ============================================
