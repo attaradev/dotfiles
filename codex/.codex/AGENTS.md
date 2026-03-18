@@ -1,7 +1,5 @@
 # Codex User Instructions
 
-Keep this file aligned with `claude/.claude/CLAUDE.md` so Claude and Codex behave consistently.
-
 ## Workflow Orchestration
 
 ### 1. Plan Mode Default
@@ -59,7 +57,14 @@ Keep this file aligned with `claude/.claude/CLAUDE.md` so Claude and Codex behav
 
 - Re-state or refresh the plan whenever scope or approach changes.
 - Treat the in-chat plan or planning tool state as the working source of truth.
-- Model domain like a staff engineer
+- Model the domain like a staff engineer.
+
+## Response Style
+
+- Be concise and direct — briefly state reasoning, then lead with the action or answer.
+- No preamble ("I'll now…", "Let me…", "Sure!") and no trailing summaries after completing a task.
+- No emojis unless explicitly requested.
+- When referencing code, include `file:line` for navigability.
 
 ## Core Principles
 

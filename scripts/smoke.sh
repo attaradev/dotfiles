@@ -240,6 +240,7 @@ if [[ -L "$TEST_HOME/.mise.toml" ]]; then
   echo "❌ Expected ~/.mise.toml to be a local file, not a symlink"
   exit 1
 fi
+require_file "$TEST_HOME/.claude/CLAUDE.md"
 require_file "$TEST_HOME/.claude/settings.json"
 require_file "$TEST_HOME/.codex/config.toml"
 require_file "$TEST_HOME/.codex/AGENTS.md"
