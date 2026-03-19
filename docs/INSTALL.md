@@ -116,7 +116,7 @@ Note: this repository has personal fallback Git defaults in `setup.sh`; override
 Optional GUI tools are controlled by env vars and persisted to `~/.config/dotfiles/brew-optional.env`.
 
 - `BREW_INSTALL_ANTIGRAVITY`
-- `BREW_INSTALL_VIRTUALBOX`
+- `BREW_INSTALL_UTM`
 - `BREW_INSTALL_BRAVE_BROWSER`
 - `BREW_INSTALL_VLC`
 - `BREW_INSTALL_SPOTIFY`

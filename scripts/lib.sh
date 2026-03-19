@@ -229,7 +229,7 @@ mise_get_tool_track() {
 # Metadata for optional casks. Format: "<SUFFIX>|<Label>|<Description>"
 OPTIONAL_CASK_SPECS=(
   "ANTIGRAVITY|Antigravity|AI coding agent IDE"
-  "VIRTUALBOX|VirtualBox|Full VM hypervisor"
+  "UTM|UTM|Virtual machines for Mac (free, open-source)"
   "BRAVE_BROWSER|Brave Browser|Privacy-focused browser"
   "VLC|VLC|Versatile media player"
   "SPOTIFY|Spotify|Music streaming client"

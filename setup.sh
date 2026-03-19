@@ -194,7 +194,7 @@ fi
 load_optional_cask_env
 
 # ============================================
-# Optional cask selection (Antigravity, VirtualBox, Brave, VLC, Spotify)
+# Optional cask selection (Antigravity, UTM, Brave, VLC, Spotify)
 # ============================================
 
 print_header "Optional Casks"

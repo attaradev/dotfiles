@@ -143,7 +143,7 @@ cask "postgres-app"                 # PostgreSQL database (Postgres.app) - suppo
 
 # --- Containers & Virtualization ---
 cask "docker-desktop"               # Containerization platform (includes Docker CLI and daemon)
-cask "virtualbox" if optional_enabled?("VIRTUALBOX")      # Full VM hypervisor for running multiple OS environments
+cask "utm" if optional_enabled?("UTM")                     # Virtual machines for Mac (free, open-source)
 
 # --- Development Utilities ---
 cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
@@ -186,7 +186,7 @@ cask "vlc" if optional_enabled?("VLC")                    # Versatile media play
 #
 # Optional casks (skipped by default; setup.sh will prompt, or set env var to install):
 #   HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=1 brew bundle install
-#   HOMEBREW_BUNDLE_INSTALL_VIRTUALBOX=1 brew bundle install
+#   HOMEBREW_BUNDLE_INSTALL_UTM=1 brew bundle install
 #   HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER=1 brew bundle install
 #   HOMEBREW_BUNDLE_INSTALL_VLC=1 brew bundle install
 #   HOMEBREW_BUNDLE_INSTALL_SPOTIFY=1 brew bundle install
