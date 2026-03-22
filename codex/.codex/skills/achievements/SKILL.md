@@ -11,7 +11,7 @@ Use this skill to turn repository and GitHub activity into a concise, evidence-b
 
 1. Resolve the requested period from the user prompt. Default to the last 3 months when no period is given.
 2. When the period is expressed relatively and the boundaries matter, translate it into exact dates and state the assumption clearly.
-3. Run `scripts/collect-achievements.sh [since] [until]` with the resolved window.
+3. Run `scripts/collect-achievements.sh [since] [until]` with the resolved window. The script scans all local git repos found under `~/code`, `~/projects`, `~/src`, `~/dev`, and `~/work` (up to 3 levels deep) plus the current repo, and fetches PRs/issues cross-org via `gh search`. Set `GIT_SEARCH_ROOTS` (colon-separated) to override the search paths.
 4. Read the collector output completely before drafting the summary.
 5. Filter the raw evidence to the requested period and group related work into themes instead of listing commits one by one.
 6. Emphasize outcomes, beneficiaries, and risk reduced. Treat reviews and issue work as real achievements.

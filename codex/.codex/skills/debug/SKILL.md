@@ -9,10 +9,11 @@ Use this skill to trace a failure to its root cause before changing code.
 
 ## Workflow
 
-1. Reproduce the failure or inspect the error path first.
-2. Read the relevant code, logs, and recent changes.
-3. Form a falsifiable hypothesis, then gather evidence for it.
-4. Fix the minimal root cause and verify the behavior change.
+1. Identify the language and framework from project files (go.mod, package.json, pyproject.toml, Cargo.toml, etc.) — this determines the right debugging tools and patterns.
+2. Reproduce the failure or inspect the error path first.
+3. Read the relevant code, logs, and recent changes.
+4. Form a falsifiable hypothesis, then gather evidence for it.
+5. Fix the minimal root cause and verify the behavior change.
 
 ## Output expectations
 

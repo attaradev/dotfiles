@@ -9,10 +9,11 @@ Use this skill to change structure without silently changing behavior.
 
 ## Workflow
 
-1. Read the target code and find all call sites before editing.
-2. State the scope, risk, and behavior-preserving invariant.
-3. Make changes incrementally so the code stays valid after each step.
-4. Verify the affected tests or manual checks before finishing.
+1. Identify the language from project files (go.mod, package.json, pyproject.toml, etc.) and check whether test coverage data exists (coverage.out, .coverage, lcov.info).
+2. Read the target code and find all call sites before editing.
+3. State the scope, risk, and behavior-preserving invariant. Flag as high-risk if the change touches more than 5 files or a public interface.
+4. Make changes incrementally so the code stays valid after each step.
+5. Verify the affected tests or manual checks before finishing.
 
 ## Output expectations
 

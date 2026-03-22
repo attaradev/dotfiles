@@ -27,6 +27,13 @@ git log "$RANGE" --format="%s%n%b" 2>/dev/null \
   | grep -i "BREAKING CHANGE\|^feat!\|^fix!\|^refactor!" || echo "(none)"
 
 echo ""
+echo "=== COMMITS BY TYPE ==="
+git log "$RANGE" --format="%s" 2>/dev/null \
+  | grep -oE "^[a-z]+(\([^)]+\))?" \
+  | sed 's/(.*//' \
+  | sort | uniq -c | sort -rn || echo "(none)"
+
+echo ""
 echo "=== MERGED PRS ==="
 git log "$RANGE" --oneline --merges 2>/dev/null | head -20 || echo "(none)"
 

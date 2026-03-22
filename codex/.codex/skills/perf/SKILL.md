@@ -9,11 +9,12 @@ Use this skill to measure the slowdown, find the bottleneck, and verify the impr
 
 ## Workflow
 
-1. Define the problem precisely with a metric and target.
-2. Establish a baseline before changing anything.
-3. Identify the bottleneck and form a falsifiable hypothesis.
-4. Apply the smallest fix that addresses the bottleneck.
-5. Measure the result and report the improvement.
+1. Identify the language from project files (go.mod, package.json, pyproject.toml, Cargo.toml, etc.) — this determines which profiling tools to use.
+2. Define the problem precisely with a metric and target.
+3. Establish a baseline before changing anything.
+4. Identify the bottleneck and form a falsifiable hypothesis.
+5. Apply the smallest fix that addresses the bottleneck.
+6. Measure the result and report the improvement.
 
 ## Quality rules
 

@@ -9,11 +9,12 @@ Use this skill to find the failing job and step in CI, classify the root cause, 
 
 ## Workflow
 
-1. Inspect the latest failed run and read the failure from the bottom up.
-2. Identify the exact job, step, and error message that caused the failure.
-3. Classify the issue as a test failure, config problem, dependency drift, environment mismatch, auth issue, resource limit, or upstream outage.
-4. Fix the underlying cause in code or workflow configuration.
-5. Verify the fix locally with the closest reproducible command.
+1. Identify the CI platform from project files (.github/workflows → GitHub Actions, .gitlab-ci.yml → GitLab CI, .circleci/config.yml → CircleCI, Jenkinsfile → Jenkins).
+2. Inspect the latest failed run and read the failure from the bottom up.
+3. Identify the exact job, step, and error message that caused the failure.
+4. Classify the issue as a test failure, config problem, dependency drift, environment mismatch, auth issue, resource limit, or upstream outage.
+5. Fix the underlying cause in code or workflow configuration.
+6. Verify the fix locally with the closest reproducible command.
 
 ## Quality rules
 

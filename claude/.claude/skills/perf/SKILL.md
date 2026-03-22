@@ -12,9 +12,10 @@ Target: $ARGUMENTS
 ## Live context
 
 - Working directory: !`pwd`
+- Language/framework: !`ls go.mod package.json pyproject.toml Cargo.toml pom.xml 2>/dev/null | head -3 || true`
 - Relevant source files: !`find . -maxdepth 5 -type f | xargs grep -l -iE "(slow|timeout|latency|benchmark|profile|perf)" 2>/dev/null | grep -vE "(node_modules|vendor|\.git)" | head -8 || true`
-- Benchmark files: !`find . -maxdepth 5 -type f -name "*bench*" -o -name "*perf*" -o -name "*load*" 2>/dev/null | grep -vE "(node_modules|vendor)" | head -8 || true`
-- Recent profiling output: !`find . -maxdepth 3 -name "*.prof" -o -name "*.pprof" -o -name "flamegraph*" -o -name "*.cpuprofile" 2>/dev/null | head -5 || true`
+- Benchmark files: !`find . -maxdepth 5 -type f \( -name "*bench*" -o -name "*perf*" -o -name "*load*" \) 2>/dev/null | grep -vE "(node_modules|vendor)" | head -8 || true`
+- Recent profiling output: !`find . -maxdepth 3 \( -name "*.prof" -o -name "*.pprof" -o -name "flamegraph*" -o -name "*.cpuprofile" \) 2>/dev/null | head -5 || true`
 - Current branch: !`git branch --show-current 2>/dev/null || true`
 
 ## Task

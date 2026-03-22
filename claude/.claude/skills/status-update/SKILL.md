@@ -13,11 +13,11 @@ Audience and timeframe: $ARGUMENTS
 
 - Working directory: !`pwd`
 - Branch: !`git branch --show-current 2>/dev/null || true`
-- Recent commits (last 7 days): !`git log --since='7 days ago' --oneline --decorate 2>/dev/null || true`
-- Commits (last 30 days, for broader context): !`git log --since='30 days ago' --oneline 2>/dev/null | tail -30 || true`
+- Recent commits — current repo (last 7 days): !`git log --since='7 days ago' --oneline --decorate 2>/dev/null || true`
 - Changed files vs main: !`git diff --name-status origin/HEAD...HEAD 2>/dev/null || git diff --name-status HEAD~5...HEAD 2>/dev/null || true`
-- Open PRs (if gh available): !`gh pr list --state open --limit 10 2>/dev/null || true`
-- Recently merged PRs (if gh available): !`gh pr list --state merged --limit 10 2>/dev/null || true`
+- Open PRs — current repo: !`gh pr list --state open --limit 10 2>/dev/null || true`
+- Recently merged PRs — current repo: !`gh pr list --state merged --limit 10 2>/dev/null || true`
+- Recent activity across all repos (last 7 days): !`AUTHOR=$(git config --global user.email 2>/dev/null || git config user.email 2>/dev/null || echo ""); for root in "$HOME/code" "$HOME/projects" "$HOME/src" "$HOME/dev" "$HOME/work"; do [ -d "$root" ] && find "$root" -maxdepth 3 -name ".git" -type d 2>/dev/null | while read g; do r="${g%/.git}"; n=$(basename "$r"); out=$(git -C "$r" log --author="$AUTHOR" --since='7 days ago' --no-merges --oneline 2>/dev/null); [ -n "$out" ] && echo "[$n] $out"; done; done`
 
 ## Task
 

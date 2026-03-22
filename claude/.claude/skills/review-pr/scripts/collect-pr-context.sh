@@ -18,6 +18,11 @@ gh pr view "$PR" $R --json files \
   --jq '.files[] | "\(.additions)+\(.deletions)-\t\(.path)"'
 
 echo ""
+echo "=== LABELS ==="
+gh pr view "$PR" $R --json labels \
+  --jq '.labels[] | .name' 2>/dev/null || true
+
+echo ""
 echo "=== LINKED ISSUES ==="
 gh pr view "$PR" $R --json closingIssuesReferences \
   --jq '.closingIssuesReferences[] | "#\(.number) \(.title)"' 2>/dev/null || true
