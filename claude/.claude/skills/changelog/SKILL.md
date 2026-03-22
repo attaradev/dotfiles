@@ -17,9 +17,11 @@ Version: $ARGUMENTS
 
 ## Task
 
-Run `scripts/collect-changes.sh` to get full structured change data:
+Run `scripts/collect-changes.sh` to get full structured change data via Bash tool:
 
-!`bash "$HOME/.claude/skills/changelog/scripts/collect-changes.sh" 2>&1`
+```
+bash "$HOME/.claude/skills/changelog/scripts/collect-changes.sh" 2>&1
+```
 
 Read the existing CHANGELOG to match its format exactly. If none exists, use the Keep a Changelog format.
 

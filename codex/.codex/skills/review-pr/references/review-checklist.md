@@ -4,6 +4,14 @@ Work through each category. Only surface findings traceable to the diff or stron
 
 ---
 
+## 0. Scope and intent
+
+- Does the set of changed files match the PR description? Flag unrelated or accidental changes.
+- Are there files that *should* have changed but didn't (missing test files, missing docs, missing migrations)?
+- Does the PR do one thing, or is it conflating unrelated concerns?
+
+---
+
 ## 1. Correctness and logic
 
 - Off-by-one errors, inverted conditions, wrong operator precedence
@@ -69,3 +77,11 @@ Work through each category. Only surface findings traceable to the diff or stron
 - Cross-cutting concerns (auth, logging, error handling, tracing) handled inconsistently
 - Coupling introduced between layers or services that should be independent
 - New patterns introduced without justification when existing ones would serve
+
+## 9. Test quality
+
+- Tests that assert implementation details instead of observable behavior (brittle)
+- Tests that pass vacuously — no assertion, wrong mock setup, or assertion never reached
+- Tests that enshrine a bug (assertions match incorrect behavior)
+- Missing negative/error path tests for new error handling
+- Test setup that duplicates so much production code that it could mask the same bug

@@ -1,6 +1,14 @@
 {
   "permissions": {
+    "additionalDirectories": [
+      "~/.dotfiles",
+      "~/.claude/skills"
+    ],
     "allow": [
+      "Write(~/.dotfiles/)",
+      "Edit(~/.dotfiles/)",
+      "Write(~/.claude/skills/)",
+      "Edit(~/.claude/skills/)",
       "Bash(git *)",
       "Bash(gh *)",
       "Bash(make *)",
@@ -18,7 +26,7 @@
       "Bash(go *)",
       "Bash(ruby *)",
       "Bash(docker *)",
-      "Bash(bash \"$HOME/.claude/skills/*)"
+      "Bash(bash \"$HOME/.claude/skills/:*)"
     ]
   },
   "enabledPlugins": {

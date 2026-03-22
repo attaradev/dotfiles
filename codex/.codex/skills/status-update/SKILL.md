@@ -9,10 +9,11 @@ Use this skill to turn recent commits, PRs, and repository changes into concise 
 
 ## Workflow
 
-1. Gather the evidence that shows what shipped, what is in progress, and what is blocked. Check recent commits and merged PRs in the current repo. Also check for recent activity in sibling repos (common roots: `~/code`, `~/projects`, `~/src`, `~/dev`, `~/work`) when the update should cover multiple projects.
-2. Separate confirmed facts (committed, merged, deployed) from inferences (appears to be working toward).
-3. Use `references/update-format.md` to produce the executive and engineering versions.
-4. Tailor the level of detail to the audience.
+1. Gather the evidence that shows what shipped, what is in progress, and what is blocked. Check recent commits and merged PRs in the current repo.
+2. Run `scripts/collect-activity.sh` to collect recent activity across all local repos (scans common roots: `~/code`, `~/projects`, `~/src`, `~/dev`, `~/work`). Use this when the update should cover multiple projects.
+3. Separate confirmed facts (committed, merged, deployed) from inferences (appears to be working toward).
+4. Use `references/update-format.md` to produce the executive and engineering versions.
+5. Tailor the level of detail to the audience.
 
 ## Quality rules
 
@@ -23,4 +24,5 @@ Use this skill to turn recent commits, PRs, and repository changes into concise 
 
 ## Resources
 
+- `scripts/collect-activity.sh` -> collects recent git activity across all local repos
 - `references/update-format.md` contains the canonical executive and engineering update templates.
