@@ -1,0 +1,4 @@
+interface:
+  display_name: "Refactor"
+  short_description: "Restructure code safely"
+  default_prompt: "Use $refactor to safely restructure this code."

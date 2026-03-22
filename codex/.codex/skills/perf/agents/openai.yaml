@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance"
+  short_description: "Find and fix bottlenecks"
+  default_prompt: "Use $perf to investigate why this path is slow."

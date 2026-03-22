@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docstring"
+  short_description: "Add meaningful documentation comments"
+  default_prompt: "Use $docstring to document the exported symbols in this file."

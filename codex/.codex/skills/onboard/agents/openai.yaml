@@ -1,0 +1,4 @@
+interface:
+  display_name: "Onboard"
+  short_description: "Orient contributors to a codebase"
+  default_prompt: "Use $onboard to explain this repository and how to get started."

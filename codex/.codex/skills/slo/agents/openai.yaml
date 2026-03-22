@@ -1,0 +1,4 @@
+interface:
+  display_name: "SLO Definition"
+  short_description: "Define reliability targets and alerts"
+  default_prompt: "Use $slo to define the reliability targets for this service."

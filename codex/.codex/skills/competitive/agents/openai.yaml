@@ -1,0 +1,4 @@
+interface:
+  display_name: "Competitive Analysis"
+  short_description: "Map competitors and differentiation"
+  default_prompt: "Use $competitive to analyze this market and identify defensible differentiation."

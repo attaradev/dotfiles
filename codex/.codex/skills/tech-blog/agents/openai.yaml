@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tech Blog"
+  short_description: "Draft a technical blog post"
+  default_prompt: "Use $tech-blog to write a post about this technical work."

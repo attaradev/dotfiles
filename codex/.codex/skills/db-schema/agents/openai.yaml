@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Schema"
+  short_description: "Design schemas and migrations"
+  default_prompt: "Use $db-schema to design the database model for this feature."

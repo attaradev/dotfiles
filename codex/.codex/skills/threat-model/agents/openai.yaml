@@ -1,0 +1,4 @@
+interface:
+  display_name: "Threat Model"
+  short_description: "Assess attack surface and mitigations"
+  default_prompt: "Use $threat-model to threat model this feature."

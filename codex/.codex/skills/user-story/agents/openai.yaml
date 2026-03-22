@@ -1,0 +1,4 @@
+interface:
+  display_name: "User Story"
+  short_description: "Turn features into testable stories"
+  default_prompt: "Use $user-story to break this feature into user stories."

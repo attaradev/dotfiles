@@ -1,0 +1,4 @@
+interface:
+  display_name: "A/B Test Design"
+  short_description: "Design rigorous experiments"
+  default_prompt: "Use $ab-test to design an experiment for this product change."

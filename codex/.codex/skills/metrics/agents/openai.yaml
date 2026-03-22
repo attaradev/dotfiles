@@ -1,0 +1,4 @@
+interface:
+  display_name: "Metrics"
+  short_description: "Define a north star and guardrails"
+  default_prompt: "Use $metrics to define success metrics for this product area."

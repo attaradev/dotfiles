@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capacity"
+  short_description: "Analyse headroom and scaling limits"
+  default_prompt: "Use $capacity to assess headroom and scaling limits for this service."

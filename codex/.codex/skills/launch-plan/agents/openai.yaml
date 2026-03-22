@@ -1,0 +1,4 @@
+interface:
+  display_name: "Launch Plan"
+  short_description: "Draft a structured GTM brief"
+  default_prompt: "Use $launch-plan to draft a launch strategy for this feature."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Onboarding"
+  short_description: "Design activation and onboarding flows"
+  default_prompt: "Use $onboarding to design a customer onboarding flow."

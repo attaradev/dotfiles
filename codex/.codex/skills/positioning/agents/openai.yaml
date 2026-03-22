@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Positioning"
+  short_description: "Define your market position"
+  default_prompt: "Use $positioning to define the positioning for this product."

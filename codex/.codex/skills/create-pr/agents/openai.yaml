@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create PR"
+  short_description: "Write a PR body"
+  default_prompt: "Use $create-pr to draft a pull request description from this branch."

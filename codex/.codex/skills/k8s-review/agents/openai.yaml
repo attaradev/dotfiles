@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kubernetes Review"
+  short_description: "Review Kubernetes manifests safely"
+  default_prompt: "Use $k8s-review to review these Kubernetes manifests."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mock Generation"
+  short_description: "Generate test doubles that match the project"
+  default_prompt: "Use $mock-gen to generate a test double for this interface."

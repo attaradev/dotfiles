@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Generation"
+  short_description: "Write tests that match project style"
+  default_prompt: "Use $test-gen to add focused coverage for this function."

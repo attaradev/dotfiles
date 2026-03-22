@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Success"
+  short_description: "Design retention and expansion plays"
+  default_prompt: "Use $customer-success to design a customer success playbook."

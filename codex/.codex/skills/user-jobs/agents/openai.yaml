@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs To Be Done"
+  short_description: "Reframe features as real user jobs"
+  default_prompt: "Use $user-jobs to analyze the real job behind this request."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Achievements"
+  short_description: "Summarize shipped work into achievements"
+  default_prompt: "Use $achievements to turn my work from the past quarter into a brag doc."

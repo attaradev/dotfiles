@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Decision Record"
+  short_description: "Write a decision record"
+  default_prompt: "Use $adr to write an ADR for this decision."

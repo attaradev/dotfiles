@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prioritize"
+  short_description: "Rank backlog items with rationale"
+  default_prompt: "Use $prioritize to rank these features and explain the trade-offs."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integration Design"
+  short_description: "Design safe system integrations"
+  default_prompt: "Use $integration to design the integration between these systems."

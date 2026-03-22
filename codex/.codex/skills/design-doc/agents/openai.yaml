@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Doc"
+  short_description: "Draft a technical design"
+  default_prompt: "Use $design-doc to draft a technical design for this feature."

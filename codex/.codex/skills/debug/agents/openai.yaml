@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug"
+  short_description: "Find the root cause of failures"
+  default_prompt: "Use $debug to investigate this failing test or error."

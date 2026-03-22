@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain Code"
+  short_description: "Explain code paths with diagrams and flow"
+  default_prompt: "Use $explain-code to walk me through this module end to end."

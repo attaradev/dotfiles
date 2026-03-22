@@ -1,0 +1,4 @@
+interface:
+  display_name: "PRD"
+  short_description: "Draft a feature requirements document"
+  default_prompt: "Use $prd to write a PRD for this feature."

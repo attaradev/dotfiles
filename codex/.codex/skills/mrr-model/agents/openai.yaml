@@ -1,0 +1,4 @@
+interface:
+  display_name: "MRR Model"
+  short_description: "Model SaaS revenue and unit economics"
+  default_prompt: "Use $mrr-model to build a SaaS financial model from these inputs."

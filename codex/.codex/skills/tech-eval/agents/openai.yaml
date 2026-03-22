@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technology Evaluation"
+  short_description: "Compare technical options"
+  default_prompt: "Use $tech-eval to evaluate the options for this decision."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Churn Analysis"
+  short_description: "Diagnose churn and retention"
+  default_prompt: "Use $churn to analyze why customers are leaving and how to reduce it."

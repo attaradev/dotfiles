@@ -1,0 +1,4 @@
+interface:
+  display_name: "Discovery Guide"
+  short_description: "Write user research interview guides"
+  default_prompt: "Use $discovery to write an interview guide for this research question."

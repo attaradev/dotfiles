@@ -110,9 +110,9 @@ Notable defaults:
 
 ## Claude and Codex Context
 
-Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow.
+Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow. Claude skills are tracked at `claude/.claude/skills/` and merged into `~/.claude/skills/`.
 
-Codex CLI defaults are tracked at `codex/.codex/config.toml`, symlinked to `~/.codex/config.toml`. Behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in the config.
+Codex CLI defaults are tracked at `codex/.codex/config.toml`, symlinked to `~/.codex/config.toml`. Behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in the config. Codex skills are tracked at `codex/.codex/skills/` and merged into `~/.codex/skills/` alongside the built-in system skills.
 
 To refresh both after pulling changes:
 

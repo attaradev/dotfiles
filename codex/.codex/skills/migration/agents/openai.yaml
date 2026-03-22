@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Plan"
+  short_description: "Plan safe system migrations"
+  default_prompt: "Use $migration to plan the migration from the current system to the target."

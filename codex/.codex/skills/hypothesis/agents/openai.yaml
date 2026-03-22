@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hypothesis Design"
+  short_description: "Frame a lean experiment"
+  default_prompt: "Use $hypothesis to define the riskiest assumption and cheapest test."

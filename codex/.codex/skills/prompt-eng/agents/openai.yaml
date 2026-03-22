@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prompt Engineering"
+  short_description: "Rewrite prompts for better output"
+  default_prompt: "Use $prompt-eng to improve this prompt."

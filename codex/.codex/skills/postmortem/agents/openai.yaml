@@ -1,0 +1,4 @@
+interface:
+  display_name: "Postmortem"
+  short_description: "Write a blameless incident postmortem"
+  default_prompt: "Use $postmortem to write a blameless RCA from this incident."

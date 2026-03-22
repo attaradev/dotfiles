@@ -1,0 +1,4 @@
+interface:
+  display_name: "Runbook"
+  short_description: "Write an ops runbook"
+  default_prompt: "Use $runbook to draft a runbook for this service."

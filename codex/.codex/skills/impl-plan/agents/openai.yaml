@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Plan"
+  short_description: "Turn a goal into a phased execution plan"
+  default_prompt: "Use $impl-plan to turn this objective into an implementation plan."

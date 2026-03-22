@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Pipeline"
+  short_description: "Design reliable data pipelines"
+  default_prompt: "Use $data-pipeline to design the pipeline for this data flow."

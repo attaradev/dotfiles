@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review local diffs with senior-level rigor"
+  default_prompt: "Use $code-review to review my current branch changes before merge."

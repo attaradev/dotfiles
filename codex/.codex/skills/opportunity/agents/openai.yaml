@@ -1,0 +1,4 @@
+interface:
+  display_name: "Opportunity Assessment"
+  short_description: "Evaluate whether to invest"
+  default_prompt: "Use $opportunity to assess whether this idea is worth pursuing."

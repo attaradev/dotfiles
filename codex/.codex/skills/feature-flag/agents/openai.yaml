@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Flag"
+  short_description: "Design safe feature rollouts"
+  default_prompt: "Use $feature-flag to design the rollout and cleanup for this feature."

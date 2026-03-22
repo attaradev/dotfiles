@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI Fix"
+  short_description: "Fix failing CI by reading logs"
+  default_prompt: "Use $ci-fix to diagnose and fix the failing CI run."
