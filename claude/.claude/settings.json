@@ -17,7 +17,8 @@
       "Bash(uv *)",
       "Bash(go *)",
       "Bash(ruby *)",
-      "Bash(docker *)"
+      "Bash(docker *)",
+      "Bash(bash *)"
     ]
   },
   "enabledPlugins": {

@@ -66,7 +66,7 @@ for root in "${ROOTS[@]}"; do
 done
 
 # Always include the current repo if it's outside the search roots
-if git rev-parse --git-dir &>/dev/null 2>&1; then
+if git rev-parse --git-dir &>/dev/null; then
   CURRENT_REPO=$(git rev-parse --show-toplevel 2>/dev/null || true)
   if [[ -n "$CURRENT_REPO" ]]; then
     already=0
@@ -97,31 +97,29 @@ if [[ "${#REPOS[@]}" -gt 0 ]]; then
     [[ -d "$repo/.git" ]] || continue
     REPO_NAME=$(basename "$repo")
 
-    COMMIT_LINES=$(git -C "$repo" log \
+    # Single pass: extract commit list and line stats together
+    RAW=$(git -C "$repo" log \
       --author="$AUTHOR_EMAIL" \
       --since="$SINCE" \
       ${UNTIL:+--until="$UNTIL"} \
       --no-merges \
-      --oneline \
+      --format="COMMIT %h %s" \
+      --numstat \
       2>/dev/null || true)
 
-    [[ -z "$COMMIT_LINES" ]] && continue
+    [[ -z "$RAW" ]] && continue
 
+    COMMIT_LINES=$(echo "$RAW" | grep '^COMMIT ' | sed 's/^COMMIT //')
     COUNT=$(echo "$COMMIT_LINES" | wc -l | tr -d ' ')
+    read -r ADDED REMOVED < <(echo "$RAW" | awk 'NF==3 && $1~/^[0-9]+$/ {add+=$1; rem+=$2} END {print add+0, rem+0}')
+
     TOTAL_COMMITS=$((TOTAL_COMMITS + COUNT))
+    TOTAL_ADDED=$((TOTAL_ADDED + ${ADDED:-0}))
+    TOTAL_REMOVED=$((TOTAL_REMOVED + ${REMOVED:-0}))
 
     echo ""
     echo "-- [$REPO_NAME] $COUNT commits --"
     echo "$COMMIT_LINES"
-
-    read -r ADDED REMOVED < <(git -C "$repo" log \
-      --author="$AUTHOR_EMAIL" \
-      --since="$SINCE" \
-      ${UNTIL:+--until="$UNTIL"} \
-      --no-merges --numstat 2>/dev/null \
-      | awk 'NF==3 && $1~/^[0-9]+$/ {add+=$1; del+=$2} END {print add+0, del+0}') || true
-    TOTAL_ADDED=$((TOTAL_ADDED + ${ADDED:-0}))
-    TOTAL_REMOVED=$((TOTAL_REMOVED + ${REMOVED:-0}))
   done
 fi
 
@@ -139,8 +137,8 @@ gh search prs \
   ${SINCE_ISO:+--merged-at ">=$SINCE_ISO"} \
   ${UNTIL_ISO:+--merged-at "<=$UNTIL_ISO"} \
   --limit 100 \
-  --json number,title,mergedAt,repository,url \
-  --jq '.[] | "#\(.number)  \(.title)  [\(.repository.nameWithOwner)]  merged \(.mergedAt[:10])"' \
+  --json number,title,closedAt,repository,url \
+  --jq '.[] | "#\(.number)  \(.title)  [\(.repository.nameWithOwner)]  merged \(.closedAt[:10])"' \
   2>/dev/null || echo "(gh not available or no merged PRs)"
 
 # --- PRs reviewed across all repos (gh search = cross-org) ---
@@ -152,8 +150,8 @@ gh search prs \
   ${SINCE_ISO:+--merged-at ">=$SINCE_ISO"} \
   ${UNTIL_ISO:+--merged-at "<=$UNTIL_ISO"} \
   --limit 100 \
-  --json number,title,mergedAt,repository \
-  --jq '.[] | "#\(.number)  \(.title)  [\(.repository.nameWithOwner)]  merged \(.mergedAt[:10])"' \
+  --json number,title,closedAt,repository \
+  --jq '.[] | "#\(.number)  \(.title)  [\(.repository.nameWithOwner)]  merged \(.closedAt[:10])"' \
   2>/dev/null || echo "(gh search not available)"
 
 # --- Issues closed across all repos (gh search = cross-org) ---

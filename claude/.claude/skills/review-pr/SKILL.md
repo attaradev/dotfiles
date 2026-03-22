@@ -21,7 +21,7 @@ Run the context collector. Pass the PR number as first arg and `owner/repo` as s
 ```
 !`PR=$(echo "$ARGUMENTS" | grep -oE '[0-9]+' | tail -1)
 SLUG=$(echo "$ARGUMENTS" | grep -oE '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' | head -1)
-bash "$(dirname "$0")/scripts/collect-pr-context.sh" "$PR" "$SLUG" 2>&1`
+bash "$HOME/.claude/skills/review-pr/scripts/collect-pr-context.sh" "$PR" "$SLUG" 2>&1`
 ```
 
 ## Task

@@ -6,33 +6,33 @@ set -euo pipefail
 
 PR="${1:?Usage: collect-pr-context.sh <PR-number> [owner/repo]}"
 REPO_SLUG="${2:-}"
-R=""
-[ -n "$REPO_SLUG" ] && R="-R $REPO_SLUG"
+R=()
+[ -n "$REPO_SLUG" ] && R=(-R "$REPO_SLUG")
 
 echo "=== PR SUMMARY ==="
-gh pr view "$PR" $R
+gh pr view "$PR" "${R[@]}"
 
 echo ""
 echo "=== CHANGED FILES ==="
-gh pr view "$PR" $R --json files \
+gh pr view "$PR" "${R[@]}" --json files \
   --jq '.files[] | "\(.additions)+\(.deletions)-\t\(.path)"'
 
 echo ""
 echo "=== LABELS ==="
-gh pr view "$PR" $R --json labels \
+gh pr view "$PR" "${R[@]}" --json labels \
   --jq '.labels[] | .name' 2>/dev/null || true
 
 echo ""
 echo "=== LINKED ISSUES ==="
-gh pr view "$PR" $R --json closingIssuesReferences \
+gh pr view "$PR" "${R[@]}" --json closingIssuesReferences \
   --jq '.closingIssuesReferences[] | "#\(.number) \(.title)"' 2>/dev/null || true
 
 echo ""
 echo "=== EXISTING REVIEWS ==="
-gh pr view "$PR" $R --json reviews \
+gh pr view "$PR" "${R[@]}" --json reviews \
   --jq '.reviews[] | "[\(.state)] \(.author.login): \(.body)"' 2>/dev/null \
   | head -80 || true
 
 echo ""
 echo "=== FULL DIFF ==="
-gh pr diff "$PR" $R
+gh pr diff "$PR" "${R[@]}"
