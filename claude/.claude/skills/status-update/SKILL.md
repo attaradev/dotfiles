@@ -17,7 +17,7 @@ Audience and timeframe: $ARGUMENTS
 - Changed files vs main: !`git diff --name-status origin/HEAD...HEAD 2>/dev/null || git diff --name-status HEAD~5...HEAD 2>/dev/null || true`
 - Open PRs — current repo: !`gh pr list --state open --limit 10 2>/dev/null || true`
 - Recently merged PRs — current repo: !`gh pr list --state merged --limit 10 2>/dev/null || true`
-- Recent activity across all repos (last 7 days): !`AUTHOR=$(git config --global user.email 2>/dev/null || git config user.email 2>/dev/null || echo ""); for root in "$HOME/code" "$HOME/projects" "$HOME/src" "$HOME/dev" "$HOME/work"; do [ -d "$root" ] && find "$root" -maxdepth 3 -name ".git" -type d 2>/dev/null | while read g; do r="${g%/.git}"; n=$(basename "$r"); out=$(git -C "$r" log --author="$AUTHOR" --since='7 days ago' --no-merges --oneline 2>/dev/null); [ -n "$out" ] && echo "[$n] $out"; done; done`
+- Recent activity across all repos (last 7 days): !`bash "$HOME/.claude/skills/status-update/scripts/collect-activity.sh" 2>/dev/null || true`
 
 ## Task
 

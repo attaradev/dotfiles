@@ -16,13 +16,9 @@ Parse the argument: extract the PR number and optional `owner/repo` slug, then r
 - PR number: !`echo "$ARGUMENTS" | grep -oE '[0-9]+' | tail -1`
 - Repo slug (if given): !`echo "$ARGUMENTS" | grep -oE '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' | head -1`
 
-Run the context collector. Pass the PR number as first arg and `owner/repo` as second arg if present:
+Run the context collector, passing the raw argument so it can parse the PR number and optional `owner/repo` slug itself:
 
-```
-!`PR=$(echo "$ARGUMENTS" | grep -oE '[0-9]+' | tail -1)
-SLUG=$(echo "$ARGUMENTS" | grep -oE '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' | head -1)
-bash "$HOME/.claude/skills/review-pr/scripts/collect-pr-context.sh" "$PR" "$SLUG" 2>&1`
-```
+!`bash "$HOME/.claude/skills/review-pr/scripts/collect-pr-context.sh" "$ARGUMENTS" 2>&1`
 
 ## Task
 

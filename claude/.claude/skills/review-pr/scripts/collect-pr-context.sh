@@ -4,8 +4,10 @@
 
 set -euo pipefail
 
-PR="${1:?Usage: collect-pr-context.sh <PR-number> [owner/repo]}"
-REPO_SLUG="${2:-}"
+# Accept either: <PR-number> [owner/repo]  OR  a raw spec like "#3258" / "owner/repo#3258"
+RAW="${1:?Usage: collect-pr-context.sh <PR-spec> [owner/repo]}"
+PR=$(echo "$RAW" | grep -oE '[0-9]+' | tail -1)
+REPO_SLUG="${2:-$(echo "$RAW" | grep -oE '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' | head -1)}"
 R=()
 [ -n "$REPO_SLUG" ] && R=(-R "$REPO_SLUG")
 
