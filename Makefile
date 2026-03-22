@@ -117,7 +117,7 @@ gnupg:
 
 ##@ Updates & Maintenance
 
-## update: Update Homebrew and mise-managed packages
+## update: Update Homebrew and mise-managed packages, and refresh agent configs
 update:
 	@echo "⬆️  Updating package managers and managed packages..."
 	@echo ""
@@ -134,6 +134,7 @@ update:
 		echo "ℹ️  npm is not managed by mise in current config; skipping npm backend upgrade."; \
 	fi
 	@echo ""
+	@$(MAKE) --no-print-directory agents
 	@echo "✅ Update complete!"
 
 ## upgrade: Alias for update

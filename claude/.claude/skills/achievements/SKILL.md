@@ -15,13 +15,9 @@ Interpret `$ARGUMENTS` as a time period and translate it to a `since` date that 
 
 Run the collector script with the resolved since date (and optional until date):
 
-```
-!`bash "$HOME/.claude/skills/achievements/scripts/collect-achievements.sh" "3 months ago" 2>&1`
-```
+!`bash "$HOME/.claude/skills/achievements/scripts/collect-achievements.sh" "$ARGUMENTS" 2>&1`
 
-> Note: The live context above uses the default period. Use the resolved date from `$ARGUMENTS` when calling the script interactively or via Bash.
->
-> The script scans all git repos found under `~/code`, `~/projects`, `~/src`, `~/dev`, and `~/work` (up to 3 levels deep), plus the current repo. Set `GIT_SEARCH_ROOTS` (colon-separated paths) to override. PRs and issues are fetched cross-org via `gh search`.
+The script scans all git repos found under `~/code`, `~/projects`, `~/src`, `~/dev`, and `~/work` (up to 3 levels deep), plus the current repo. Set `GIT_SEARCH_ROOTS` (colon-separated paths) to override. PRs and issues are fetched cross-org via `gh search`.
 
 ## Task
 

@@ -18,7 +18,7 @@
       "Bash(go *)",
       "Bash(ruby *)",
       "Bash(docker *)",
-      "Bash(!*)"
+      "Bash(bash \"$HOME/.claude/skills/*)"
     ]
   },
   "enabledPlugins": {
