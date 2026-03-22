@@ -21,7 +21,15 @@ Hint: $ARGUMENTS
 
 Read the full staged diff before writing anything. Understand the change holistically — what it does, why it exists, and what area it touches.
 
-Follow the conventions in `references/conventions.md` to compose the commit message.
+Follow the conventions in `references/conventions.md` to compose the commit message. Choose the type that matches the *actual* nature of the change — do not default to `feat`:
+
+- `feat` only for new user-visible capabilities
+- `fix` for bug fixes, even if the fix involves restructuring
+- `refactor` for restructuring, extractions, or simplifications with no behavior change
+- `chore` for config, tooling, permissions, or dependency changes
+- `docs` for documentation-only changes
+
+When a commit mixes types (e.g. a fix plus a refactor), use the type that represents the dominant or most important change.
 
 If a Jira ticket was detected from the branch name, include it in the footer as `Refs: PROJ-123`. Omit if none was found.
 
