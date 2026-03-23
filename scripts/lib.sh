@@ -130,9 +130,7 @@ copy_file_if_missing() {
   local target="$1"
   local source="$2"
 
-  if materialize_local_file "$target"; then
-    :
-  fi
+  materialize_local_file "$target" || true
 
   if [[ -e "$target" ]]; then
     return 0
@@ -148,9 +146,7 @@ replace_file_if_changed() {
   local tmp_file="$1"
   local target="$2"
 
-  if materialize_local_file "$target"; then
-    :
-  fi
+  materialize_local_file "$target" || true
 
   mkdir -p "$(dirname "$target")"
 

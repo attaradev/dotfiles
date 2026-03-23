@@ -154,6 +154,18 @@ _brewup_repair_cask() {
   brew install --cask "$token"
 }
 
+_brewup_fix_brew_symlink_permissions() {
+  # Homebrew calls rb_readlink on managed symlinks during cask uninstall.
+  # If any symlink in /usr/local/bin is not world-readable (e.g. lrwx------
+  # owned by root), that syscall fails with Permission denied and the cask
+  # upgrade aborts. Scan for such symlinks and chmod them to 755.
+  local f
+  while IFS= read -r f; do
+    _brewup_log "Fixing world-unreadable symlink: $f"
+    sudo chmod -h 755 "$f" || _brewup_log "Warning: could not chmod $f"
+  done < <(find /usr/local/bin -maxdepth 1 -type l ! -perm -o+r 2>/dev/null)
+}
+
 _brewup_repair_broken_casks() {
   local token
   if ! command -v jq >/dev/null 2>&1; then return 0; fi
@@ -175,6 +187,7 @@ cmd_upgrade() {
   trap _brewup_cleanup_sudo_session EXIT
   _brewup_prepare_sudo
 
+  _brewup_fix_brew_symlink_permissions
   _brewup_repair_broken_casks "$@"
   brew upgrade --greedy --overwrite "$@"
   brew cleanup

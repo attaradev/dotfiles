@@ -76,6 +76,19 @@ _stow_ensure_knowledge_dir() {
 # mise helpers
 # ===========================================================================
 
+_mise_add_shell_activation() {
+  local shell="$1" rc_file="$2" local_fallback="$3" added_var="$4" ok_var="$5"
+  local target; target=$(resolve_mutable_target "$rc_file" "$local_fallback" "$DOTFILES_DIR")
+  [[ -f "$target" ]] || [[ "$target" == "$local_fallback" ]] || [[ "$target" == "$rc_file" ]] || return 0
+  touch "$target"
+  if _mise_has_activation "mise activate $shell" "$rc_file" "$target"; then
+    eval "${ok_var}+=(\"\$shell\")"
+  else
+    { echo ""; echo "# mise (unified version manager)"; echo "eval \"\$(mise activate $shell)\""; } >> "$target"
+    eval "${added_var}+=(\"\$shell\")"
+  fi
+}
+
 _mise_has_activation() {
   local pattern="$1"; shift
   local file
@@ -225,9 +238,13 @@ cmd_stow() {
     packages=("${default_packages[@]}"); full_run=1
   fi
 
+  local has_gpg=0 has_ssh=0
+  printf '%s\n' "${packages[@]}" | grep -Fxq "gpg" && [[ -d "$DOTFILES_DIR/gpg" ]] && has_gpg=1
+  printf '%s\n' "${packages[@]}" | grep -Fxq "ssh" && [[ -d "$DOTFILES_DIR/ssh" ]] && has_ssh=1
+
   # Determine skip_gpg BEFORE backup so materialized local files are detected correctly
   local skip_gpg=0
-  if printf '%s\n' "${packages[@]}" | grep -Fxq "gpg" && [[ -d "$DOTFILES_DIR/gpg" ]]; then
+  if (( has_gpg )); then
     if [[ -e "$HOME/.gnupg/gpg-agent.conf" && ! -L "$HOME/.gnupg/gpg-agent.conf" ]] || \
        [[ -e "$HOME/.gnupg/gpg.conf" && ! -L "$HOME/.gnupg/gpg.conf" ]]; then
       skip_gpg=1
@@ -240,11 +257,11 @@ cmd_stow() {
     _stow_backup_package_files "$pkg"
   done
 
-  if printf '%s\n' "${packages[@]}" | grep -Fxq "ssh" && [[ -d "$DOTFILES_DIR/ssh" ]]; then
+  if (( has_ssh )); then
     _stow_ensure_dir "$HOME/.ssh" 700
     _stow_ensure_dir "$HOME/.ssh/sockets" 700
   fi
-  if printf '%s\n' "${packages[@]}" | grep -Fxq "gpg" && [[ -d "$DOTFILES_DIR/gpg" ]]; then
+  if (( has_gpg )); then
     _stow_ensure_dir "$HOME/.gnupg" 700
   fi
 
@@ -285,30 +302,9 @@ cmd_mise() {
     exit 1
   fi
 
-  local zshrc="$HOME/.zshrc" bashrc="$HOME/.bashrc"
   local shells_added=() shells_ok=()
-
-  local zshrc_target; zshrc_target=$(resolve_mutable_target "$zshrc" "$HOME/.zshrc.local" "$DOTFILES_DIR")
-  if [[ -f "$zshrc_target" ]] || [[ "$zshrc_target" == "$HOME/.zshrc.local" ]] || [[ "$zshrc_target" == "$HOME/.zshrc" ]]; then
-    touch "$zshrc_target"
-    if ! _mise_has_activation 'mise activate zsh' "$zshrc" "$zshrc_target"; then
-      { echo ""; echo "# mise (unified version manager)"; echo 'eval "$(mise activate zsh)"'; } >> "$zshrc_target"
-      shells_added+=(zsh)
-    else
-      shells_ok+=(zsh)
-    fi
-  fi
-
-  local bashrc_target; bashrc_target=$(resolve_mutable_target "$bashrc" "$HOME/.bashrc.local" "$DOTFILES_DIR")
-  if [[ -f "$bashrc_target" ]] || [[ "$bashrc_target" == "$HOME/.bashrc.local" ]] || [[ "$bashrc_target" == "$HOME/.bashrc" ]]; then
-    touch "$bashrc_target"
-    if ! _mise_has_activation 'mise activate bash' "$bashrc" "$bashrc_target"; then
-      { echo ""; echo "# mise (unified version manager)"; echo 'eval "$(mise activate bash)"'; } >> "$bashrc_target"
-      shells_added+=(bash)
-    else
-      shells_ok+=(bash)
-    fi
-  fi
+  _mise_add_shell_activation zsh  "$HOME/.zshrc"  "$HOME/.zshrc.local"  shells_added shells_ok
+  _mise_add_shell_activation bash "$HOME/.bashrc" "$HOME/.bashrc.local" shells_added shells_ok
 
   if [[ ${#shells_added[@]} -gt 0 ]]; then
     echo "✓ Added mise activation to: ${shells_added[*]}"
