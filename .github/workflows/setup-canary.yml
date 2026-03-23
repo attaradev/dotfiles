@@ -26,6 +26,7 @@ jobs:
           DOTFILES_NONINTERACTIVE: '1'
           DOTFILES_SETUP_OBSIDIAN_PLUGINS: '0'
           SKIP_VSCODE_EXTENSIONS: '1'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export HOME="$RUNNER_TEMP/setup-canary-home"
           mkdir -p "$HOME"
