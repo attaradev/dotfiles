@@ -326,7 +326,7 @@ cmd_mise() {
       [[ -n "$libyaml_prefix" ]] && ruby_opts_extra+=" --with-libyaml-dir=${libyaml_prefix}"
       [[ -n "$openssl_prefix" ]] && ruby_opts_extra+=" --with-openssl-dir=${openssl_prefix}"
       export RUBY_CONFIGURE_OPTS="${RUBY_CONFIGURE_OPTS:-}${ruby_opts_extra}"
-      mise install 2>&1 | grep -v "^mise " | grep -v "^$" || true
+      mise install 2>&1 || true
       mise reshim || true
     )
     echo "✓ tools installed"
