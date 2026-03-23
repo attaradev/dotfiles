@@ -16,7 +16,7 @@ Target: $ARGUMENTS
 - Workflow files: !`ls .github/workflows/ 2>/dev/null || true`
 - Recent CI runs: !`gh run list --limit 5 2>/dev/null || true`
 - Failed run details: !`gh run list --status failure --limit 3 --json databaseId,name,conclusion,headBranch,createdAt 2>/dev/null || true`
-- Latest failed run log: !`gh run list --status failure --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null | { read -r id && gh run view "$id" --log-failed 2>/dev/null | head -100; } || true`
+- Latest failed run log: !`id=$(gh run list --status failure --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null) && gh run view "$id" --log-failed 2>/dev/null | head -100 || true`
 - Recent local test run: !`cat .last-test-output 2>/dev/null | tail -50 || true`
 
 ## Task
