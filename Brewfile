@@ -29,6 +29,7 @@ end
 # ============================================
 
 brew "gh"                           # GitHub CLI - Official GitHub command-line tool
+brew "act"                          # Run GitHub Actions locally
 
 # ============================================
 # Security & Encryption
