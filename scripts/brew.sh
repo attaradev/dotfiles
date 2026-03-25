@@ -21,8 +21,6 @@ cmd_bundle() {
     load_optional_cask_env_file "$env_file"
   fi
 
-  sync_optional_cask_env_vars
-
   exec brew bundle "$@"
 }
 

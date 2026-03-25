@@ -80,9 +80,8 @@ write_mock brew <<'EOF'
 cmd="${1:-}"
 
 if [[ -n "${MOCK_BREW_LOG:-}" && "$cmd" == "bundle" && "${2:-}" == "check" ]]; then
-  printf 'bundle_check HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=%s BREW_INSTALL_ANTIGRAVITY=%s args=%s\n' \
+  printf 'bundle_check HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=%s args=%s\n' \
     "${HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY:-unset}" \
-    "${BREW_INSTALL_ANTIGRAVITY:-unset}" \
     "$*" >> "$MOCK_BREW_LOG"
 fi
 
@@ -262,7 +261,6 @@ fi
 
 OPTIONAL_CASK_ENV_FILE="$TMP_DIR/optional-casks.env"
 cat > "$OPTIONAL_CASK_ENV_FILE" <<'EOF'
-export BREW_INSTALL_ANTIGRAVITY=0
 export HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=1
 EOF
 
@@ -288,8 +286,8 @@ if [[ "$bundle_check_count" != "2" ]]; then
   exit 1
 fi
 
-if grep '^bundle_check ' "$MOCK_BREW_LOG" | grep -vq 'HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=1 BREW_INSTALL_ANTIGRAVITY=1'; then
-  echo "❌ Optional cask env normalization failed for make wrapper path"
+if grep '^bundle_check ' "$MOCK_BREW_LOG" | grep -vq 'HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY=1'; then
+  echo "❌ Optional cask env var not forwarded to brew bundle"
   cat "$MOCK_BREW_LOG"
   exit 1
 fi

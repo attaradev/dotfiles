@@ -232,10 +232,10 @@ OPTIONAL_CASK_SPECS=(
 )
 
 # Load optional cask preferences from an env file, exporting only recognised
-# BREW_INSTALL_* / HOMEBREW_BUNDLE_INSTALL_* keys with normalised values.
+# HOMEBREW_BUNDLE_INSTALL_* keys with normalised values.
 load_optional_cask_env_file() {
   local env_file="${1:-}"
-  local line key value entry suffix brew_var bundle_var allowed
+  local line key value entry suffix allowed
 
   [[ -n "$env_file" && -f "$env_file" ]] || return 0
 
@@ -265,9 +265,7 @@ load_optional_cask_env_file() {
     allowed=0
     for entry in "${OPTIONAL_CASK_SPECS[@]}"; do
       IFS='|' read -r suffix _ _ <<< "$entry"
-      brew_var="BREW_INSTALL_${suffix}"
-      bundle_var="HOMEBREW_BUNDLE_INSTALL_${suffix}"
-      if [[ "$key" == "$brew_var" || "$key" == "$bundle_var" ]]; then
+      if [[ "$key" == "HOMEBREW_BUNDLE_INSTALL_${suffix}" ]]; then
         allowed=1
         break
       fi
@@ -279,17 +277,3 @@ load_optional_cask_env_file() {
   done < "$env_file"
 }
 
-# Sync BREW_INSTALL_* and HOMEBREW_BUNDLE_INSTALL_* pairs to a consistent
-# normalised value, so both naming conventions agree.
-sync_optional_cask_env_vars() {
-  local entry suffix brew_var bundle_var value
-
-  for entry in "${OPTIONAL_CASK_SPECS[@]}"; do
-    IFS='|' read -r suffix _ _ <<< "$entry"
-    brew_var="BREW_INSTALL_${suffix}"
-    bundle_var="HOMEBREW_BUNDLE_INSTALL_${suffix}"
-    value="$(normalize_bool "${!bundle_var:-${!brew_var:-0}}")"
-    export "$brew_var=$value"
-    export "$bundle_var=$value"
-  done
-}

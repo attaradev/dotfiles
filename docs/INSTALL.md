@@ -115,13 +115,11 @@ Note: this repository has personal fallback Git defaults in `setup.sh`; override
 
 Optional GUI tools are controlled by env vars and persisted to `~/.config/dotfiles/brew-optional.env`.
 
-- `BREW_INSTALL_ANTIGRAVITY`
-- `BREW_INSTALL_UTM`
-- `BREW_INSTALL_BRAVE_BROWSER`
-- `BREW_INSTALL_VLC`
-- `BREW_INSTALL_SPOTIFY`
-
-Homebrew bundle equivalents are mirrored to `HOMEBREW_BUNDLE_INSTALL_*` automatically.
+- `HOMEBREW_BUNDLE_INSTALL_ANTIGRAVITY`
+- `HOMEBREW_BUNDLE_INSTALL_UTM`
+- `HOMEBREW_BUNDLE_INSTALL_BRAVE_BROWSER`
+- `HOMEBREW_BUNDLE_INSTALL_VLC`
+- `HOMEBREW_BUNDLE_INSTALL_SPOTIFY`
 
 ## Post-Install Verification
 

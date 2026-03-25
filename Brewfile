@@ -21,8 +21,7 @@
 tap "hashicorp/tap"
 
 def optional_enabled?(key)
-  value = ENV["HOMEBREW_BUNDLE_INSTALL_#{key}"] || ENV["BREW_INSTALL_#{key}"]
-  value.to_s == "1"
+  ENV["HOMEBREW_BUNDLE_INSTALL_#{key}"].to_s == "1"
 end
 
 # ============================================
