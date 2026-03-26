@@ -32,77 +32,50 @@ _brewup_log() {
   printf 'brewup: %s\n' "$*" >&2
 }
 
-_brewup_cleanup_sudo_session() {
-  if [[ "${_BREWUP_SUDO_ASKPASS_CREATED:-0}" -eq 1 ]]; then
-    unset SUDO_ASKPASS
-  fi
-
-  if [[ -z "${_BREWUP_SUDO_SESSION_DIR:-}" ]]; then
-    return 0
-  fi
-
-  rm -rf "$_BREWUP_SUDO_SESSION_DIR"
-  _BREWUP_SUDO_SESSION_DIR=""
-}
-
-_brewup_prompt_password() {
-  local prompt="${1:-Password: }"
-  local password tty_state
-
-  tty_state="$(stty -g </dev/tty)"
-  printf '%s' "$prompt" >/dev/tty
-  stty -echo </dev/tty
-
-  if ! IFS= read -r password </dev/tty; then
-    stty "$tty_state" </dev/tty
-    printf '\n' >/dev/tty
-    return 1
-  fi
-
-  stty "$tty_state" </dev/tty
-  printf '\n' >/dev/tty
-  printf '%s\n' "$password"
-}
-
-_brewup_setup_askpass() {
-  local password_file askpass_script password attempt
-
-  if [[ -n "${SUDO_ASKPASS:-}" ]]; then
-    sudo -A -v
-    return 0
-  fi
-
-  _BREWUP_SUDO_SESSION_DIR="$(mktemp -d "${TMPDIR:-/tmp}/brewup-sudo.XXXXXX")"
-  chmod 700 "$_BREWUP_SUDO_SESSION_DIR"
-  password_file="$_BREWUP_SUDO_SESSION_DIR/password"
-  askpass_script="$_BREWUP_SUDO_SESSION_DIR/askpass.sh"
-
-  cat >"$askpass_script" <<EOF
-#!/usr/bin/env bash
-exec /bin/cat "$password_file"
-EOF
-  chmod 700 "$askpass_script"
-
-  export SUDO_ASKPASS="$askpass_script"
-  _BREWUP_SUDO_ASKPASS_CREATED=1
-
-  for attempt in 1 2 3; do
-    password="$(_brewup_prompt_password)"
-    printf '%s\n' "$password" >"$password_file"
-    chmod 600 "$password_file"
-    if sudo -A -v; then return 0; fi
-    _brewup_log "Incorrect password; try again."
-  done
-
-  _brewup_log "Failed to authenticate with sudo after 3 attempts."
-  return 1
-}
+_BREWUP_SUDO_DIR="${TMPDIR:-/tmp}/brewup-sudo-${EUID:-$(id -u)}"
 
 _brewup_prepare_sudo() {
   if [[ ! -t 0 || ! -t 1 ]]; then return 0; fi
   if ! command -v sudo >/dev/null 2>&1; then return 0; fi
-  if sudo -n -v 2>/dev/null; then return 0; fi
-  _brewup_setup_askpass
+
+  local pass="$_BREWUP_SUDO_DIR/pass"
+  local askpass="$_BREWUP_SUDO_DIR/askpass.sh"
+
+  # Reuse cached credentials if < 5 minutes old
+  if [[ -f "$pass" ]]; then
+    local now mtime
+    now="$(date +%s)"
+    mtime="$(stat -f %m "$pass" 2>/dev/null)" || mtime=0
+    if (( now - mtime < 300 )); then
+      export SUDO_ASKPASS="$askpass"
+      sudo -A -v 2>/dev/null && return 0
+      rm -f "$pass"  # cached password no longer valid; re-prompt below
+    fi
+  fi
+
+  mkdir -p "$_BREWUP_SUDO_DIR"
+  chmod 700 "$_BREWUP_SUDO_DIR"
+  printf '#!/usr/bin/env bash\nexec /bin/cat "%s"\n' "$pass" > "$askpass"
+  chmod 700 "$askpass"
+  export SUDO_ASKPASS="$askpass"
+
+  local attempt password tty_state
+  for attempt in 1 2 3; do
+    tty_state="$(stty -g </dev/tty)"
+    printf 'brewup requires administrator privileges. Password: ' >/dev/tty
+    stty -echo </dev/tty
+    IFS= read -r password </dev/tty
+    stty "$tty_state" </dev/tty
+    printf '\n' >/dev/tty
+    printf '%s\n' "$password" > "$pass"
+    chmod 600 "$pass"
+    if sudo -A -v; then return 0; fi
+    _brewup_log "Incorrect password; try again."
+  done
+
+  rm -f "$pass"
+  _brewup_log "Failed to authenticate with sudo after 3 attempts."
+  return 1
 }
 
 _brewup_is_installed_cask() {
@@ -160,7 +133,7 @@ _brewup_fix_brew_symlink_permissions() {
   local f
   while IFS= read -r f; do
     _brewup_log "Fixing world-unreadable symlink: $f"
-    sudo chmod -h 755 "$f" || _brewup_log "Warning: could not chmod $f"
+    sudo ${SUDO_ASKPASS:+-A} chmod -h 755 "$f" || _brewup_log "Warning: could not chmod $f"
   done < <(find /usr/local/bin -maxdepth 1 -type l ! -perm -o+r 2>/dev/null)
 }
 
@@ -179,10 +152,6 @@ cmd_upgrade() {
     return 1
   fi
 
-  _BREWUP_SUDO_SESSION_DIR=""
-  _BREWUP_SUDO_ASKPASS_CREATED=0
-
-  trap _brewup_cleanup_sudo_session EXIT
   _brewup_prepare_sudo
 
   _brewup_fix_brew_symlink_permissions
