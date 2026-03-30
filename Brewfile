@@ -124,6 +124,12 @@ brew "libyaml"                      # YAML parser/headers required for Ruby psyc
 brew "pkg-config"                   # Manage compile and link flags for libraries
 
 # ============================================
+# System Utilities
+# ============================================
+
+brew "mole"                         # Deep clean and optimize your Mac
+
+# ============================================
 # Dotfile Management
 # ============================================
 
