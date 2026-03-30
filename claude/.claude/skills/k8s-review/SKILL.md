@@ -1,7 +1,6 @@
 ---
 name: k8s-review
 description: This skill should be used when the user asks to "review this Kubernetes manifest", "check my k8s config", "is this Deployment safe", "review these Helm values", "audit this k8s yaml", "k8s best practices", "review my pod spec", or "harden this k8s resource". Reviews Kubernetes manifests for correctness, security, reliability, and operational readiness.
-disable-model-invocation: true
 argument-hint: "[path to manifest(s) or paste the YAML to review]"
 ---
 

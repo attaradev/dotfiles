@@ -1,7 +1,6 @@
 ---
 name: status-update
 description: This skill should be used when the user asks to "write a status update", "draft a stakeholder update", "prepare a weekly update", "write a leadership summary", "draft a cross-team update", "write an engineering update for", or "summarize progress for". Drafts engineering updates that separate confirmed facts from inferences and give the right level of detail for the audience.
-disable-model-invocation: true
 argument-hint: "[audience and timeframe — e.g. 'engineering leadership, past week']"
 ---
 

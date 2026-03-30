@@ -1,7 +1,6 @@
 ---
 name: review-pr
 description: This skill should be used when the user asks to "review PR", "review pull request", "review this PR", "look at PR #N", "gh pr review", or provides a GitHub PR number or URL. Performs a deep, file-by-file pull request review via the GitHub CLI — producing a per-file breakdown, severity-ranked findings, exhaustive inline comments, and an approval recommendation.
-disable-model-invocation: true
 argument-hint: "[PR-number or owner/repo#PR]"
 ---
 
@@ -9,7 +8,7 @@ argument-hint: "[PR-number or owner/repo#PR]"
 
 Review target: $ARGUMENTS
 
-## Gather context
+## Live context
 
 Run the context collector via Bash tool before forming any opinion:
 
@@ -19,7 +18,7 @@ bash "$HOME/.claude/skills/review-pr/scripts/collect-pr-context.sh" "$ARGUMENTS"
 
 If the diff is large and key files are referenced without full context, read them directly with the Read tool.
 
-## Review process
+## Task
 
 Work through this sequence before writing a single finding:
 
@@ -102,6 +101,13 @@ gh pr review <N> --comment --body "<summary>"
 gh pr review <N> --request-changes --body "<summary>"
 gh pr review <N> --approve --body "<summary>"
 ```
+
+## Quality bar
+
+- All findings must be backed by evidence in the diff — do not invent issues
+- Inline comments must be specific and actionable; do not cap their number
+- Do not comment on formatting or naming unless it impairs correctness
+- Approval recommendation must be explicit — choose one of the four options, do not hedge
 
 ## Additional resources
 

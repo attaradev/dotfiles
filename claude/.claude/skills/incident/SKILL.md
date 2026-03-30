@@ -1,7 +1,6 @@
 ---
 name: incident
 description: This skill should be used when the user asks to "write an incident report", "draft a postmortem", "write a post-incident review", "document this incident", "create an RCA", "write up what happened", or "help me do the postmortem". Produces a structured incident report with timeline, impact, root cause analysis, and action items from a description of symptoms and logs.
-disable-model-invocation: true
 argument-hint: "[incident description, symptoms, or service affected]"
 ---
 
@@ -35,6 +34,14 @@ Produce the filled report, then separately list:
 
 **Suggested follow-up questions:**
 - [Questions to ask in the retrospective that would improve the RCA]
+
+## Quality bar
+
+- Timeline must use real timestamps — do not estimate or approximate if the data is available
+- Root cause must identify the systemic failure, not just the triggering event
+- Every action item must have an owner and a type (prevent recurrence / improve detection / reduce impact)
+- Use blameless language — describe system behavior, not individual mistakes
+- Leave sections as `[TBD]` rather than fabricating data
 
 ## Additional resources
 

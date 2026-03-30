@@ -1,7 +1,6 @@
 ---
 name: mrr-model
 description: This skill should be used when the user asks to "model our MRR", "ARR forecast", "MRR waterfall", "CAC LTV ratio", "SaaS financial model", "payback period", "rule of 40", "net revenue retention", "expansion MRR", or "build a SaaS metrics model". Builds a SaaS financial model covering MRR waterfall, unit economics, and growth forecasting.
-disable-model-invocation: true
 argument-hint: "[current MRR, churn rate, growth rate, and any specific financial question to answer]"
 ---
 

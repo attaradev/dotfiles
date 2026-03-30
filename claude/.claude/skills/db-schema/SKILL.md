@@ -1,7 +1,6 @@
 ---
 name: db-schema
 description: This skill should be used when the user asks to "design the schema", "ERD for this", "data model design", "what tables do we need", "database schema for this feature", "design the data model", or "how should we structure this in the database". Produces a schema design with entity model, normalization rationale, index strategy, and migration notes.
-disable-model-invocation: true
 argument-hint: "[the domain, feature, or entities to model]"
 ---
 

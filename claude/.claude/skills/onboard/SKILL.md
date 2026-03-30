@@ -65,3 +65,14 @@ Two to four things that trip up newcomers. Be specific.
 ### Where to start
 
 Recommended first PR or first exploration task for someone new to this codebase. Name specific files to read and change.
+
+## Quality bar
+
+- Read the actual code before describing it — do not summarize the README alone.
+- Every structural claim must be grounded in the file tree or source, not assumed.
+- Gotchas must be specific and non-obvious — skip anything derivable from reading one file.
+- If `$ARGUMENTS` names a focus area, stay anchored to it rather than producing a generic overview.
+
+## Additional resources
+
+- **`references/onboard-guide.md`** — Techniques for reading unfamiliar codebases, diagram conventions, and calibrating depth.

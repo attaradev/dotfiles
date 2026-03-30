@@ -23,6 +23,14 @@ Use this skill to trace a failure to its root cause before changing code.
 - Describe the fix and how to verify it.
 - Call out residual risk if the issue may recur elsewhere.
 
+## Quality bar
+
+- Root cause must be identified, not just the symptom.
+- The hypothesis must be falsifiable: state it as "the issue is X because Y", not "it might be related to Z."
+- The fix must be minimal; do not refactor surrounding code unless it is directly causing the problem.
+- Verification must be concrete and runnable, not "test it locally."
+- If the root cause cannot be determined, say so and list what information is missing.
+
 ## Resource map
 
 - `references/debug-playbook.md` -> systematic debugging steps and common failure patterns

@@ -1,7 +1,6 @@
 ---
 name: ab-test
 description: This skill should be used when the user asks to "design an A/B test", "experiment design for this", "how do we test this", "split test", "randomised controlled trial for this", "experiment brief", or "what sample size do we need". Produces a complete experiment brief with hypothesis, variants, sample size, duration, primary metrics, and rollout decision criteria.
-disable-model-invocation: true
 argument-hint: "[the change or hypothesis you want to test]"
 ---
 

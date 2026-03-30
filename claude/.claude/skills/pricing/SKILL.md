@@ -1,7 +1,6 @@
 ---
 name: pricing
 description: This skill should be used when the user asks to "design a pricing model", "should we use freemium", "how should we price this", "pricing strategy", "pricing tiers", "free trial vs freemium", "usage-based pricing", "pricing page design", or "how do we test pricing". Designs a SaaS pricing model covering model selection, tier architecture, and go-to-market approach.
-disable-model-invocation: true
 argument-hint: "[your product, target customer, and current pricing situation or question]"
 ---
 

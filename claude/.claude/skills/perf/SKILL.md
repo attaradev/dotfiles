@@ -1,7 +1,6 @@
 ---
 name: perf
 description: This skill should be used when the user asks to "why is this slow", "profile this", "performance analysis", "find the bottleneck", "this is too slow", "optimise the performance", "latency investigation", or "throughput analysis". Systematically investigates performance problems through measurement, bottleneck identification, and targeted fixes.
-disable-model-invocation: true
 argument-hint: "[the slow code path, endpoint, or operation to investigate]"
 ---
 

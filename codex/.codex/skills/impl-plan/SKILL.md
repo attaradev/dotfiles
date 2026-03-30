@@ -22,6 +22,13 @@ Use this skill to turn a goal into a concrete implementation plan.
 - Keep phases small enough to validate independently.
 - Call out assumptions that may change the plan.
 
+## Quality bar
+
+- The recommended approach must be a direct recommendation, not "it depends."
+- Phase exit criteria must be specific and verifiable, not vague milestones.
+- Risks must be ranked and each must have a concrete mitigation or contingency.
+- Open questions must actually block progress; do not list things that do not need resolution before starting.
+
 ## Resource map
 
 - `references/planning-framework.md` -> approach evaluation, scope heuristics, and planning failure modes

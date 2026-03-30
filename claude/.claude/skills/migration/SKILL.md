@@ -1,7 +1,6 @@
 ---
 name: migration
 description: This skill should be used when the user asks to "migration plan for this", "how do we move off X", "re-platform this", "strangler fig for this", "system migration plan", "move from X to Y", "data migration plan", or "how do we cut over". Produces a structured system migration plan covering current state, target state, phases, risks, validation gates, and rollback.
-disable-model-invocation: true
 argument-hint: "[the system or data to migrate: from X to Y, or describe the current state and target]"
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: launch-plan
 description: This skill should be used when the user asks to "go-to-market plan", "launch strategy", "how do we roll this out", "GTM for this feature", "launch plan", "launch this feature", or "release strategy". Produces a structured go-to-market brief covering audience, positioning, launch phases, channels, and success criteria.
-disable-model-invocation: true
 argument-hint: "[feature, product, or release to plan a launch for]"
 ---
 

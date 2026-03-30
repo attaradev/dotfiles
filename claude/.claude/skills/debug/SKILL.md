@@ -53,6 +53,14 @@ How to confirm the fix is correct: specific test to run, assertion to check, or 
 
 Anything the fix does not address, or related areas that may have the same problem.
 
+## Quality bar
+
+- Root cause must be identified, not just the symptom
+- Hypothesis must be falsifiable — state it as "the issue is X because Y", not "it might be related to Z"
+- Fix must be minimal — do not refactor surrounding code unless it is directly causing the problem
+- Verification step must be concrete and runnable, not "test it locally"
+- If the root cause cannot be determined, say so and list what information is missing
+
 ## Additional resources
 
 - **`references/debug-playbook.md`** — Systematic investigation steps, common failure patterns, and techniques for isolating root cause.

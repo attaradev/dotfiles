@@ -1,7 +1,6 @@
 ---
 name: git-commit
 description: This skill should be used when the user asks to "git commit", "make a commit", "write a commit message", "stage and commit", "commit my changes", "create a git commit", or "commit this with a proper message". Generates a Conventional Commit message from the staged diff and creates the commit.
-disable-model-invocation: true
 argument-hint: "[optional hint about scope or intent]"
 ---
 
@@ -49,6 +48,14 @@ EOF
 ```
 
 Do not use `--no-verify`. Do not amend unless explicitly asked.
+
+## Quality bar
+
+- Subject line must be under 72 characters
+- Type must match the actual nature of the change — do not default to `feat`
+- Describe what changed and why, not what the code does
+- If the diff mixes unrelated concerns, flag it rather than forcing a single subject
+- Never use `--no-verify` or `--amend` unless explicitly requested
 
 ## Additional resources
 

@@ -1,7 +1,6 @@
 ---
 name: churn
 description: This skill should be used when the user asks to "analyse our churn", "why are customers leaving", "reduce churn", "churn investigation", "at-risk customers", "cancellation flow", "win-back strategy", "involuntary churn", "revenue churn vs logo churn", or "cohort churn analysis". Diagnoses churn drivers and produces a concrete reduction plan.
-disable-model-invocation: true
 argument-hint: "[your product, current churn rate, and what you know about why customers cancel]"
 ---
 

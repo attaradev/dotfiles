@@ -1,7 +1,6 @@
 ---
 name: user-jobs
 description: This skill should be used when the user asks to "jobs to be done", "what job is this solving", "frame this as JTBD", "what are users really trying to do", "JTBD analysis", or "what is the underlying job". Reframes a feature or problem through the Jobs-to-be-Done lens to expose the real motivation driving user behaviour.
-disable-model-invocation: true
 argument-hint: "[feature, product area, or user behaviour to analyse]"
 ---
 

@@ -20,6 +20,13 @@ Use this skill to add tests that match the project’s existing style.
 - Cover the most important exported behavior first.
 - Call out anything explicitly left untested and why.
 
+## Quality bar
+
+- Tests must match the project’s existing patterns exactly; do not introduce a new framework or style.
+- Each test must be independent and not rely on execution order.
+- Assert observable behavior and outputs, not implementation details.
+- Coverage summaries must be honest about gaps; name what is not covered and why.
+
 ## Resource map
 
 - `references/testing-patterns.md` -> patterns, anti-patterns, and test-scope guidance

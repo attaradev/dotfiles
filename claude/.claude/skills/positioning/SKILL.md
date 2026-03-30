@@ -1,7 +1,6 @@
 ---
 name: positioning
 description: This skill should be used when the user asks to "define our positioning", "write our value proposition", "how should we message this", "positioning statement", "what makes us different", "website messaging", "how do we talk about our product", or "product positioning vs competitors". Produces a complete positioning framework covering differentiation, value proposition, and messaging hierarchy.
-disable-model-invocation: true
 argument-hint: "[your product, target customer, and key competitors or alternatives]"
 ---
 

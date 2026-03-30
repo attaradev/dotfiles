@@ -1,7 +1,6 @@
 ---
 name: discovery
 description: This skill should be used when the user asks to "write discovery questions", "create an interview guide", "user research questions for this", "what should I ask users", "prepare for user interviews", "discovery interview script", or "research guide". Generates a structured user research interview guide with screener, core questions, and follow-up probes calibrated to the research goal.
-disable-model-invocation: true
 argument-hint: "[the assumption or hypothesis you are trying to test, or the problem area to explore]"
 ---
 

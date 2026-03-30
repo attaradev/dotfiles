@@ -60,3 +60,7 @@ Three to five files or functions most useful for deepening understanding. Format
 - Favor clarity over completeness — one clear explanation beats five partial ones.
 - Scale depth to the target: a 20-line utility needs less than a 500-line subsystem.
 - If the target is unclear or not found, say so and ask for clarification rather than guessing.
+
+## Additional resources
+
+- **`references/explain-guide.md`** — Guidance on constructing analogies, ASCII diagrams, and calibrating explanation depth.

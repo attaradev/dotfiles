@@ -1,7 +1,6 @@
 ---
 name: code-review
 description: This skill should be used when the user asks to "review my changes", "code review", "review this diff", "review before merge", "check my implementation", "review this branch", or "look at my PR locally". Performs senior/staff-level review of local working-tree or branch changes with severity-ranked findings and concrete remediation steps.
-disable-model-invocation: true
 argument-hint: "[branch, file, or scope — defaults to working tree vs HEAD]"
 ---
 
@@ -60,6 +59,14 @@ Choose one with a one-sentence rationale:
 - **Approve with comments** — no blockers, non-trivial concerns to address
 - **Request changes** — blockers present (list by label)
 - **Cannot fully assess** — missing context; explain the gap
+
+## Quality bar
+
+- All findings must be traceable to the diff — do not invent issues without evidence
+- Blockers must name a specific fix, not just describe the problem
+- Do not flag formatting or naming unless it impairs correctness or readability
+- Approval recommendation must be explicit — do not hedge with "it depends"
+- Positive observations section should be omitted if nothing genuinely stands out
 
 ## Additional resources
 

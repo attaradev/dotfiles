@@ -1,7 +1,6 @@
 ---
 name: mock-gen
 description: This skill should be used when the user asks to "generate a mock", "create a test double", "stub this interface", "mock this dependency", "fake this service", "generate mocks for this", or "set up test doubles". Generates idiomatic mocks, stubs, fakes, and spies for the detected language and framework.
-disable-model-invocation: true
 argument-hint: "[the interface, type, or service to mock]"
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: customer-success
 description: This skill should be used when the user asks to "design a CS playbook", "customer health score", "QBR template", "expansion playbook", "upsell triggers", "at-risk customer intervention", "customer success strategy", "CS-to-sales handoff", or "how to scale customer success". Produces a complete CS playbook covering health scoring, expansion plays, and at-risk intervention.
-disable-model-invocation: true
 argument-hint: "[your product, customer segments, and current CS challenges or goals]"
 ---
 

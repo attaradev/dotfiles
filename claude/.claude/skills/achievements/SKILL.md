@@ -1,7 +1,6 @@
 ---
 name: achievements
 description: This skill should be used when the user asks to "pull my achievements", "what did I ship", "summarize my work", "write my brag doc", "what have I done this quarter", "prepare my performance review input", "what did I accomplish", "list my contributions", or "what did I build this month". Collects commits, merged PRs, reviews, and closed issues for a period, then synthesizes them into a structured achievement summary.
-disable-model-invocation: true
 argument-hint: "[period] [for technical|non-technical|exec|both — optional audience]"
 ---
 

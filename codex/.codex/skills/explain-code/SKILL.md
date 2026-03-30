@@ -23,3 +23,13 @@ Use this skill to explain code from first principles without hand-waving.
 - Call out one subtle gotcha or misconception if there is one.
 - End with the next files or functions worth reading.
 - If the target is unclear or missing, say so instead of guessing.
+
+## Quality bar
+
+- Favor clarity over completeness; one clear explanation beats five partial ones.
+- Scale depth to the target: a 20-line utility needs less than a 500-line subsystem.
+- If the target is unclear or not found, say so and ask for clarification rather than guessing.
+
+## Resource map
+
+- `references/explain-guide.md` -> analogy patterns, ASCII diagrams, and explanation-depth guidance

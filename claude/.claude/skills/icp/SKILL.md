@@ -1,7 +1,6 @@
 ---
 name: icp
 description: This skill should be used when the user asks to "define our ICP", "who is our ideal customer", "narrow our target market", "ICP definition", "ideal customer profile", "who should we sell to", "customer segmentation", or "who gets the most value from our product". Defines a tight Ideal Customer Profile with firmographic, behavioral, and situational attributes.
-disable-model-invocation: true
 argument-hint: "[your product, what it does, and what you know about your best customers so far]"
 ---
 

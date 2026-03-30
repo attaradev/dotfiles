@@ -21,9 +21,20 @@ Use this skill to review local changes with a staff-engineer mindset. Findings c
 - Lead with findings, not a summary.
 - Prioritize correctness bugs, regressions, security risks, compatibility breaks, and missing tests.
 - Include file and line references whenever the diff supports them.
+- Call out test coverage gaps for important untested behavior.
+- Include positive observations only when something genuinely stands out.
+- End with an explicit approval recommendation (`Approve`, `Approve with comments`, `Request changes`, or `Cannot fully assess`).
 - Be explicit about uncertainty when context is missing.
 - If there are no findings, say so plainly and note any residual risk or testing gaps.
 - Keep style comments out unless they materially affect readability or correctness.
+
+## Quality bar
+
+- All findings must be traceable to the diff; do not invent issues without evidence.
+- Blockers must name a specific fix, not just describe the problem.
+- Do not flag formatting or naming unless it impairs correctness or readability.
+- Approval recommendation must be explicit; do not hedge with "it depends."
+- Positive observations should be omitted if nothing genuinely stands out.
 
 ## Resource map
 

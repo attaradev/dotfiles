@@ -20,8 +20,15 @@ Use this skill to explain a repository from the actual code, not just the README
 - Show the important directories and entry points.
 - Include how it runs locally when that is discoverable from the repo.
 - Call out non-obvious conventions and newcomer gotchas.
+- Recommend the first files or tasks a new contributor should start with.
 
-## Notes
+## Quality bar
 
-- Prefer source code and manifests over a README summary.
-- Keep the orientation concise but actionable.
+- Read the actual code before describing it; do not summarize the README alone.
+- Every structural claim must be grounded in the file tree or source, not assumed.
+- Gotchas must be specific and non-obvious; skip anything derivable from reading one file.
+- If the user names a focus area, stay anchored to it rather than producing a generic overview.
+
+## Resource map
+
+- `references/onboard-guide.md` -> techniques for reading unfamiliar codebases, diagram conventions, and depth calibration

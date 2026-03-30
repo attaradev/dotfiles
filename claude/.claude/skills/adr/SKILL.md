@@ -1,7 +1,6 @@
 ---
 name: adr
 description: This skill should be used when the user asks to "write an ADR", "document this decision", "create an architecture decision record", "record this design decision", "capture why we chose", or "write up the decision to". Drafts a structured Architecture Decision Record from a description of the decision and its context.
-disable-model-invocation: true
 argument-hint: "[decision description or title]"
 ---
 

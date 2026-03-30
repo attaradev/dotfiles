@@ -1,7 +1,6 @@
 ---
 name: tech-eval
 description: This skill should be used when the user asks to "evaluate these options", "build vs buy", "vendor selection", "compare these technologies", "technology evaluation", "which database should we use", "make vs buy decision", or "tech stack decision". Produces a structured technology evaluation with criteria matrix, trade-off analysis, and a recommendation with rationale.
-disable-model-invocation: true
 argument-hint: "[the decision to evaluate: options, context, and key constraints]"
 ---
 

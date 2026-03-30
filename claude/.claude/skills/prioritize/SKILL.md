@@ -1,7 +1,6 @@
 ---
 name: prioritize
 description: This skill should be used when the user asks to "prioritize these features", "RICE score this", "rank the backlog", "MoSCoW this", "help me decide what to build next", "prioritization framework", or "stack rank these". Applies a scoring framework (RICE, MoSCoW, or ICE) to a list of features or initiatives and surfaces the ranking with rationale.
-disable-model-invocation: true
 argument-hint: "[list of features or initiatives to prioritize, or a description of the backlog]"
 ---
 

@@ -14,13 +14,14 @@ Use this skill to turn incident evidence into a clear, blameless report with imp
 3. Fill the incident template with a precise timeline, root cause analysis, and remediation steps.
 4. Include action items with owners and types so the follow-up work is actionable.
 
-## Quality rules
+## Quality bar
 
-- Focus on systemic causes, not individual mistakes.
-- Prefer partial accuracy over complete speculation.
-- Make action items specific enough to verify later.
-- Ask for missing information when a section cannot be filled credibly.
+- Timelines must use real timestamps when the data is available.
+- Root cause analysis must identify the systemic failure, not just the triggering event.
+- Every action item must have an owner and a type (`prevent recurrence`, `improve detection`, or `reduce impact`).
+- Use blameless language; describe system behavior, not individual mistakes.
+- Leave sections as `[TBD]` rather than fabricating data.
 
-## Resources
+## Resource map
 
 - `references/incident-template.md` contains the canonical incident report structure.

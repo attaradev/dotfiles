@@ -1,7 +1,6 @@
 ---
 name: ci-fix
 description: This skill should be used when the user asks to "CI is failing", "fix the pipeline", "these checks are red", "fix failing CI", "why is the build failing", "fix the GitHub Actions workflow", or "CI is broken". Fetches failing CI run logs, diagnoses the root cause, and applies a fix.
-disable-model-invocation: true
 argument-hint: "[optional: PR number, run ID, or workflow name]"
 ---
 
@@ -16,7 +15,7 @@ Target: $ARGUMENTS
 - Workflow files: !`ls .github/workflows/ 2>/dev/null || true`
 - Recent CI runs: !`gh run list --limit 5 2>/dev/null || true`
 - Failed run details: !`gh run list --status failure --limit 3 --json databaseId,name,conclusion,headBranch,createdAt 2>/dev/null || true`
-- Latest failed run log: !`id=$(gh run list --status failure --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null) && gh run view "$id" --log-failed 2>/dev/null | head -100 || true`
+- Latest failed run log: !`id=$(gh run list --status failure --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null); [ -n "$id" ] && gh run view "$id" --log-failed 2>/dev/null | head -100 || true`
 - Recent local test run: !`cat .last-test-output 2>/dev/null | tail -50 || true`
 
 ## Task

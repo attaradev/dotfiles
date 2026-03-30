@@ -1,7 +1,6 @@
 ---
 name: prompt-eng
 description: This skill should be used when the user asks to "improve this prompt", "prompt engineering for this", "make this LLM prompt better", "optimise this system prompt", "this prompt is not working", "help me write a prompt for", or "prompt design". Systematically analyses and rewrites prompts for clarity, reliability, and output quality.
-disable-model-invocation: true
 argument-hint: "[the prompt to improve, or a description of what the prompt should do]"
 ---
 

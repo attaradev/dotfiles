@@ -1,7 +1,6 @@
 ---
 name: postmortem
 description: This skill should be used when the user asks to "write a postmortem", "5-whys this incident", "post-incident review", "incident retrospective", "blameless postmortem", "RCA for this", or "root cause analysis". Produces a structured blameless post-incident postmortem with timeline, root cause analysis, contributing factors, and action items.
-disable-model-invocation: true
 argument-hint: "[incident description, or reference to an existing incident doc or Jira ticket]"
 ---
 

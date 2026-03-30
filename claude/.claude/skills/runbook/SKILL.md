@@ -1,7 +1,6 @@
 ---
 name: runbook
 description: This skill should be used when the user asks to "write a runbook", "create a runbook for", "document how to operate", "write the ops guide for", "document the on-call procedure for", or "create operational documentation for". Produces a structured operational runbook for a service or process — capturing procedures, troubleshooting steps, and escalation paths so on-call engineers can act without needing the original author.
-disable-model-invocation: true
 argument-hint: "[service, process, or operation to document]"
 ---
 

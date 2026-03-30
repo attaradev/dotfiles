@@ -1,7 +1,6 @@
 ---
 name: changelog
 description: This skill should be used when the user asks to "update the changelog", "write the changelog", "generate changelog", "what changed since last release", "draft release notes", or "add changelog entry". Generates a structured CHANGELOG entry from commits since the last tag, following Keep a Changelog format.
-disable-model-invocation: true
 argument-hint: "[version number or release name — optional]"
 ---
 
@@ -43,6 +42,14 @@ Prepend the new entry to the CHANGELOG file.
 | `chore`, `ci`, `test`, `docs` | Omit (internal, not user-facing) |
 
 Omit internal chores entirely unless they affect users (e.g., a dependency upgrade that changes behavior).
+
+## Quality bar
+
+- Entries must be user-facing — omit internal chores, CI changes, and refactors with no visible effect
+- Use past tense and imperative phrasing ("Added X", "Fixed Y")
+- Each entry should be one line — no implementation details
+- Do not fabricate entries for commits with no user-visible change
+- Version bump must follow semver: `feat!`/`BREAKING CHANGE` → major, `feat` → minor, `fix`/`perf` → patch
 
 ## Additional resources
 

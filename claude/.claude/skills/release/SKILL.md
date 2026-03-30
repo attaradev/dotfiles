@@ -1,7 +1,6 @@
 ---
 name: release
 description: This skill should be used when the user asks to "cut a release", "tag this version", "draft release notes", "bump the version", "prepare a release", "create a GitHub release", or "release this". Handles end-to-end release preparation: version bump, CHANGELOG update, git tag, and GitHub release draft.
-disable-model-invocation: true
 argument-hint: "[version number or bump type: patch | minor | major]"
 ---
 

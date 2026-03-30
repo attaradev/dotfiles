@@ -1,7 +1,6 @@
 ---
 name: c4
 description: This skill should be used when the user asks to "draw the architecture", "C4 diagram for this", "system diagram", "container diagram", "component diagram", "architecture overview diagram", or "visualise this system". Generates C4 model diagrams (context, containers, components) in Mermaid with narrative for each level.
-disable-model-invocation: true
 argument-hint: "[system or component to diagram]"
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: threat-model
 description: This skill should be used when the user asks to "threat model this", "STRIDE analysis", "what can go wrong security-wise", "attack surface analysis", "security threat model", "what are the security risks here", or "threat modelling for this feature". Produces a STRIDE threat model with assets, trust boundaries, threats, mitigations, and residual risk.
-disable-model-invocation: true
 argument-hint: "[system, feature, or data flow to threat model]"
 ---
 

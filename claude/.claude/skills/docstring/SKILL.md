@@ -1,7 +1,6 @@
 ---
 name: docstring
 description: This skill should be used when the user asks to "add docstrings", "document this file", "add JSDoc", "add godoc comments", "write inline docs", "document these functions", or "add documentation comments". Generates inline documentation for undocumented functions and types in a file, matching the language's documentation convention and the project's existing doc style.
-disable-model-invocation: true
 argument-hint: "[file path or function name]"
 ---
 

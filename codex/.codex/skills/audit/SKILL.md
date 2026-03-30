@@ -22,6 +22,13 @@ Use this skill to assess security risk in code or diffs.
 - Include positive observations when a control is implemented well.
 - End with prioritized next steps.
 
+## Quality bar
+
+- All findings must be traceable to specific code; no theoretical risks without evidence.
+- Critical and High findings must include a concrete fix, not just a description of the problem.
+- Omit an entire severity section rather than writing "None found"; empty sections create noise.
+- Stay security-focused; do not conflate security findings with general code quality.
+
 ## Resource map
 
 - `references/security-checklist.md` -> security signals to check while auditing

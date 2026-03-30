@@ -1,7 +1,6 @@
 ---
 name: tech-blog
 description: This skill should be used when the user asks to "write a tech blog post", "draft a technical article", "write an engineering blog", "explain this to a technical audience", "write up what we built", "document this architecture decision for external consumption", or "write a post-launch writeup". Produces a structured, engaging technical blog post.
-disable-model-invocation: true
 argument-hint: "[the topic, feature, or decision to write about]"
 ---
 

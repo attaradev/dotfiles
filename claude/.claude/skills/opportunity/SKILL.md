@@ -1,7 +1,6 @@
 ---
 name: opportunity
 description: This skill should be used when the user asks to "assess this opportunity", "evaluate this problem space", "is this worth building", "size this market", "opportunity assessment", or "should we invest in this". Produces a structured opportunity assessment covering problem size, target users, current alternatives, and investment rationale.
-disable-model-invocation: true
 argument-hint: "[feature idea, problem area, or market opportunity to assess]"
 ---
 

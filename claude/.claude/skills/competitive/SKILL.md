@@ -1,7 +1,6 @@
 ---
 name: competitive
 description: This skill should be used when the user asks to "competitive analysis", "how does X compare", "who else solves this", "competitive teardown", "compare us to competitors", "market landscape", or "who are the competitors". Produces a structured competitive analysis covering the player map, feature matrix, positioning gaps, and differentiation angle.
-disable-model-invocation: true
 argument-hint: "[product area, feature, or market to analyse competitively]"
 ---
 

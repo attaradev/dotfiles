@@ -1,7 +1,6 @@
 ---
 name: api-design
 description: This skill should be used when the user asks to "design this API", "REST spec for this", "OpenAPI for this", "API contract", "design the endpoints for this", "gRPC service design", "GraphQL schema for this", or "API interface design". Produces an API contract covering endpoints, request/response shapes, auth, error codes, and versioning strategy.
-disable-model-invocation: true
 argument-hint: "[the resource, capability, or system the API should expose]"
 ---
 

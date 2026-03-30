@@ -1,7 +1,6 @@
 ---
 name: impl-plan
 description: This skill should be used when the user asks to "plan this", "build an execution plan", "how should I approach this", "design the implementation", "create a technical plan", "make a plan for", or "turn this into a concrete plan". Builds a staff-quality execution plan from an objective, covering approach trade-offs, phased milestones, and a verification strategy.
-disable-model-invocation: true
 argument-hint: "[goal or objective]"
 ---
 
@@ -63,6 +62,13 @@ Top 3–5 risks with a mitigation or contingency for each. Focus on risks not al
 ### Open questions
 
 Decisions that block progress or materially change the plan. Flag assumptions that need validation before work begins.
+
+## Quality bar
+
+- Recommended approach must be a direct recommendation, not "it depends"
+- Phase exit criteria must be specific and verifiable, not vague milestones
+- Risks must be ranked and each must have a concrete mitigation or contingency
+- Open questions must actually block progress — do not list things that do not need resolution before starting
 
 ## Additional resources
 

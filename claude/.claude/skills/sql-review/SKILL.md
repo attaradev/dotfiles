@@ -1,7 +1,6 @@
 ---
 name: sql-review
 description: This skill should be used when the user asks to "review this query", "optimise this SQL", "why is this query slow", "SQL review", "check this query for performance", "is this query safe", or "analyse this SQL". Reviews SQL for correctness, performance problems, missing indexes, N+1 patterns, and injection risks.
-disable-model-invocation: true
 argument-hint: "[the SQL query or ORM code to review, or a file path]"
 ---
 

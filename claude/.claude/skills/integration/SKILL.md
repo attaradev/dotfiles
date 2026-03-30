@@ -1,7 +1,6 @@
 ---
 name: integration
 description: This skill should be used when the user asks to "integration design for this", "how should these systems talk", "event-driven design", "async vs sync for this", "integration pattern", "message queue design", "webhook design", or "API integration architecture". Produces an integration design covering pattern selection, event schema, failure modes, idempotency, ordering, and operational concerns.
-disable-model-invocation: true
 argument-hint: "[the systems to integrate and the data or events to exchange]"
 ---
 

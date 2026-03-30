@@ -1,7 +1,6 @@
 ---
 name: retro
 description: This skill should be used when the user asks to "run a retro", "retrospective for this sprint", "4Ls for this", "starfish retro", "team retrospective", "facilitate a retro", "what went well what went wrong", or "sprint review". Produces a retrospective facilitation guide with format selection, structured prompts, and action item capture.
-disable-model-invocation: true
 argument-hint: "[sprint, project, quarter, or incident to retrospect on; optionally specify format: 4Ls | starfish | start-stop-continue | sailboat]"
 ---
 

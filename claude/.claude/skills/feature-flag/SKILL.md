@@ -1,7 +1,6 @@
 ---
 name: feature-flag
 description: This skill should be used when the user asks to "add a feature flag", "design a flag for this", "flag lifecycle", "clean up this flag", "feature toggle", "implement a feature gate", "rollout strategy with flags", or "remove this flag". Designs feature flag implementation, evaluation logic, rollout strategy, and cleanup plan.
-disable-model-invocation: true
 argument-hint: "[the feature to flag, or the flag to clean up]"
 ---
 

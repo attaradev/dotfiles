@@ -1,7 +1,6 @@
 ---
 name: design-doc
 description: This skill should be used when the user asks to "write a design doc", "write a tech spec", "draft a technical design", "design this feature", "write up the approach before we build", "create a design document for", or "spec this out". Produces a technical design document for a feature or system change — heavier than an ADR (one decision) and broader than an execution plan (task breakdown).
-disable-model-invocation: true
 argument-hint: "[feature or system to design]"
 ---
 

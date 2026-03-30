@@ -1,7 +1,6 @@
 ---
 name: onboarding
 description: This skill should be used when the user asks to "design customer onboarding", "improve our onboarding flow", "reduce time to value", "onboarding email sequence", "activation milestone", "new user experience", "first run experience", or "why aren't trial users converting". Designs a complete customer onboarding system covering in-product flows, email sequences, and activation milestones.
-disable-model-invocation: true
 argument-hint: "[your product, the activation milestone, and where onboarding currently breaks down]"
 ---
 

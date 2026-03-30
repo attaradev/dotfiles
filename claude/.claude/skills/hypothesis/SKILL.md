@@ -1,7 +1,6 @@
 ---
 name: hypothesis
 description: This skill should be used when the user asks to "write a hypothesis", "frame this as an experiment", "how do we validate this", "lean hypothesis for this", "experiment design", "build-measure-learn for this", or "what is our riskiest assumption". Produces a lean experiment hypothesis with the assumption, signal, test design, and minimum evidence required to proceed.
-disable-model-invocation: true
 argument-hint: "[the feature, idea, or belief you want to validate]"
 ---
 

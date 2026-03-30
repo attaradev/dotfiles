@@ -1,7 +1,6 @@
 ---
 name: metrics
 description: This skill should be used when the user asks to "define success metrics", "what KPIs should we track", "north star for this", "metrics for this feature", "how do we measure success", "OKR metrics", or "measurement plan". Defines a north star metric, input metrics, guardrail metrics, and a measurement plan for a feature or product area.
-disable-model-invocation: true
 argument-hint: "[feature, product area, or goal to define metrics for]"
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: release-notes
 description: This skill should be used when the user asks to "write release notes", "draft a changelog entry", "summarize what's in this release", "write user-facing release notes for this version", "what changed in this sprint", or "generate release notes from commits". Produces clear, user-focused release notes from git history, PRs, or a feature list.
-disable-model-invocation: true
 argument-hint: "[version number, date range, or list of features/PRs to cover]"
 ---
 

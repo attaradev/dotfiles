@@ -14,12 +14,14 @@ Use this skill to turn a staged diff into a clear Conventional Commit message an
 3. Follow the conventions in `references/conventions.md`.
 4. If nothing is staged, stop and report that instead of committing.
 
-## Quality rules
+## Quality bar
 
-- Keep the subject specific, imperative, and within 72 characters.
-- Prefer why-focused body text when the change is non-obvious.
-- Include a footer when the change needs issue or ticket references.
+- Subject lines must stay under 72 characters.
+- The commit type must match the actual nature of the change; do not default to `feat`.
+- Describe what changed and why, not just what the code does.
+- If the staged diff mixes unrelated concerns, flag it rather than forcing a single subject.
+- Never use `--no-verify` or `--amend` unless the user explicitly requested it.
 
-## Resources
+## Resource map
 
 - `references/conventions.md` documents the commit format, types, and examples.

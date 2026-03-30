@@ -1,7 +1,6 @@
 ---
 name: capacity
 description: This skill should be used when the user asks to "capacity plan for this", "how do we scale this", "sizing estimate", "can this handle the load", "what are the bottlenecks", "capacity analysis", "headroom analysis", or "when will we run out of capacity". Produces a capacity analysis covering current headroom, growth projections, bottlenecks, and scaling triggers.
-disable-model-invocation: true
 argument-hint: "[service, system, or infrastructure component to analyse]"
 ---
 

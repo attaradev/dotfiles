@@ -1,7 +1,6 @@
 ---
 name: slo
 description: This skill should be used when the user asks to "define SLOs", "error budget for this", "what SLAs should we set", "reliability targets", "SLI SLO SLA for this", "service level objectives", or "how reliable does this need to be". Defines SLIs, SLOs, SLAs, and error budget policy with alerting thresholds for a service or feature.
-disable-model-invocation: true
 argument-hint: "[service, API, or system to define reliability targets for]"
 ---
 

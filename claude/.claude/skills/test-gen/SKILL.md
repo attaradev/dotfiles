@@ -1,7 +1,6 @@
 ---
 name: test-gen
 description: This skill should be used when the user asks to "write tests for", "generate tests", "add tests to", "test this function", "cover this with tests", "add unit tests", "add integration tests", or "this needs tests". Generates tests for a file or function by reading the target, finding existing test patterns in the project, and producing tests that match the project's conventions.
-disable-model-invocation: true
 argument-hint: "[file path or function name to test]"
 ---
 
@@ -61,6 +60,13 @@ Before writing tests, state:
 Then write the test file. After writing:
 
 4. **Coverage summary** — what is now covered and what is explicitly not covered (and why)
+
+## Quality bar
+
+- Tests must match the project's existing patterns exactly — do not introduce a new framework or style
+- Each test must be independent and not rely on execution order
+- Assert observable behavior and outputs, not implementation details
+- Coverage summary must be honest about gaps — name what is not covered and why
 
 ## Additional resources
 

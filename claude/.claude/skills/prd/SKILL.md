@@ -1,7 +1,6 @@
 ---
 name: prd
 description: This skill should be used when the user asks to "write a PRD", "draft the requirements", "spec out this feature", "product requirements document", "write the spec", "feature brief", or "define the requirements for". Generates a complete Product Requirements Document covering problem, goals, user stories, scope, constraints, and success metrics.
-disable-model-invocation: true
 argument-hint: "[feature or product area to spec out]"
 ---
 

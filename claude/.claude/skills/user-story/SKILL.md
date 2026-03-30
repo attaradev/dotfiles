@@ -1,7 +1,6 @@
 ---
 name: user-story
 description: This skill should be used when the user asks to "write user stories", "acceptance criteria for this", "BDD scenarios", "Given When Then for this", "create stories for this feature", "story map this", or "break this into user stories". Generates user stories with acceptance criteria in Given/When/Then format, covering the happy path, error states, and edge cases.
-disable-model-invocation: true
 argument-hint: "[feature, epic, or workflow to break into user stories]"
 ---
 

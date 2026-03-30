@@ -1,7 +1,6 @@
 ---
 name: data-pipeline
 description: This skill should be used when the user asks to "design a data pipeline", "build an ETL", "ingest this data", "transform this dataset", "schedule this data job", "stream processing", "batch processing", "data flow design", or "pipeline orchestration". Designs robust, observable, and maintainable data pipelines.
-disable-model-invocation: true
 argument-hint: "[the pipeline to design: source, transform, destination, and trigger]"
 ---
 

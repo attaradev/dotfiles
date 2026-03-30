@@ -1,7 +1,6 @@
 ---
 name: refactor
 description: This skill should be used when the user asks to "refactor this", "clean this up", "extract this function", "rename this across the codebase", "consolidate this pattern", "dedup this", or "restructure this module". Scopes and executes a targeted refactor safely — read, find all call sites, plan, execute incrementally, verify correctness.
-disable-model-invocation: true
 argument-hint: "[what to refactor and the goal]"
 ---
 
@@ -64,6 +63,14 @@ Then execute. After completing:
 5. **Changes made** — summary of what was changed
 6. **Verification** — test results or manual verification steps performed
 7. **Residual risk** — anything not covered by the refactor or tests
+
+## Quality bar
+
+- All call sites must be found and updated before the refactor is complete
+- Behavior must be preserved — do not mix logic changes into a refactor
+- Verification must include running the test suite for affected modules
+- If test coverage is thin, flag it explicitly as residual risk rather than claiming correctness
+- If the plan touches more than 5 files or changes a public interface, confirm with the user before proceeding
 
 ## Additional resources
 
