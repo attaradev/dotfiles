@@ -3,26 +3,26 @@
 ## Template
 
 ```markdown
-## Problem
+## What
+
+[What was changed and the key decisions made. Explain *why* this approach over alternatives
+if the choice is non-obvious. Two to five sentences for a typical PR; more for large changes.]
+
+## Why
 
 [Why this change is needed. What breaks, fails, is missing, or is suboptimal without it.
 One to three sentences. Frame in terms of impact, not implementation.]
 
-## Solution
+## Risks
 
-[What was changed and the key decisions made. Explain *why* this approach over alternatives
-if the choice is non-obvious. Two to five sentences for a typical PR; more for large changes.]
+[What could go wrong, break, or need monitoring. Known limitations, edge cases not handled,
+deployment order, migration steps, or follow-up work. Omit only if genuinely risk-free.]
 
 ## Validation
 
 - [ ] [Specific test run or manual step that confirms the fix/feature works]
 - [ ] [Edge case verified]
 - [ ] [Regression checked — existing tests pass]
-
-## Notes
-
-[Optional. Anything a reviewer should know: follow-up work, known limitations, deployment
-order, migration steps, or context that doesn't fit above.]
 ```
 
 ---
@@ -45,17 +45,7 @@ Examples:
 
 ## Section guidance
 
-### Problem
-
-The most important section. A reviewer who understands the problem can evaluate the solution. One who doesn't cannot.
-
-**Good:** "The checkout flow did not validate coupon expiry before applying the discount, allowing expired coupons to be used indefinitely."
-
-**Bad:** "This PR adds coupon validation." (That's the solution, not the problem.)
-
-Include a link to the issue, bug report, or incident if one exists.
-
-### Solution
+### What
 
 Describe the approach, not a tour of the files changed. The diff shows the files — the description should explain the thinking.
 
@@ -65,9 +55,29 @@ Describe the approach, not a tour of the files changed. The diff shows the files
 
 Note design decisions and trade-offs for non-obvious choices.
 
+### Why
+
+The most important section. A reviewer who understands the problem can evaluate the solution. One who doesn't cannot.
+
+**Good:** "The checkout flow did not validate coupon expiry before applying the discount, allowing expired coupons to be used indefinitely."
+
+**Bad:** "This PR adds coupon validation." (That's the solution, not the problem.)
+
+Include a link to the issue, bug report, or incident if one exists.
+
+### Risks
+
+Surface anything that might concern a reviewer or require action before/after merge:
+- Known limitations or deferred edge cases ("OAuth provider rate limiting not yet handled — tracked in #456")
+- Deployment instructions ("Run migration before deploying: `make migrate`")
+- Breaking changes that callers need to know about
+- Areas of elevated risk ("The session invalidation logic in `auth/session.go` is the riskiest part")
+
+If there are genuinely no risks, write "None" — don't omit the section, as its absence is ambiguous.
+
 ### Validation
 
-Every item in this section should be something a reviewer can verify or reproduce. Vague entries erode trust.
+Every item should be something a reviewer can verify or reproduce. Vague entries erode trust.
 
 **Good:**
 - [ ] `go test ./billing/...` passes
@@ -78,23 +88,15 @@ Every item in this section should be something a reviewer can verify or reproduc
 - [ ] Tested
 - [ ] Looks good
 
-### Notes
-
-Use this section for:
-- Follow-up tasks or known limitations ("OAuth provider rate limiting not yet handled — tracked in #456")
-- Deployment instructions ("Run migration before deploying: `make migrate`")
-- Reviewer focus areas ("The session invalidation logic in `auth/session.go` is the riskiest part")
-- Breaking changes that callers need to know about
-
 ---
 
 ## Scope calibration
 
-| Change size | Title | Problem | Solution | Validation | Notes |
-|-------------|-------|---------|----------|------------|-------|
-| One-liner fix | Required | 1 sentence | 1 sentence | 1–2 items | Usually omit |
-| Small feature | Required | 2–3 sentences | 3–5 sentences | 3–5 items | If needed |
-| Large feature | Required | 1 paragraph | 2–3 paragraphs | Full checklist | Often needed |
+| Change size | Title | What | Why | Risks | Validation |
+|-------------|-------|------|-----|-------|------------|
+| One-liner fix | Required | 1 sentence | 1 sentence | None or 1 item | 1–2 items |
+| Small feature | Required | 3–5 sentences | 2–3 sentences | If any | 3–5 items |
+| Large feature | Required | 2–3 paragraphs | 1 paragraph | Required | Full checklist |
 | Breaking change | Required | Required | Required | Required | Required |
 
 Do not write a five-paragraph description for a two-line fix. Do not write two sentences for a week of work.

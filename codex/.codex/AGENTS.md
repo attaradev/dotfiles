@@ -78,7 +78,7 @@
 - Never revert unrelated local changes.
 - Do not amend commits unless explicitly requested.
 - Use Conventional Commits with concise, descriptive subjects (<= 72 chars; avoid `update`, `fixes`, `misc`, `changes`); add body/footer when needed.
-- PR descriptions should clearly cover: problem statement, solution summary, and validation evidence.
+- PR descriptions should clearly cover: what changed, why it was needed, risks, and validation evidence.
 - Do not include AI attribution signatures in commits or PRs.
 
 ## Environment and Precedence
