@@ -143,6 +143,7 @@ brew "stow"                         # Symlink farm manager for organizing dotfil
 cask "visual-studio-code"           # Powerful, extensible code editor
 cask "claude"                       # Claude Desktop app
 cask "codex"                        # OpenAI Codex CLI coding agent
+cask "coderabbit"                   # AI code review platform
 cask "antigravity" if optional_enabled?("ANTIGRAVITY")    # AI coding agent IDE
 cask "postman"                      # API development and testing platform
 cask "postgres-app"                 # PostgreSQL database (Postgres.app) - supports multiple versions
