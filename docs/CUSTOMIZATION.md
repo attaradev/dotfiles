@@ -110,21 +110,23 @@ Notable defaults:
 
 ## Claude and Codex Context
 
-Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow. Claude skills are generated into `claude/.claude/skills/` from canonical sources in `agent-skills/`, then merged into `~/.claude/skills/`.
+Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow. Claude skills are generated (not tracked in git) into `claude/.claude/skills/` from canonical sources in `agent-skills/`, and stow symlinks them to `~/.claude/skills/`.
 
-Codex CLI defaults are tracked at `codex/.codex/config.toml`, symlinked to `~/.codex/config.toml`. Behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in the config. Codex skills are generated into `codex/.codex/skills/` from the same canonical sources and merged into `~/.codex/skills/` alongside the built-in system skills.
+Codex CLI defaults are tracked at `codex/.codex/config.toml`, symlinked to `~/.codex/config.toml`. Behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in the config. Codex skills are generated (not tracked in git) into `codex/.codex/skills/` from the same canonical sources and symlinked to `~/.codex/skills/`.
 
-Edit agent skills in `agent-skills/<skill>/`: put shared instructions in `body.md`, metadata in `skill.toml`, Claude-only live context in `claude-live.md`, and shared resources in `references/` or `scripts/`. Regenerate runtime catalogs with:
+Skill generation runs automatically as part of `make stow` when the `claude` or `codex` packages are included. To regenerate skills manually after editing canonical sources in `agent-skills/`:
 
 ```bash
-make agent-skills
+make generate
 ```
 
-To refresh both after pulling changes:
+To regenerate skills and reapply stow symlinks for both Claude and Codex:
 
 ```bash
 make agents
 ```
+
+Edit agent skills in `agent-skills/<skill>/`: put shared instructions in `body.md`, metadata in `skill.toml`, Claude-only live context in `claude-live.md`, and shared resources in `references/` or `scripts/`.
 
 ## Obsidian Knowledge Vault
 
