@@ -5,24 +5,21 @@
 ```markdown
 ## What
 
-[What was changed and the key decisions made. Explain *why* this approach over alternatives
-if the choice is non-obvious. Two to five sentences for a typical PR; more for large changes.]
+[The approach and key decisions. One to three sentences. Skip anything the diff makes obvious.]
 
 ## Why
 
-[Why this change is needed. What breaks, fails, is missing, or is suboptimal without it.
-One to three sentences. Frame in terms of impact, not implementation.]
+[The problem or need this addresses. One to two sentences. State impact, not implementation.]
 
 ## Risks
 
-[What could go wrong, break, or need monitoring. Known limitations, edge cases not handled,
-deployment order, migration steps, or follow-up work. Omit only if genuinely risk-free.]
+[What could break or needs attention. Write "None" if genuinely risk-free.]
 
 ## Validation
 
-- [ ] [Specific test run or manual step that confirms the fix/feature works]
+- [ ] [Specific test or manual step that confirms the happy path works]
 - [ ] [Edge case verified]
-- [ ] [Regression checked — existing tests pass]
+- [ ] [Existing tests pass / no regressions]
 ```
 
 ---
@@ -92,14 +89,14 @@ Every item should be something a reviewer can verify or reproduce. Vague entries
 
 ## Scope calibration
 
-| Change size | Title | What | Why | Risks | Validation |
-|-------------|-------|------|-----|-------|------------|
-| One-liner fix | Required | 1 sentence | 1 sentence | None or 1 item | 1–2 items |
-| Small feature | Required | 3–5 sentences | 2–3 sentences | If any | 3–5 items |
-| Large feature | Required | 2–3 paragraphs | 1 paragraph | Required | Full checklist |
-| Breaking change | Required | Required | Required | Required | Required |
+| Change size | What | Why | Risks | Validation |
+|-------------|------|-----|-------|------------|
+| One-liner fix | 1 sentence | 1 sentence | None or 1 item | 1–2 items |
+| Small feature | 2–3 sentences | 1–2 sentences | If any | 2–3 items |
+| Large feature | 1 short paragraph | 2–3 sentences | Required | Full checklist |
+| Breaking change | Required | Required | Required | Required |
 
-Do not write a five-paragraph description for a two-line fix. Do not write two sentences for a week of work.
+Write to the size of the change. No filler — every sentence must carry information not already visible in the diff.
 
 ---
 

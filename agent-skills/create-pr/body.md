@@ -4,7 +4,7 @@ Read the full diff before writing anything. The diff is the authoritative source
 
 Follow the template in `references/pr-format.md`. Write the description to match the scope of the change — a one-commit fix needs less than a multi-day feature.
 
-If a Jira ticket was detected from the branch name, prepend `[PROJ-123]` to the PR title and include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit if no ticket was found.
+If a Jira ticket was detected from the branch name, append `[PROJ-123]` to the PR title (e.g. "fix null check in user loader [PROJ-123]") and include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit if no ticket was found.
 
 After generating the body, output a ready-to-run command:
 
@@ -23,12 +23,13 @@ If an open PR already exists on this branch, output a `gh pr edit` command inste
 
 ## Quality bar
 
+- Be concise and accurate — every sentence must carry information not visible in the diff
 - Title must be specific: "fix null check in user loader" not "fix bug"
 - Content must derive from the diff — never copy or paraphrase commit messages
-- What must cover the key decisions made, not just list files changed
-- Why must explain the impact or need, not just restate what was done
+- What covers key decisions, not a tour of files changed
+- Why explains the impact or need, not just what was done
 - Risks must be explicit — write "None" if there are none, never omit the section
-- Validation must name concrete steps, not say "tested locally"
+- Validation must name concrete steps including edge cases; use checkboxes
 - Do not include AI attribution or generic filler ("this PR aims to...")
 
 ## Additional resources
