@@ -1,0 +1,15 @@
+name = "capacity"
+title = "Capacity Plan"
+
+[claude]
+description = "This skill should be used when the user asks to \"capacity plan for this\", \"how do we scale this\", \"sizing estimate\", \"can this handle the load\", \"what are the bottlenecks\", \"capacity analysis\", \"headroom analysis\", or \"when will we run out of capacity\". Produces a capacity analysis covering current headroom, growth projections, bottlenecks, and scaling triggers."
+argument_hint = "[service, system, or infrastructure component to analyse]"
+argument_label = "System"
+
+[codex]
+description = "Produce a capacity analysis for a service or infrastructure component when the user asks about load, bottlenecks, headroom, scaling, or when capacity will run out."
+
+[codex.interface]
+display_name = "Capacity"
+short_description = "Analyse headroom and scaling limits"
+default_prompt = "Use $capacity to assess headroom and scaling limits for this service."

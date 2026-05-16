@@ -1,0 +1,15 @@
+name = "audit"
+title = "Security Review"
+
+[claude]
+description = "This skill should be used when the user asks to \"sec audit\", \"security audit this\", \"check this for vulnerabilities\", \"audit the auth code\", \"check for security issues\", \"threat model this\", or \"do a security pass on\". Performs a focused security audit with security as the primary lens — not one of eight review categories, but the entire focus."
+argument_hint = "[file, PR number, or scope to audit]"
+argument_label = "Target"
+
+[codex]
+description = "Perform a focused security audit of code, diffs, or PRs when the user asks for a security review, vulnerability check, threat model, or auth/security pass."
+
+[codex.interface]
+display_name = "Audit"
+short_description = "Review code for security issues"
+default_prompt = "Use $audit to perform a security review of this change."

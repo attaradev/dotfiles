@@ -1,0 +1,15 @@
+name = "prompt-eng"
+title = "Prompt Engineering"
+
+[claude]
+description = "This skill should be used when the user asks to \"improve this prompt\", \"prompt engineering for this\", \"make this LLM prompt better\", \"optimise this system prompt\", \"this prompt is not working\", \"help me write a prompt for\", or \"prompt design\". Systematically analyses and rewrites prompts for clarity, reliability, and output quality."
+argument_hint = "[the prompt to improve, or a description of what the prompt should do]"
+argument_label = "Prompt to improve"
+
+[codex]
+description = "Analyse and rewrite prompts for clarity, reliability, and output quality when the user asks to improve a prompt or design one for an LLM task."
+
+[codex.interface]
+display_name = "Prompt Engineering"
+short_description = "Rewrite prompts for better output"
+default_prompt = "Use $prompt-eng to improve this prompt."

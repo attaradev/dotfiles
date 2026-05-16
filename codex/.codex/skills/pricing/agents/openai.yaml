@@ -1,4 +1,0 @@
-interface:
-  display_name: "Pricing"
-  short_description: "Design SaaS pricing tiers and model"
-  default_prompt: "Use $pricing to design a pricing strategy for this product."

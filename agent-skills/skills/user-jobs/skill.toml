@@ -1,0 +1,15 @@
+name = "user-jobs"
+title = "Jobs-to-be-Done Analysis"
+
+[claude]
+description = "This skill should be used when the user asks to \"jobs to be done\", \"what job is this solving\", \"frame this as JTBD\", \"what are users really trying to do\", \"JTBD analysis\", or \"what is the underlying job\". Reframes a feature or problem through the Jobs-to-be-Done lens to expose the real motivation driving user behaviour."
+argument_hint = "[feature, product area, or user behaviour to analyse]"
+argument_label = "Topic"
+
+[codex]
+description = "Reframe a feature or product area through the Jobs-to-be-Done lens. Use when the user asks what job the product solves or what users are really trying to accomplish."
+
+[codex.interface]
+display_name = "Jobs To Be Done"
+short_description = "Reframe features as real user jobs"
+default_prompt = "Use $user-jobs to analyze the real job behind this request."

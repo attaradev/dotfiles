@@ -1,0 +1,15 @@
+name = "db-schema"
+title = "Database Schema Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"design the schema\", \"ERD for this\", \"data model design\", \"what tables do we need\", \"database schema for this feature\", \"design the data model\", or \"how should we structure this in the database\". Produces a schema design with entity model, normalization rationale, index strategy, and migration notes."
+argument_hint = "[the domain, feature, or entities to model]"
+argument_label = "Domain"
+
+[codex]
+description = "Design relational database schemas and migrations. Use when the user asks for a schema, ERD, data model, table layout, or migration notes."
+
+[codex.interface]
+display_name = "Database Schema"
+short_description = "Design schemas and migrations"
+default_prompt = "Use $db-schema to design the database model for this feature."

@@ -1,0 +1,15 @@
+name = "churn"
+title = "Churn Analysis and Reduction"
+
+[claude]
+description = "This skill should be used when the user asks to \"analyse our churn\", \"why are customers leaving\", \"reduce churn\", \"churn investigation\", \"at-risk customers\", \"cancellation flow\", \"win-back strategy\", \"involuntary churn\", \"revenue churn vs logo churn\", or \"cohort churn analysis\". Diagnoses churn drivers and produces a concrete reduction plan."
+argument_hint = "[your product, current churn rate, and what you know about why customers cancel]"
+argument_label = "Context"
+
+[codex]
+description = "Diagnose churn drivers and propose churn reduction actions. Use when the user asks to analyze churn, reduce churn, investigate cancellations, or design win-back or dunning playbooks."
+
+[codex.interface]
+display_name = "Churn Analysis"
+short_description = "Diagnose churn and retention"
+default_prompt = "Use $churn to analyze why customers are leaving and how to reduce it."

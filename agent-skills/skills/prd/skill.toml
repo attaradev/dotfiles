@@ -1,0 +1,15 @@
+name = "prd"
+title = "Product Requirements Document"
+
+[claude]
+description = "This skill should be used when the user asks to \"write a PRD\", \"draft the requirements\", \"spec out this feature\", \"product requirements document\", \"write the spec\", \"feature brief\", or \"define the requirements for\". Generates a complete Product Requirements Document covering problem, goals, user stories, scope, constraints, and success metrics."
+argument_hint = "[feature or product area to spec out]"
+argument_label = "Feature"
+
+[codex]
+description = "Draft a Product Requirements Document for a feature or product area. Use when the user asks for a PRD, feature brief, requirements spec, or scope document."
+
+[codex.interface]
+display_name = "PRD"
+short_description = "Draft a feature requirements document"
+default_prompt = "Use $prd to write a PRD for this feature."

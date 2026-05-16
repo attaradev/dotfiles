@@ -1,0 +1,15 @@
+name = "impl-plan"
+title = "Execution Plan"
+
+[claude]
+description = "This skill should be used when the user asks to \"plan this\", \"build an execution plan\", \"how should I approach this\", \"design the implementation\", \"create a technical plan\", \"make a plan for\", or \"turn this into a concrete plan\". Builds a staff-quality execution plan from an objective, covering approach trade-offs, phased milestones, and a verification strategy."
+argument_hint = "[goal or objective]"
+argument_label = "Goal"
+
+[codex]
+description = "Build a staff-quality execution plan for a technical objective, including trade-offs, phased milestones, validation, risks, and open questions. Use when the user asks to plan an implementation, design an approach, or turn a goal into a concrete technical plan."
+
+[codex.interface]
+display_name = "Implementation Plan"
+short_description = "Turn a goal into a phased execution plan"
+default_prompt = "Use $impl-plan to turn this objective into an implementation plan."

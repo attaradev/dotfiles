@@ -1,0 +1,15 @@
+name = "migration"
+title = "System Migration Plan"
+
+[claude]
+description = "This skill should be used when the user asks to \"migration plan for this\", \"how do we move off X\", \"re-platform this\", \"strangler fig for this\", \"system migration plan\", \"move from X to Y\", \"data migration plan\", or \"how do we cut over\". Produces a structured system migration plan covering current state, target state, phases, risks, validation gates, and rollback."
+argument_hint = "[the system or data to migrate: from X to Y, or describe the current state and target]"
+argument_label = "Migration"
+
+[codex]
+description = "Plan system or data migrations from one state to another. Use when the user asks for a migration plan, cutover plan, strangler fig approach, or rollback strategy."
+
+[codex.interface]
+display_name = "Migration Plan"
+short_description = "Plan safe system migrations"
+default_prompt = "Use $migration to plan the migration from the current system to the target."

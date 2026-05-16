@@ -1,0 +1,15 @@
+name = "api-design"
+title = "API Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"design this API\", \"REST spec for this\", \"OpenAPI for this\", \"API contract\", \"design the endpoints for this\", \"gRPC service design\", \"GraphQL schema for this\", or \"API interface design\". Produces an API contract covering endpoints, request/response shapes, auth, error codes, and versioning strategy."
+argument_hint = "[the resource, capability, or system the API should expose]"
+argument_label = "API scope"
+
+[codex]
+description = "Design APIs and contracts for REST, GraphQL, or gRPC. Use when the user asks for an API design, OpenAPI spec, REST endpoints, service contract, or interface design."
+
+[codex.interface]
+display_name = "API Design"
+short_description = "Design API contracts and endpoints"
+default_prompt = "Use $api-design to design the API contract for this feature."

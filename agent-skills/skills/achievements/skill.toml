@@ -1,0 +1,15 @@
+name = "achievements"
+title = "Achievements"
+
+[claude]
+description = "This skill should be used when the user asks to \"pull my achievements\", \"what did I ship\", \"summarize my work\", \"write my brag doc\", \"what have I done this quarter\", \"prepare my performance review input\", \"what did I accomplish\", \"list my contributions\", or \"what did I build this month\". Collects commits, merged PRs, reviews, and closed issues for a period, then synthesizes them into a structured achievement summary."
+argument_hint = "[period] [for technical|non-technical|exec|both — optional audience]"
+argument_label = "Period"
+
+[codex]
+description = "Collect commits, merged PRs, reviews, and closed issues for a time period, then synthesize them into a structured achievement summary. Use when the user asks to pull achievements, summarize shipped work, write a brag doc, prepare performance review input, or list contributions over a period."
+
+[codex.interface]
+display_name = "Achievements"
+short_description = "Summarize shipped work into achievements"
+default_prompt = "Use $achievements to turn my work from the past quarter into a brag doc."

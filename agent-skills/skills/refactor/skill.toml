@@ -1,0 +1,15 @@
+name = "refactor"
+title = "Refactor"
+
+[claude]
+description = "This skill should be used when the user asks to \"refactor this\", \"clean this up\", \"extract this function\", \"rename this across the codebase\", \"consolidate this pattern\", \"dedup this\", or \"restructure this module\". Scopes and executes a targeted refactor safely — read, find all call sites, plan, execute incrementally, verify correctness."
+argument_hint = "[what to refactor and the goal]"
+argument_label = "Scope"
+
+[codex]
+description = "Safely restructure code, extract helpers, deduplicate patterns, or rename across a codebase when the user asks for a refactor or cleanup."
+
+[codex.interface]
+display_name = "Refactor"
+short_description = "Restructure code safely"
+default_prompt = "Use $refactor to safely restructure this code."

@@ -1,0 +1,15 @@
+name = "status-update"
+title = "Stakeholder Update"
+
+[claude]
+description = "This skill should be used when the user asks to \"write a status update\", \"draft a stakeholder update\", \"prepare a weekly update\", \"write a leadership summary\", \"draft a cross-team update\", \"write an engineering update for\", or \"summarize progress for\". Drafts engineering updates that separate confirmed facts from inferences and give the right level of detail for the audience."
+argument_hint = "[audience and timeframe — e.g. 'engineering leadership, past week']"
+argument_label = "Audience and timeframe"
+
+[codex]
+description = "Draft executive and engineering status updates from repository evidence. Use when the user asks for a weekly update, leadership summary, stakeholder update, or progress report."
+
+[codex.interface]
+display_name = "Status Update"
+short_description = "Draft concise progress updates"
+default_prompt = "Use $status-update to draft a weekly progress update."

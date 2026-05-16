@@ -1,0 +1,15 @@
+name = "onboarding"
+title = "Customer Onboarding Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"design customer onboarding\", \"improve our onboarding flow\", \"reduce time to value\", \"onboarding email sequence\", \"activation milestone\", \"new user experience\", \"first run experience\", or \"why aren't trial users converting\". Designs a complete customer onboarding system covering in-product flows, email sequences, and activation milestones."
+argument_hint = "[your product, the activation milestone, and where onboarding currently breaks down]"
+argument_label = "Product / context"
+
+[codex]
+description = "Design a customer onboarding system. Use when the user asks to improve onboarding, reduce time to value, define an activation milestone, or design trial conversion flows."
+
+[codex.interface]
+display_name = "Onboarding"
+short_description = "Design activation and onboarding flows"
+default_prompt = "Use $onboarding to design a customer onboarding flow."

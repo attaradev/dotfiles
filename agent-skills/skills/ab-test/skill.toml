@@ -1,0 +1,15 @@
+name = "ab-test"
+title = "A/B Test Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"design an A/B test\", \"experiment design for this\", \"how do we test this\", \"split test\", \"randomised controlled trial for this\", \"experiment brief\", or \"what sample size do we need\". Produces a complete experiment brief with hypothesis, variants, sample size, duration, primary metrics, and rollout decision criteria."
+argument_hint = "[the change or hypothesis you want to test]"
+argument_label = "Change to test"
+
+[codex]
+description = "Design rigorous A/B tests for changes or hypotheses. Use when the user asks to design an experiment, split test, RCT, sample size, MDE, rollout decision, or experiment brief."
+
+[codex.interface]
+display_name = "A/B Test Design"
+short_description = "Design rigorous experiments"
+default_prompt = "Use $ab-test to design an experiment for this product change."

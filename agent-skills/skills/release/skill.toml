@@ -1,0 +1,15 @@
+name = "release"
+title = "Release Preparation"
+
+[claude]
+description = "This skill should be used when the user asks to \"cut a release\", \"tag this version\", \"draft release notes\", \"bump the version\", \"prepare a release\", \"create a GitHub release\", or \"release this\". Handles end-to-end release preparation: version bump, CHANGELOG update, git tag, and GitHub release draft."
+argument_hint = "[version number or bump type: patch | minor | major]"
+argument_label = "Version / bump"
+
+[codex]
+description = "Handle end-to-end release preparation when the user asks to cut a release, bump a version, tag a version, or draft a GitHub release."
+
+[codex.interface]
+display_name = "Release"
+short_description = "Prepare a versioned release"
+default_prompt = "Use $release to prepare the next release."

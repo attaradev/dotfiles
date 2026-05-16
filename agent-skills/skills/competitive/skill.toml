@@ -1,0 +1,15 @@
+name = "competitive"
+title = "Competitive Analysis"
+
+[claude]
+description = "This skill should be used when the user asks to \"competitive analysis\", \"how does X compare\", \"who else solves this\", \"competitive teardown\", \"compare us to competitors\", \"market landscape\", or \"who are the competitors\". Produces a structured competitive analysis covering the player map, feature matrix, positioning gaps, and differentiation angle."
+argument_hint = "[product area, feature, or market to analyse competitively]"
+argument_label = "Topic"
+
+[codex]
+description = "Produce structured competitive analysis for a product area or market. Use when the user asks to compare competitors, map a market, analyze alternatives, or define differentiation."
+
+[codex.interface]
+display_name = "Competitive Analysis"
+short_description = "Map competitors and differentiation"
+default_prompt = "Use $competitive to analyze this market and identify defensible differentiation."

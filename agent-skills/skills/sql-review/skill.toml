@@ -1,0 +1,15 @@
+name = "sql-review"
+title = "SQL Review"
+
+[claude]
+description = "This skill should be used when the user asks to \"review this query\", \"optimise this SQL\", \"why is this query slow\", \"SQL review\", \"check this query for performance\", \"is this query safe\", or \"analyse this SQL\". Reviews SQL for correctness, performance problems, missing indexes, N+1 patterns, and injection risks."
+argument_hint = "[the SQL query or ORM code to review, or a file path]"
+argument_label = "Query"
+
+[codex]
+description = "Review SQL or ORM-generated queries for correctness, performance, safety, and maintainability. Use when the user asks to review SQL, optimise a query, or check for injection and index issues."
+
+[codex.interface]
+display_name = "SQL Review"
+short_description = "Review SQL for correctness and speed"
+default_prompt = "Use $sql-review to review this SQL query."

@@ -1,0 +1,15 @@
+name = "data-pipeline"
+title = "Data Pipeline Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"design a data pipeline\", \"build an ETL\", \"ingest this data\", \"transform this dataset\", \"schedule this data job\", \"stream processing\", \"batch processing\", \"data flow design\", or \"pipeline orchestration\". Designs robust, observable, and maintainable data pipelines."
+argument_hint = "[the pipeline to design: source, transform, destination, and trigger]"
+argument_label = "Pipeline"
+
+[codex]
+description = "Design data pipelines for batch, micro-batch, or streaming workloads. Use when the user asks for ETL, ELT, ingestion, orchestration, or pipeline design."
+
+[codex.interface]
+display_name = "Data Pipeline"
+short_description = "Design reliable data pipelines"
+default_prompt = "Use $data-pipeline to design the pipeline for this data flow."

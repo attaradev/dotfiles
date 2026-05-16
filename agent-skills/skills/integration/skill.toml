@@ -1,0 +1,15 @@
+name = "integration"
+title = "Integration Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"integration design for this\", \"how should these systems talk\", \"event-driven design\", \"async vs sync for this\", \"integration pattern\", \"message queue design\", \"webhook design\", or \"API integration architecture\". Produces an integration design covering pattern selection, event schema, failure modes, idempotency, ordering, and operational concerns."
+argument_hint = "[the systems to integrate and the data or events to exchange]"
+argument_label = "Integration"
+
+[codex]
+description = "Design service integrations, event flows, and message contracts. Use when the user asks about integration architecture, event-driven design, webhooks, queues, or sync vs async trade-offs."
+
+[codex.interface]
+display_name = "Integration Design"
+short_description = "Design safe system integrations"
+default_prompt = "Use $integration to design the integration between these systems."

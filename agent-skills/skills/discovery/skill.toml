@@ -1,0 +1,15 @@
+name = "discovery"
+title = "Discovery Interview Guide"
+
+[claude]
+description = "This skill should be used when the user asks to \"write discovery questions\", \"create an interview guide\", \"user research questions for this\", \"what should I ask users\", \"prepare for user interviews\", \"discovery interview script\", or \"research guide\". Generates a structured user research interview guide with screener, core questions, and follow-up probes calibrated to the research goal."
+argument_hint = "[the assumption or hypothesis you are trying to test, or the problem area to explore]"
+argument_label = "Research goal"
+
+[codex]
+description = "Draft user research interview guides and discovery questions. Use when the user asks for interview scripts, user research questions, discovery guides, or how to interview users."
+
+[codex.interface]
+display_name = "Discovery Guide"
+short_description = "Write user research interview guides"
+default_prompt = "Use $discovery to write an interview guide for this research question."

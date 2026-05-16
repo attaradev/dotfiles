@@ -1,0 +1,15 @@
+name = "pricing"
+title = "SaaS Pricing Strategy"
+
+[claude]
+description = "This skill should be used when the user asks to \"design a pricing model\", \"should we use freemium\", \"how should we price this\", \"pricing strategy\", \"pricing tiers\", \"free trial vs freemium\", \"usage-based pricing\", \"pricing page design\", or \"how do we test pricing\". Designs a SaaS pricing model covering model selection, tier architecture, and go-to-market approach."
+argument_hint = "[your product, target customer, and current pricing situation or question]"
+argument_label = "Product / context"
+
+[codex]
+description = "Design a SaaS pricing model, tier structure, and price testing plan. Use when the user asks about pricing strategy, tiers, freemium, trials, or packaging."
+
+[codex.interface]
+display_name = "Pricing"
+short_description = "Design SaaS pricing tiers and model"
+default_prompt = "Use $pricing to design a pricing strategy for this product."

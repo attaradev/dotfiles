@@ -1,0 +1,15 @@
+name = "release-notes"
+title = "Release Notes"
+
+[claude]
+description = "This skill should be used when the user asks to \"write release notes\", \"draft a changelog entry\", \"summarize what's in this release\", \"write user-facing release notes for this version\", \"what changed in this sprint\", or \"generate release notes from commits\". Produces clear, user-focused release notes from git history, PRs, or a feature list."
+argument_hint = "[version number, date range, or list of features/PRs to cover]"
+argument_label = "Release"
+
+[codex]
+description = "Write user-focused release notes from commits, PRs, or a feature list when the user asks what changed in a release or sprint."
+
+[codex.interface]
+display_name = "Release Notes"
+short_description = "Write user-facing release notes"
+default_prompt = "Use $release-notes to write release notes for this version."

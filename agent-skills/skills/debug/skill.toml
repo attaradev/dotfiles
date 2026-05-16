@@ -1,0 +1,15 @@
+name = "debug"
+title = "Debug"
+
+[claude]
+description = "This skill should be used when the user asks to \"debug this\", \"why is this failing\", \"figure out this error\", \"this test is failing\", \"investigate this crash\", \"what's causing this\", \"help me debug\", or pastes a stack trace or error message. Systematically diagnoses root cause from an error, stack trace, or failing test — reproduce, isolate, identify, fix."
+argument_hint = "[error message, stack trace, or failing test name]"
+argument_label = "Problem"
+
+[codex]
+description = "Diagnose failing code, tests, or crashes when the user pastes an error, stack trace, or failing test name and wants the root cause found and fixed."
+
+[codex.interface]
+display_name = "Debug"
+short_description = "Find the root cause of failures"
+default_prompt = "Use $debug to investigate this failing test or error."

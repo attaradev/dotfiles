@@ -1,4 +1,0 @@
-interface:
-  display_name: "Retrospective"
-  short_description: "Facilitate structured retros"
-  default_prompt: "Use $retro to prepare a retrospective for this sprint."

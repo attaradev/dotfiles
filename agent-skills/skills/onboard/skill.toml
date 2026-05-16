@@ -1,0 +1,15 @@
+name = "onboard"
+title = "Codebase Onboarding"
+
+[claude]
+description = "This skill should be used when the user asks to \"explain this codebase\", \"onboard me to this repo\", \"give me an overview of this project\", \"what is this repo\", \"how is this project structured\", \"help me understand this codebase\", or \"where do I start in this repo\". Produces a structured codebase orientation covering purpose, structure, key entry points, and how to get started."
+argument_hint = "[optional focus area — e.g. 'auth system' or 'data pipeline']"
+argument_label = "Focus"
+
+[codex]
+description = "Orient a new contributor in a codebase when the user asks what the repo does, how it is structured, where to start, or how to get it running."
+
+[codex.interface]
+display_name = "Onboard"
+short_description = "Orient contributors to a codebase"
+default_prompt = "Use $onboard to explain this repository and how to get started."

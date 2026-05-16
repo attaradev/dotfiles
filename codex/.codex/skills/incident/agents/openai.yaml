@@ -1,4 +1,0 @@
-interface:
-  display_name: "Incident Report"
-  short_description: "Draft a postmortem"
-  default_prompt: "Use $incident to draft a blameless incident report."

@@ -1,0 +1,15 @@
+name = "slo"
+title = "SLI / SLO / SLA Definition"
+
+[claude]
+description = "This skill should be used when the user asks to \"define SLOs\", \"error budget for this\", \"what SLAs should we set\", \"reliability targets\", \"SLI SLO SLA for this\", \"service level objectives\", or \"how reliable does this need to be\". Defines SLIs, SLOs, SLAs, and error budget policy with alerting thresholds for a service or feature."
+argument_hint = "[service, API, or system to define reliability targets for]"
+argument_label = "Service"
+
+[codex]
+description = "Define SLIs, SLOs, SLAs, and error-budget policy for a service. Use when the user asks about reliability targets, SLOs, SLAs, or alert thresholds."
+
+[codex.interface]
+display_name = "SLO Definition"
+short_description = "Define reliability targets and alerts"
+default_prompt = "Use $slo to define the reliability targets for this service."

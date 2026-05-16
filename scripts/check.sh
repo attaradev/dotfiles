@@ -121,6 +121,31 @@ fi
 echo "✓ Docs reference valid make targets"
 
 # ---------------------------------------------------------------------------
+# Agent skill source validation
+# ---------------------------------------------------------------------------
+
+run_agent_skill_generator_check() {
+  local generator="./scripts/generate-agent-skills.py"
+
+  if command -v python3 >/dev/null 2>&1; then
+    python3 "$generator" --check
+  elif command -v mise >/dev/null 2>&1; then
+    mise x python -- python3 "$generator" --check
+  else
+    echo "❌ python3 not found. Run 'make mise' before validating agent skills."
+    exit 1
+  fi
+}
+
+run_agent_skill_generator_check
+
+while IFS= read -r script_file; do
+  bash -n "$script_file"
+done < <(find agent-skills/skills -path '*/scripts/*.sh' -type f | sort)
+
+echo "✓ Agent skill source checks passed"
+
+# ---------------------------------------------------------------------------
 # No absolute host-specific paths in tracked files
 # ---------------------------------------------------------------------------
 

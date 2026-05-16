@@ -1,0 +1,15 @@
+name = "git-commit"
+title = "Commit"
+
+[claude]
+description = "This skill should be used when the user asks to \"git commit\", \"make a commit\", \"write a commit message\", \"stage and commit\", \"commit my changes\", \"create a git commit\", or \"commit this with a proper message\". Generates a Conventional Commit message from the staged diff and creates the commit."
+argument_hint = "[optional hint about scope or intent]"
+argument_label = "Hint"
+
+[codex]
+description = "Write a Conventional Commit message from the staged diff and create the commit. Use when the user asks to commit staged changes or write a commit message."
+
+[codex.interface]
+display_name = "Git Commit"
+short_description = "Write a commit message"
+default_prompt = "Use $git-commit to write a Conventional Commit message."

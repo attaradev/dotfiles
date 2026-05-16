@@ -1,0 +1,15 @@
+name = "design-doc"
+title = "Design Document"
+
+[claude]
+description = "This skill should be used when the user asks to \"write a design doc\", \"write a tech spec\", \"draft a technical design\", \"design this feature\", \"write up the approach before we build\", \"create a design document for\", or \"spec this out\". Produces a technical design document for a feature or system change — heavier than an ADR (one decision) and broader than an execution plan (task breakdown)."
+argument_hint = "[feature or system to design]"
+argument_label = "Feature"
+
+[codex]
+description = "Draft a technical design document for a feature or system change. Use when the user asks for a design doc, tech spec, or detailed approach for a multi-part implementation."
+
+[codex.interface]
+display_name = "Design Doc"
+short_description = "Draft a technical design"
+default_prompt = "Use $design-doc to draft a technical design for this feature."

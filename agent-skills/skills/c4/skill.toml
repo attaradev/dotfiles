@@ -1,0 +1,15 @@
+name = "c4"
+title = "C4 Architecture Diagram"
+
+[claude]
+description = "This skill should be used when the user asks to \"draw the architecture\", \"C4 diagram for this\", \"system diagram\", \"container diagram\", \"component diagram\", \"architecture overview diagram\", or \"visualise this system\". Generates C4 model diagrams (context, containers, components) in Mermaid with narrative for each level."
+argument_hint = "[system or component to diagram]"
+argument_label = "System"
+
+[codex]
+description = "Generate C4 architecture diagrams in Mermaid. Use when the user asks for a system diagram, architecture overview, container diagram, component diagram, or C4 model."
+
+[codex.interface]
+display_name = "C4 Architecture"
+short_description = "Draw C4 diagrams with narrative"
+default_prompt = "Use $c4 to draw the architecture for this system."

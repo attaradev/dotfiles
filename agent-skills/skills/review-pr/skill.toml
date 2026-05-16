@@ -1,0 +1,15 @@
+name = "review-pr"
+title = "GitHub PR Review"
+
+[claude]
+description = "This skill should be used when the user asks to \"review PR\", \"review pull request\", \"review this PR\", \"look at PR #N\", \"gh pr review\", or provides a GitHub PR number or URL. Performs a deep, file-by-file pull request review via the GitHub CLI — producing a per-file breakdown, severity-ranked findings, exhaustive inline comments, and an approval recommendation."
+argument_hint = "[PR-number or owner/repo#PR]"
+argument_label = "Review target"
+
+[codex]
+description = "Perform a deep, file-by-file GitHub pull request review. Produces a per-file breakdown, severity-ranked findings, exhaustive inline comments, and an approval recommendation. Use when the user provides a PR number or URL and wants a thorough review."
+
+[codex.interface]
+display_name = "Review PR"
+short_description = "Review a GitHub pull request"
+default_prompt = "Use $review-pr to review PR #123 with blockers and concerns."

@@ -241,8 +241,13 @@ if [[ -L "$TEST_HOME/.mise.toml" ]]; then
 fi
 require_file "$TEST_HOME/.claude/CLAUDE.md"
 require_file "$TEST_HOME/.claude/settings.json"
+require_file "$TEST_HOME/.claude/skills/code-review/SKILL.md"
+require_file "$TEST_HOME/.claude/skills/status-update/scripts/collect-activity.sh"
 require_file "$TEST_HOME/.codex/config.toml"
 require_file "$TEST_HOME/.codex/AGENTS.md"
+require_file "$TEST_HOME/.codex/skills/code-review/SKILL.md"
+require_file "$TEST_HOME/.codex/skills/code-review/agents/openai.yaml"
+require_file "$TEST_HOME/.codex/skills/status-update/scripts/collect-activity.sh"
 require_file "$TEST_HOME/.knowledge/hub.md"
 require_file "$TEST_HOME/.knowledge/tasks.md"
 require_file "$TEST_HOME/.knowledge/career/achievement-log.md"

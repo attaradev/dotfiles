@@ -1,0 +1,15 @@
+name = "icp"
+title = "Ideal Customer Profile"
+
+[claude]
+description = "This skill should be used when the user asks to \"define our ICP\", \"who is our ideal customer\", \"narrow our target market\", \"ICP definition\", \"ideal customer profile\", \"who should we sell to\", \"customer segmentation\", or \"who gets the most value from our product\". Defines a tight Ideal Customer Profile with firmographic, behavioral, and situational attributes."
+argument_hint = "[your product, what it does, and what you know about your best customers so far]"
+argument_label = "Product / context"
+
+[codex]
+description = "Define a tight Ideal Customer Profile with firmographic, behavioral, and situational attributes. Use when the user asks who the ideal customer is or how to narrow the target market."
+
+[codex.interface]
+display_name = "Ideal Customer Profile"
+short_description = "Define your best-fit customers"
+default_prompt = "Use $icp to define the ideal customer profile for this product."

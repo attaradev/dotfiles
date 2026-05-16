@@ -1,0 +1,15 @@
+name = "positioning"
+title = "Product Positioning"
+
+[claude]
+description = "This skill should be used when the user asks to \"define our positioning\", \"write our value proposition\", \"how should we message this\", \"positioning statement\", \"what makes us different\", \"website messaging\", \"how do we talk about our product\", or \"product positioning vs competitors\". Produces a complete positioning framework covering differentiation, value proposition, and messaging hierarchy."
+argument_hint = "[your product, target customer, and key competitors or alternatives]"
+argument_label = "Product / context"
+
+[codex]
+description = "Develop product positioning, value proposition, messaging hierarchy, and proof points. Use when the user asks how to position a product or what makes it different."
+
+[codex.interface]
+display_name = "Product Positioning"
+short_description = "Define your market position"
+default_prompt = "Use $positioning to define the positioning for this product."

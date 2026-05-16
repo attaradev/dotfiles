@@ -1,0 +1,15 @@
+name = "code-review"
+title = "Code Review"
+
+[claude]
+description = "This skill should be used when the user asks to \"review my changes\", \"code review\", \"review this diff\", \"review before merge\", \"check my implementation\", \"review this branch\", or \"look at my PR locally\". Performs senior/staff-level review of local working-tree or branch changes with severity-ranked findings and concrete remediation steps."
+argument_hint = "[branch, file, or scope — defaults to working tree vs HEAD]"
+argument_label = "Review scope"
+
+[codex]
+description = "Perform senior-level review of local working-tree or branch changes with severity-ranked findings and concrete remediation steps. Use when the user asks to review changes, review a diff, check an implementation before merge, or look at a local PR or branch."
+
+[codex.interface]
+display_name = "Code Review"
+short_description = "Review local diffs with senior-level rigor"
+default_prompt = "Use $code-review to review my current branch changes before merge."

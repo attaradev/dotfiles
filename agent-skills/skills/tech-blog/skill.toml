@@ -1,0 +1,15 @@
+name = "tech-blog"
+title = "Technical Blog Post"
+
+[claude]
+description = "This skill should be used when the user asks to \"write a tech blog post\", \"draft a technical article\", \"write an engineering blog\", \"explain this to a technical audience\", \"write up what we built\", \"document this architecture decision for external consumption\", or \"write a post-launch writeup\". Produces a structured, engaging technical blog post."
+argument_hint = "[the topic, feature, or decision to write about]"
+argument_label = "Topic"
+
+[codex]
+description = "Write a technical blog post about what was built, why it matters, and what was learned. Use when the user asks for a tech blog, engineering article, or external write-up."
+
+[codex.interface]
+display_name = "Tech Blog"
+short_description = "Draft a technical blog post"
+default_prompt = "Use $tech-blog to write a post about this technical work."

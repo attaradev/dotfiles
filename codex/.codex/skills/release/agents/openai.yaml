@@ -1,4 +1,0 @@
-interface:
-  display_name: "Release"
-  short_description: "Prepare a versioned release"
-  default_prompt: "Use $release to prepare the next release."

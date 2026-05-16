@@ -1,0 +1,15 @@
+name = "create-pr"
+title = "PR Description"
+
+[claude]
+description = "This skill should be used when the user asks to \"create a PR\", \"open a pull request\", \"write a PR description\", \"draft the PR body\", \"write up this PR\", \"describe these changes for review\", or \"write the PR\". Generates a structured pull request body from the branch diff and commits, then offers a ready-to-run gh pr create command."
+argument_hint = "[optional: target base branch, defaults to main/master]"
+argument_label = "Base branch"
+
+[codex]
+description = "Draft a pull request title and body from the branch diff and commits. Use when the user asks to create a PR, write a PR description, or prepare review-ready pull request text."
+
+[codex.interface]
+display_name = "Create PR"
+short_description = "Write a PR body"
+default_prompt = "Use $create-pr to draft a pull request description from this branch."

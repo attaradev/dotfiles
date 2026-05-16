@@ -1,4 +1,0 @@
-interface:
-  display_name: "Status Update"
-  short_description: "Draft concise progress updates"
-  default_prompt: "Use $status-update to draft a weekly progress update."

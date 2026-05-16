@@ -1,0 +1,15 @@
+name = "prioritize"
+title = "Feature Prioritization"
+
+[claude]
+description = "This skill should be used when the user asks to \"prioritize these features\", \"RICE score this\", \"rank the backlog\", \"MoSCoW this\", \"help me decide what to build next\", \"prioritization framework\", or \"stack rank these\". Applies a scoring framework (RICE, MoSCoW, or ICE) to a list of features or initiatives and surfaces the ranking with rationale."
+argument_hint = "[list of features or initiatives to prioritize, or a description of the backlog]"
+argument_label = "Items to prioritize"
+
+[codex]
+description = "Rank features or initiatives using a prioritization framework. Use when the user asks to prioritize a backlog, score options, or decide what to build next."
+
+[codex.interface]
+display_name = "Prioritize"
+short_description = "Rank backlog items with rationale"
+default_prompt = "Use $prioritize to rank these features and explain the trade-offs."

@@ -1,0 +1,15 @@
+name = "explain-code"
+title = "Explain Code"
+
+[claude]
+description = "This skill should be used when the user asks to \"explain this code\", \"how does this work\", \"walk me through this\", \"explain this file\", \"I don't understand this\", \"how does X work in this codebase\", or needs onboarding to an unfamiliar code path or architecture. Explains code with plain-language analogies, ASCII diagrams, and step-by-step flow breakdowns."
+argument_hint = "[file, function, or module to explain]"
+argument_label = "Target"
+
+[codex]
+description = "Explain unfamiliar code paths or architecture with plain-language analogies, ASCII diagrams, and step-by-step flow breakdowns. Use when the user asks to explain a file, function, module, or how part of the codebase works."
+
+[codex.interface]
+display_name = "Explain Code"
+short_description = "Explain code paths with diagrams and flow"
+default_prompt = "Use $explain-code to walk me through this module end to end."

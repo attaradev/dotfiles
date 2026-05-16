@@ -1,0 +1,15 @@
+name = "metrics"
+title = "Metrics & Measurement Plan"
+
+[claude]
+description = "This skill should be used when the user asks to \"define success metrics\", \"what KPIs should we track\", \"north star for this\", \"metrics for this feature\", \"how do we measure success\", \"OKR metrics\", or \"measurement plan\". Defines a north star metric, input metrics, guardrail metrics, and a measurement plan for a feature or product area."
+argument_hint = "[feature, product area, or goal to define metrics for]"
+argument_label = "Topic"
+
+[codex]
+description = "Define a measurement plan for a feature or product area. Use when the user asks for success metrics, KPIs, a north star metric, guardrails, or a measurement plan."
+
+[codex.interface]
+display_name = "Metrics"
+short_description = "Define a north star and guardrails"
+default_prompt = "Use $metrics to define success metrics for this product area."

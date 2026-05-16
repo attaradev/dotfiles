@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Individual tool setup. Usage: tools.sh [stow|mise|gnupg|vscode] [args...]
+# Individual tool setup. Usage: tools.sh [stow|agent-skills|mise|gnupg|vscode] [args...]
 
 set -euo pipefail
 
@@ -14,6 +14,24 @@ shift || true
 # ===========================================================================
 # stow helpers
 # ===========================================================================
+
+cmd_agent_skills() {
+  local generator="$DOTFILES_DIR/scripts/generate-agent-skills.py"
+
+  if [[ ! -f "$generator" ]]; then
+    echo "❌ Agent skill generator not found: $generator"
+    exit 1
+  fi
+
+  if command -v python3 &>/dev/null; then
+    python3 "$generator"
+  elif command -v mise &>/dev/null; then
+    mise x python -- python3 "$generator"
+  else
+    echo "❌ python3 not found. Run 'make mise' or install Python before generating agent skills."
+    exit 1
+  fi
+}
 
 _stow_path_contains_symlink() {
   local path=$1
@@ -236,6 +254,10 @@ cmd_stow() {
     echo "ℹ️  Targeted stow run for packages: ${packages[*]}"
   else
     packages=("${default_packages[@]}"); full_run=1
+  fi
+
+  if printf '%s\n' "${packages[@]}" | grep -Eq '^(claude|codex)$'; then
+    cmd_agent_skills
   fi
 
   local has_gpg=0 has_ssh=0
@@ -511,11 +533,12 @@ cmd_vscode() {
 
 case "$COMMAND" in
   stow)   cmd_stow  "$@" ;;
+  agent-skills) cmd_agent_skills "$@" ;;
   mise)   cmd_mise  ;;
   gnupg)  cmd_gnupg ;;
   vscode) cmd_vscode ;;
   *)
-    echo "Usage: $(basename "$0") [stow|mise|gnupg|vscode] [args...]" >&2
+    echo "Usage: $(basename "$0") [stow|agent-skills|mise|gnupg|vscode] [args...]" >&2
     exit 1
     ;;
 esac

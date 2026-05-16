@@ -1,0 +1,15 @@
+name = "docstring"
+title = "Docstring Generation"
+
+[claude]
+description = "This skill should be used when the user asks to \"add docstrings\", \"document this file\", \"add JSDoc\", \"add godoc comments\", \"write inline docs\", \"document these functions\", or \"add documentation comments\". Generates inline documentation for undocumented functions and types in a file, matching the language's documentation convention and the project's existing doc style."
+argument_hint = "[file path or function name]"
+argument_label = "Target"
+
+[codex]
+description = "Add or improve inline documentation comments for exported functions, methods, types, or constants when the user asks for docstrings, inline docs, JSDoc, godoc, or documentation comments."
+
+[codex.interface]
+display_name = "Docstring"
+short_description = "Add meaningful documentation comments"
+default_prompt = "Use $docstring to document the exported symbols in this file."

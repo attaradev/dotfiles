@@ -1,0 +1,15 @@
+name = "adr"
+title = "Architecture Decision Record"
+
+[claude]
+description = "This skill should be used when the user asks to \"write an ADR\", \"document this decision\", \"create an architecture decision record\", \"record this design decision\", \"capture why we chose\", or \"write up the decision to\". Drafts a structured Architecture Decision Record from a description of the decision and its context."
+argument_hint = "[decision description or title]"
+argument_label = "Decision"
+
+[codex]
+description = "Draft an architecture decision record from a concrete decision and its context. Use when the user asks to write an ADR, document a decision, or capture why a design choice was made."
+
+[codex.interface]
+display_name = "Architecture Decision Record"
+short_description = "Write a decision record"
+default_prompt = "Use $adr to write an ADR for this decision."

@@ -1,0 +1,15 @@
+name = "k8s-review"
+title = "Kubernetes Manifest Review"
+
+[claude]
+description = "This skill should be used when the user asks to \"review this Kubernetes manifest\", \"check my k8s config\", \"is this Deployment safe\", \"review these Helm values\", \"audit this k8s yaml\", \"k8s best practices\", \"review my pod spec\", or \"harden this k8s resource\". Reviews Kubernetes manifests for correctness, security, reliability, and operational readiness."
+argument_hint = "[path to manifest(s) or paste the YAML to review]"
+argument_label = "Manifest(s)"
+
+[codex]
+description = "Review Kubernetes manifests and Helm values for correctness, security, reliability, and operational readiness. Use when the user asks to review Kubernetes YAML, Helm, or pod specs."
+
+[codex.interface]
+display_name = "Kubernetes Review"
+short_description = "Review Kubernetes manifests safely"
+default_prompt = "Use $k8s-review to review these Kubernetes manifests."
