@@ -141,7 +141,7 @@ run_agent_skill_generator_check
 
 while IFS= read -r script_file; do
   bash -n "$script_file"
-done < <(find agent-skills/skills -path '*/scripts/*.sh' -type f | sort)
+done < <(find agent-skills -path '*/scripts/*.sh' -type f | sort)
 
 echo "✓ Agent skill source checks passed"
 

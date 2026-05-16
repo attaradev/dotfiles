@@ -112,7 +112,7 @@ Run `make help` when you need the full target catalog. Practical workflows inclu
 make install        # Full setup
 make update         # Update Homebrew and mise-managed packages
 make stow           # Apply dotfile symlinks with GNU Stow
-make agent-skills   # Generate Claude/Codex skills from agent-skills/skills
+make agent-skills   # Generate Claude/Codex skills from agent-skills
 make obsidian       # Ensure the Knowledge vault and plugins are configured
 make check          # Run lint + local quality checks
 ```

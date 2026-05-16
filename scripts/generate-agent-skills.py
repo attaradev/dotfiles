@@ -21,7 +21,7 @@ except ModuleNotFoundError:  # macOS system Python can be older than 3.11.
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SOURCE = ROOT / "agent-skills" / "skills"
+DEFAULT_SOURCE = ROOT / "agent-skills"
 DEFAULT_CLAUDE_OUT = ROOT / "claude" / ".claude" / "skills"
 DEFAULT_CODEX_OUT = ROOT / "codex" / ".codex" / "skills"
 RESOURCE_DIRS = {"references", "scripts", "assets"}
