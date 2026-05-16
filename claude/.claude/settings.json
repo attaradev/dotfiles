@@ -1,9 +1,9 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
-    "additionalDirectories": [
-      "~/.dotfiles",
-      "~/.claude/skills"
-    ],
     "allow": [
       "Write(~/.dotfiles/)",
       "Edit(~/.dotfiles/)",
@@ -26,16 +26,24 @@
       "Bash(go *)",
       "Bash(ruby *)",
       "Bash(docker *)",
-      "Bash(bash \"$HOME/.claude/skills/:*)"
+      "Bash(bash \"$HOME/.claude/skills/:*)",
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(pwd)",
+      "Bash(date *)",
+      "Bash(awk *)",
+      "Bash(sort *)"
+    ],
+    "additionalDirectories": [
+      "~/.dotfiles",
+      "~/.claude/skills"
     ]
   },
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "modern-go-guidelines@goland-claude-marketplace": true
-  },
-  "model": "sonnet",
-  "attribution": {
-    "commit": "",
-    "pr": ""
   }
 }

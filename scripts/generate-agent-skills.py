@@ -9,6 +9,7 @@ import re
 import shutil
 import sys
 import tempfile
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -64,6 +65,24 @@ def require_string(data: dict[str, Any], key: str, context: str) -> str:
     return value.strip()
 
 
+def _resolve_toml_table(data: dict[str, Any], header: str) -> dict[str, Any]:
+    current: dict[str, Any] = data
+    for part in header.split("."):
+        current = current.setdefault(part, {})
+    return current
+
+
+def _parse_toml_assignment(raw_line: str, current: dict[str, Any]) -> None:
+    if "=" not in raw_line:
+        fail(f"invalid TOML line: {raw_line}")
+    key, _, value = raw_line.partition("=")
+    key = key.strip()
+    try:
+        current[key] = json.loads(value.strip())
+    except json.JSONDecodeError as exc:
+        fail(f"invalid TOML string for `{key}`: {exc}")
+
+
 def loads_toml(text: str) -> dict[str, Any]:
     if tomllib is not None:
         return tomllib.loads(text)
@@ -75,51 +94,42 @@ def loads_toml(text: str) -> dict[str, Any]:
         if not line or line.startswith("#"):
             continue
         if line.startswith("[") and line.endswith("]"):
-            current = data
-            for part in line[1:-1].split("."):
-                current = current.setdefault(part, {})
-                if not isinstance(current, dict):
-                    fail(f"invalid TOML table path: {line}")
+            current = _resolve_toml_table(data, line[1:-1])
             continue
-        if "=" not in line:
-            fail(f"invalid TOML line: {raw_line}")
-        key, value = line.split("=", 1)
-        key = key.strip()
-        try:
-            current[key] = json.loads(value.strip())
-        except json.JSONDecodeError as exc:
-            fail(f"invalid TOML string for `{key}`: {exc}")
+        _parse_toml_assignment(raw_line, current)
     return data
 
 
-def load_skill(skill_dir: Path) -> Skill:
-    metadata_path = skill_dir / "skill.toml"
-    body_path = skill_dir / "body.md"
-    if not metadata_path.exists():
-        fail(f"{skill_dir}: missing skill.toml")
-    if not body_path.exists():
-        fail(f"{skill_dir}: missing body.md")
-
-    metadata = loads_toml(metadata_path.read_text(encoding="utf-8"))
+def _parse_metadata(
+    metadata_path: Path, skill_dir: Path
+) -> tuple[str, str, dict[str, Any], dict[str, Any], dict[str, Any]]:
+    try:
+        metadata = loads_toml(metadata_path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise ValueError(f"{skill_dir}: missing skill.toml")
     name = require_string(metadata, "name", str(metadata_path))
     title = require_string(metadata, "title", str(metadata_path))
     if not SKILL_NAME_RE.fullmatch(name):
         fail(f"{metadata_path}: invalid skill name `{name}`")
     if skill_dir.name != name:
         fail(f"{metadata_path}: directory name `{skill_dir.name}` must match skill name `{name}`")
-
     claude = metadata.get("claude")
     codex = metadata.get("codex")
     if not isinstance(claude, dict):
         fail(f"{metadata_path}: missing [claude] table")
     if not isinstance(codex, dict):
         fail(f"{metadata_path}: missing [codex] table")
-
     interface = codex.get("interface")
     if not isinstance(interface, dict):
         fail(f"{metadata_path}: missing [codex.interface] table")
+    return name, title, claude, codex, interface
 
-    body = body_path.read_text(encoding="utf-8").strip()
+
+def _read_body(body_path: Path) -> str:
+    try:
+        body = body_path.read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        raise ValueError(f"{body_path.parent}: missing body.md")
     if not body:
         fail(f"{body_path}: body must not be empty")
     for pattern in CLAUDE_ONLY_PATTERNS:
@@ -127,6 +137,14 @@ def load_skill(skill_dir: Path) -> Skill:
             fail(f"{body_path}: shared body contains Claude-only pattern `{pattern}`")
     if CLAUDE_SHELL_INTERPOLATION_RE.search(body):
         fail(f"{body_path}: shared body contains Claude shell interpolation")
+    return body
+
+
+def load_skill(skill_dir: Path) -> Skill:
+    metadata_path = skill_dir / "skill.toml"
+    body_path = skill_dir / "body.md"
+    name, title, claude, codex, interface = _parse_metadata(metadata_path, skill_dir)
+    body = _read_body(body_path)
 
     live_path = skill_dir / "claude-live.md"
     claude_live = live_path.read_text(encoding="utf-8").strip() if live_path.exists() else ""
@@ -138,7 +156,7 @@ def load_skill(skill_dir: Path) -> Skill:
         source_dir=skill_dir,
         claude_description=require_string(claude, "description", str(metadata_path)),
         claude_argument_hint=require_string(claude, "argument_hint", str(metadata_path)),
-        claude_argument_label=str(claude.get("argument_label", "")).strip(),
+        claude_argument_label=(claude.get("argument_label") or "").strip(),
         claude_live=claude_live,
         codex_description=require_string(codex, "description", str(metadata_path)),
         openai_display_name=require_string(interface, "display_name", str(metadata_path)),
@@ -155,16 +173,15 @@ def load_skills(source_dir: Path) -> list[Skill]:
     if not skills:
         fail(f"No canonical skills found in {source_dir}")
 
-    names = [skill.name for skill in skills]
-    duplicates = sorted({name for name in names if names.count(name) > 1})
+    counts = Counter(skill.name for skill in skills)
+    duplicates = sorted(name for name, n in counts.items() if n > 1)
     if duplicates:
         fail(f"Duplicate skill names: {', '.join(duplicates)}")
     return skills
 
 
 def reset_output_dir(output_dir: Path) -> None:
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
+    shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
 

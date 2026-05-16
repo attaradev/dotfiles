@@ -1,4 +1,4 @@
-# Codex User Instructions
+# AI Agent Instructions
 
 ## Workflow Orchestration
 
@@ -84,6 +84,5 @@
 ## Environment and Precedence
 
 - Primary environment is macOS with `zsh`; prefer `rg` / `rg --files` for search.
-- Treat this file as user-level Codex behavior defaults.
-- If repo-local guidance conflicts, follow repository-local rules for the active repo.
+- Treat these as user-level behavior defaults; repo-local rules win on conflict.
 - Keep secrets in untracked local files; never commit credentials or private keys.
