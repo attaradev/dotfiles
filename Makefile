@@ -9,7 +9,7 @@
 #   make help       # Show all available commands
 
 .DEFAULT_GOAL := help
-.PHONY: help install setup update upgrade brew brew-check mise stow agent-skills agents obsidian obsidian-lock obsidian-clean vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
+.PHONY: help install setup update upgrade brew brew-check mise stow agent-skills generate agents obsidian obsidian-lock obsidian-clean vscode gnupg clean doctor status list dump cleanup backup backup-list backup-clean test smoke validate uninstall-stow lint-shell lint-docs check
 
 BUNDLE_ENV_FILE ?= $(HOME)/.config/dotfiles/brew-optional.env
 MARKDOWNLINT ?= markdownlint
@@ -89,6 +89,9 @@ stow:
 agent-skills:
 	@echo "🧠 Generating Claude/Codex skills..."
 	@bash ./scripts/tools.sh agent-skills
+
+## generate: Alias for agent-skills
+generate: agent-skills
 
 ## agents: Refresh Claude/Codex configs
 agents:
