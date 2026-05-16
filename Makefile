@@ -55,6 +55,7 @@ install:
 setup:
 	@echo "🔁 Re-applying idempotent setup tasks..."
 	@$(MAKE) --no-print-directory mise
+	@$(MAKE) --no-print-directory agent-skills
 	@$(MAKE) --no-print-directory stow
 	@$(MAKE) --no-print-directory obsidian
 	@$(MAKE) --no-print-directory gnupg
@@ -96,6 +97,7 @@ generate: agent-skills
 ## agents: Refresh Claude/Codex configs
 agents:
 	@echo "🤖 Refreshing Claude/Codex configs..."
+	@$(MAKE) --no-print-directory agent-skills
 	@bash ./scripts/tools.sh stow claude codex
 
 ## obsidian: Setup Knowledge vault and install/update Obsidian plugins

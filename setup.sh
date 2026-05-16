@@ -431,10 +431,22 @@ configure_git_identity() {
 configure_git_identity
 
 # ============================================
-# Step 5: Setup dotfiles with GNU Stow
+# Step 5: Generate Agent Skills
 # ============================================
 
-print_header "Step 5: Setting up Dotfiles with GNU Stow"
+print_header "Step 5: Generating Agent Skills"
+
+if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
+  bash "$DOTFILES_DIR/scripts/tools.sh" agent-skills
+else
+  print_warning "scripts/tools.sh not found, skipping agent skill generation..."
+fi
+
+# ============================================
+# Step 6: Setup dotfiles with GNU Stow
+# ============================================
+
+print_header "Step 6: Setting up Dotfiles with GNU Stow"
 
 if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
   bash "$DOTFILES_DIR/scripts/tools.sh" stow
@@ -512,7 +524,7 @@ verify_obsidian_setup() {
   fi
 }
 
-print_header "Step 6: Setting up Obsidian Vault and Plugins"
+print_header "Step 7: Setting up Obsidian Vault and Plugins"
 
 if [[ -f "$DOTFILES_DIR/scripts/obsidian.sh" ]]; then
   if [[ "$DOTFILES_SETUP_OBSIDIAN_PLUGINS" == "1" ]]; then
@@ -529,10 +541,10 @@ fi
 verify_obsidian_setup
 
 # ============================================
-# Step 7: Setup GnuPG (GPG)
+# Step 8: Setup GnuPG (GPG)
 # ============================================
 
-print_header "Step 7: Setting up GnuPG"
+print_header "Step 8: Setting up GnuPG"
 
 if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
   bash "$DOTFILES_DIR/scripts/tools.sh" gnupg
@@ -541,10 +553,10 @@ else
 fi
 
 # ============================================
-# Step 8: Setup VSCode extensions
+# Step 9: Setup VSCode extensions
 # ============================================
 
-print_header "Step 8: Setting up VSCode Extensions"
+print_header "Step 9: Setting up VSCode Extensions"
 
 # Allow skipping via env; otherwise auto-run if VSCode CLI is available
 if [[ "${SKIP_VSCODE_EXTENSIONS:-0}" == "1" ]]; then

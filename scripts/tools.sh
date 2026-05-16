@@ -256,10 +256,6 @@ cmd_stow() {
     packages=("${default_packages[@]}"); full_run=1
   fi
 
-  if printf '%s\n' "${packages[@]}" | grep -Eq '^(claude|codex)$'; then
-    cmd_agent_skills
-  fi
-
   local has_gpg=0 has_ssh=0
   printf '%s\n' "${packages[@]}" | grep -Fxq "gpg" && [[ -d "$DOTFILES_DIR/gpg" ]] && has_gpg=1
   printf '%s\n' "${packages[@]}" | grep -Fxq "ssh" && [[ -d "$DOTFILES_DIR/ssh" ]] && has_ssh=1

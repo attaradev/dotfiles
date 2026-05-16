@@ -44,10 +44,11 @@ make install
 2. `brew bundle install`
 3. Runtime and tooling setup via `mise` (bootstraps `~/.mise.toml` from template when missing)
 4. Git identity setup (`~/.gitconfig.local`)
-5. Dotfile symlinks via GNU Stow (agent skills for Claude and Codex are generated automatically during this step)
-6. Obsidian vault scaffold and community plugins with SHA-256 verification
-7. GPG agent configuration with `pinentry-mac`
-8. VSCode extensions (if `code` CLI is present)
+5. Agent skill generation for Claude and Codex
+6. Dotfile symlinks via GNU Stow
+7. Obsidian vault scaffold and community plugins with SHA-256 verification
+8. GPG agent configuration with `pinentry-mac`
+9. VSCode extensions (if `code` CLI is present)
 
 After pulling later dotfile changes, run `make setup` to re-apply idempotent setup tasks without running package upgrades.
 
