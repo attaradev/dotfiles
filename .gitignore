@@ -69,6 +69,8 @@ Brewfile.lock.json
 .gitconfig.local
 
 # Generated agent skill catalogs. Edit agent-skills/skills/ instead.
+claude/.claude/skills/**
+!claude/.claude/skills/
 codex/.codex/skills/**
 !codex/.codex/skills/
 
