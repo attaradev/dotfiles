@@ -136,13 +136,7 @@ update:
 	@bash ./scripts/brew.sh upgrade
 	@echo ""
 	@echo "⚡ Upgrading mise-managed tools..."
-	@mise upgrade --exclude npm
-	@if mise current npm >/dev/null 2>&1; then \
-		echo "📦 Upgrading npm via npm backend..."; \
-		mise upgrade npm:npm; \
-	else \
-		echo "ℹ️  npm is not managed by mise in current config; skipping npm backend upgrade."; \
-	fi
+	@mise upgrade
 	@echo ""
 	@$(MAKE) --no-print-directory agents
 	@echo "✅ Update complete!"
