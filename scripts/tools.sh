@@ -164,6 +164,10 @@ _mise_ensure_local_config() {
   return 1
 }
 
+_mise_is_online() {
+  curl -s --max-time 3 --head https://mise.jdx.dev >/dev/null 2>&1
+}
+
 _mise_sync_global_tracks() {
   local config_path="$1"
   if [[ ! -f "$config_path" ]]; then return 0; fi
@@ -361,19 +365,23 @@ cmd_mise() {
   _mise_ensure_local_config "$local_config" "$tracked_template" || true
 
   if [[ -f "$local_config" ]]; then
-    _mise_sync_global_tracks "$local_config"
-    (
-      cd "$HOME"
-      local libyaml_prefix openssl_prefix ruby_opts_extra=""
-      libyaml_prefix="$(brew --prefix libyaml 2>/dev/null || true)"
-      openssl_prefix="$(brew --prefix openssl@3 2>/dev/null || true)"
-      [[ -n "$libyaml_prefix" ]] && ruby_opts_extra+=" --with-libyaml-dir=${libyaml_prefix}"
-      [[ -n "$openssl_prefix" ]] && ruby_opts_extra+=" --with-openssl-dir=${openssl_prefix}"
-      export RUBY_CONFIGURE_OPTS="${RUBY_CONFIGURE_OPTS:-}${ruby_opts_extra}"
-      mise install 2>&1 || true
-      mise reshim || true
-    )
-    echo "✓ tools installed"
+    if _mise_is_online; then
+      _mise_sync_global_tracks "$local_config"
+      (
+        cd "$HOME"
+        local libyaml_prefix openssl_prefix ruby_opts_extra=""
+        libyaml_prefix="$(brew --prefix libyaml 2>/dev/null || true)"
+        openssl_prefix="$(brew --prefix openssl@3 2>/dev/null || true)"
+        [[ -n "$libyaml_prefix" ]] && ruby_opts_extra+=" --with-libyaml-dir=${libyaml_prefix}"
+        [[ -n "$openssl_prefix" ]] && ruby_opts_extra+=" --with-openssl-dir=${openssl_prefix}"
+        export RUBY_CONFIGURE_OPTS="${RUBY_CONFIGURE_OPTS:-}${ruby_opts_extra}"
+        mise install 2>&1 || true
+        mise reshim || true
+      )
+      echo "✓ tools installed"
+    else
+      echo "⚠️  Offline — skipping mise tool sync and install. Run 'make mise' when connected."
+    fi
   else
     echo "⚠️  ~/.mise.toml not found; skipping runtime install."
   fi
