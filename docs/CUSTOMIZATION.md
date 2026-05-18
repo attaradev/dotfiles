@@ -11,6 +11,8 @@ Use local override files for secrets and machine-specific settings:
 - `~/.npmrc.local`
 - `~/.ssh/config.local`
 - `~/.ssh/config.local.d/*.conf`
+- `~/.claude/settings.local.json`
+- `~/.codex/config.toml` (local-only — bootstrapped from template, never symlinked)
 
 These overrides are optional: they load when present and are skipped when missing.
 
@@ -50,7 +52,7 @@ Examples:
 
 - Keep Node.js on a single major line, e.g. `node = "<major>"`.
 - Keep Python on a major/minor line, e.g. `python = "<major.minor>"`.
-- Keep Go, Ruby, pnpm, npm, and uv pinned to their chosen patch/minor lines via `<major.minor>` strings.
+- Keep Go, Ruby, pnpm, and uv pinned to their chosen patch/minor lines via `<major.minor>` strings.
 - Add new runtimes such as Java or Rust by declaring their tracks (e.g. `java = "<major>"`, `rust = "<major.minor>"`).
 
 See [RUNTIMES.md](RUNTIMES.md) for the tracked defaults that ship with the repo.
@@ -110,9 +112,9 @@ Notable defaults:
 
 ## Claude and Codex Context
 
-Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow. Claude skills are generated (not tracked in git) into `claude/.claude/skills/` from canonical sources in `agent-skills/`, and stow symlinks them to `~/.claude/skills/`.
+Global Claude Code context and settings are tracked at `claude/.claude/CLAUDE.md` and `claude/.claude/settings.json`, then symlinked to `~/.claude/` by stow. Machine-specific Claude settings (extra permissions, MCP tool allowlists, etc.) belong in `~/.claude/settings.local.json`, which is gitignored and merged by Claude at runtime. Claude skills are generated (not tracked in git) into `claude/.claude/skills/` from canonical sources in `agent-skills/`, and stow symlinks them to `~/.claude/skills/`.
 
-Codex CLI defaults are tracked at `codex/.codex/config.toml`, symlinked to `~/.codex/config.toml`. Behavior instructions are tracked at `codex/.codex/AGENTS.md`, symlinked to `~/.codex/AGENTS.md`, and referenced by `instructions_file` in the config. Codex skills are generated (not tracked in git) into `codex/.codex/skills/` from the same canonical sources and symlinked to `~/.codex/skills/`.
+Codex behavior instructions are tracked at `codex/.codex/AGENTS.md` and symlinked to `~/.codex/AGENTS.md`. The base config template lives at `codex/.codex/config.toml` in the repo but is **not** symlinked — on first setup `make stow` copies it to a local-only `~/.codex/config.toml` and leaves it alone on subsequent runs. This keeps machine-specific Codex state (project trust entries, local plugin config) out of git. To update the base template for new machines, edit `codex/.codex/config.toml` and commit; existing machines keep their local file unchanged. Codex skills are generated (not tracked in git) into `codex/.codex/skills/` from the same canonical sources and symlinked to `~/.codex/skills/`.
 
 Skill generation runs automatically as part of `make stow` when the `claude` or `codex` packages are included. To regenerate skills manually after editing canonical sources in `agent-skills/`:
 

@@ -14,7 +14,7 @@ Personal macOS development environment focused on reproducible installs, securit
 - Default shell: `zsh`
 - System package manager: Homebrew
 - Runtime manager: `mise`
-- Language package managers: `npm`, `pnpm`, `uv` (managed via `mise`)
+- Language package managers: `pnpm`, `uv` (managed via `mise`)
 
 ## 5-Minute Setup
 
@@ -43,7 +43,9 @@ If Homebrew is missing, `setup.sh` installs it automatically via the official in
 
 Keep shareable defaults in this repo. Put machine-specific or secret customizations
 in local override files such as `~/.gitconfig.local`, `~/.zshrc.local`,
-`~/.npmrc.local`, and `~/.ssh/config.local`.
+`~/.npmrc.local`, `~/.ssh/config.local`, and `~/.claude/settings.local.json`.
+`~/.codex/config.toml` is also local-only (bootstrapped from a template; never
+symlinked) so machine-specific Codex project trust and plugin entries stay private.
 
 ### 3. Verify setup
 
@@ -90,13 +92,13 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 ## What This Configures
 
 - **Homebrew** — packages and casks from `Brewfile`
-- **Language runtimes** — Node.js, Python, Go, Ruby, npm, pnpm, uv via `mise`, sourced from `~/.mise.toml`
+- **Language runtimes** — Node.js, Python, Go, Ruby, pnpm, uv via `mise`, sourced from `~/.mise.toml`
 - **Dotfiles** — symlinks managed by GNU Stow for the packages listed in `scripts/stow-packages.txt`
 - **Obsidian** — knowledge vault scaffold, pinned community plugins with SHA-256 verification, and `~/Knowledge` alias
 - **GPG** — `gpg-agent.conf` and `gpg.conf` with `pinentry-mac`, non-destructive (preserves existing local values)
 - **VSCode** — extensions installed when the `code` CLI is present (skippable)
 - **Claude Code** — global context and settings at `~/.claude/CLAUDE.md`, `~/.claude/settings.json`, with generated skills under `~/.claude/skills`
-- **Codex CLI** — defaults at `~/.codex/config.toml`, instructions at `~/.codex/AGENTS.md`, with generated skills under `~/.codex/skills`
+- **Codex CLI** — base config bootstrapped from `codex/.codex/config.toml` template into a local-only `~/.codex/config.toml`; instructions symlinked from `codex/.codex/AGENTS.md`; generated skills under `~/.codex/skills`
 
 ## Managed Runtime and Tooling Tracks
 

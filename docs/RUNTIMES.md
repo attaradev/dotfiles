@@ -18,7 +18,7 @@ Inspect `mise/.mise.toml` to see the current tracked defaults.
 Policy:
 
 - Language runtimes such as Node.js, Python, Go, and Ruby stay on explicit major or major/minor lines.
-- Package managers and tooling such as npm, pnpm, and uv stay on explicit major or minor lines.
+- Package managers and tooling such as pnpm and uv stay on explicit major or minor lines.
 - Local overrides belong in `~/.mise.toml`, not the tracked template.
 - Changes to tracked defaults should update `mise/.mise.toml` only; other docs should point back here or to that file rather than restating the numbers.
 
@@ -28,8 +28,7 @@ Policy:
 make mise
 mise list
 
-node -v
-npm -v
+node -v && npm -v
 pnpm -v
 python --version
 uv --version

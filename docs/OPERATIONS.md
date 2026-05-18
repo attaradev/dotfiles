@@ -21,8 +21,7 @@ mise upgrade
 mise install
 mise list
 
-node -v
-npm -v
+node -v && npm -v
 pnpm -v
 python --version
 uv --version
