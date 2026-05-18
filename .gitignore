@@ -73,6 +73,8 @@ claude/.claude/skills/**
 !claude/.claude/skills/
 codex/.codex/skills/**
 !codex/.codex/skills/
+# Local machine settings — never commit
+claude/.claude/settings.local.json
 
 # Obsidian vault: track only public scaffolding; keep personal notes local.
 obsidian/.knowledge/**

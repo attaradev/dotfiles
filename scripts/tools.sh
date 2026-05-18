@@ -55,14 +55,37 @@ _stow_backup_if_exists() {
 }
 
 _stow_backup_package_files() {
-  local package=$1
+  local package=$1; shift
+  local -a skip_relpaths=("$@")
   local package_dir="$DOTFILES_DIR/$package"
   local source_file rel_path
   if [[ ! -d "$package_dir" ]]; then return; fi
   while IFS= read -r source_file; do
     rel_path="${source_file#"$package_dir/"}"
+    local skip=0
+    if (( ${#skip_relpaths[@]} > 0 )); then
+      for s in "${skip_relpaths[@]}"; do
+        [[ "$rel_path" == "$s" ]] && skip=1 && break
+      done
+    fi
+    (( skip )) && continue
     _stow_backup_if_exists "$HOME/$rel_path"
   done < <(find "$package_dir" -type f)
+}
+
+_codex_ensure_local_config() {
+  local local_config="$HOME/.codex/config.toml"
+  local template="$DOTFILES_DIR/codex/.codex/config.toml"
+  if [[ -L "$local_config" ]]; then
+    local tmp; tmp="$(mktemp)"
+    cp "$local_config" "$tmp"
+    rm "$local_config"
+    mv "$tmp" "$local_config"
+    echo "✓ Materialized ~/.codex/config.toml as local file"
+  elif [[ ! -f "$local_config" ]]; then
+    [[ -f "$template" ]] && cp "$template" "$local_config"
+    echo "✓ Created ~/.codex/config.toml from template"
+  fi
 }
 
 _stow_ensure_dir() {
@@ -272,7 +295,11 @@ cmd_stow() {
   local pkg
   for pkg in "${packages[@]}"; do
     [[ "$pkg" == "gpg" && "$skip_gpg" == "1" ]] && continue
-    _stow_backup_package_files "$pkg"
+    if [[ "$pkg" == "codex" ]]; then
+      _stow_backup_package_files "$pkg" ".codex/config.toml"
+    else
+      _stow_backup_package_files "$pkg"
+    fi
   done
 
   if (( has_ssh )); then
@@ -295,6 +322,7 @@ cmd_stow() {
     if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
       local stow_args=(--target="$HOME" --restow)
       [[ "$pkg" == "obsidian" ]] && stow_args+=(--no-folding)
+      [[ "$pkg" == "codex" ]] && stow_args+=(--ignore='config\.toml')
       stow "$pkg" "${stow_args[@]}" 2>&1 | grep -v "^LINK:\|^UNLINK:" || true
       stowed+=("$pkg")
     else
@@ -307,6 +335,8 @@ cmd_stow() {
     local joined; joined=$(printf '%s · ' "${stowed[@]}"); joined="${joined% · }"
     echo "✓ $joined"
   fi
+
+  _codex_ensure_local_config
 }
 
 cmd_mise() {
