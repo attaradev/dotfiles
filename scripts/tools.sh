@@ -348,7 +348,7 @@ cmd_mise() {
   local tracked_template="$DOTFILES_DIR/mise/.mise.toml"
 
   if command -v mise &>/dev/null; then
-    echo "✓ mise $(mise --version | awk '{print $1}')"
+    echo "✓ mise $(mise --version 2>/dev/null | awk '{print $1}')"
   else
     echo "❌ mise not found — run: brew bundle install"
     exit 1
