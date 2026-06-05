@@ -5,11 +5,11 @@
 ```markdown
 ## What
 
-[The approach and key decisions. One to three sentences. Skip anything the diff makes obvious.]
+[The value being delivered. One to three sentences. Describe outcomes and decisions — not a file tour.]
 
 ## Why
 
-[The problem or need this addresses. One to two sentences. State impact, not implementation.]
+[The rationale. One to two sentences. Explain why this approach was chosen, not just what problem exists.]
 
 ## Risks
 
@@ -44,21 +44,21 @@ Examples:
 
 ### What
 
-Describe the approach, not a tour of the files changed. The diff shows the files — the description should explain the thinking.
+Lead with value — what does the user or system gain from this change? The diff shows files; the description explains outcomes and the decisions that produced them.
 
-**Good:** "Validation is now applied at the service layer rather than the handler, so it runs regardless of which endpoint initiates checkout. The coupon model gains an `IsExpired()` method to keep the logic centralized."
+**Good:** "Checkout now enforces coupon expiry at the service layer, closing a gap that let expired coupons apply indefinitely. Centralising the check in `IsExpired()` means all entry points (web, API, mobile) are covered without per-handler duplication."
 
-**Bad:** "Modified checkout_handler.go and coupon.go. Added IsExpired method."
+**Bad:** "Modified checkout_handler.go and coupon.go. Added IsExpired method." (File tour with no stated value.)
 
-Note design decisions and trade-offs for non-obvious choices.
+Note design decisions and trade-offs for non-obvious choices; skip anything the diff already makes obvious.
 
 ### Why
 
-The most important section. A reviewer who understands the problem can evaluate the solution. One who doesn't cannot.
+Rationale answers *why this approach* — the constraint, business need, or decision driver that makes this the right solution. A reviewer who understands the rationale can judge whether the trade-offs are sound.
 
-**Good:** "The checkout flow did not validate coupon expiry before applying the discount, allowing expired coupons to be used indefinitely."
+**Good:** "The service layer was chosen over handler-level checks because it enforces the rule for all callers (web, API, mobile) without requiring each to duplicate the logic independently."
 
-**Bad:** "This PR adds coupon validation." (That's the solution, not the problem.)
+**Bad:** "This PR adds coupon validation." (Restates the What; gives no rationale.)
 
 Include a link to the issue, bug report, or incident if one exists.
 
@@ -96,7 +96,7 @@ Every item should be something a reviewer can verify or reproduce. Vague entries
 | Large feature | 1 short paragraph | 2–3 sentences | Required | Full checklist |
 | Breaking change | Required | Required | Required | Required |
 
-Write to the size of the change. No filler — every sentence must carry information not already visible in the diff.
+Write to the size of the change. Be concise, clear, and accurate — every sentence must carry information not already visible in the diff. Trim anything that restates the obvious or adds filler.
 
 ---
 
@@ -110,3 +110,5 @@ Write to the size of the change. No filler — every sentence must carry informa
 | Listing every file changed | The diff shows files; describe decisions instead |
 | AI attribution ("As an AI assistant...") | Never include |
 | Present tense for problems ("The bug causes...") | Use past tense once fixed: "The bug caused..." |
+| Padding with context the diff already shows | Reduces signal-to-noise; reviewers stop reading carefully |
+| Vague qualifiers ("somewhat", "generally", "may") | Weakens trust; say what's true or omit it |
