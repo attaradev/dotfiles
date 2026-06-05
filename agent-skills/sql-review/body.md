@@ -8,7 +8,7 @@ Follow the review checklist in `references/sql-review-checklist.md`:
 2. **Performance** — will this query be fast at scale? (explain plan, indexes, full table scans)
 3. **N+1 patterns** — is this query inside a loop? Does it need to be batched?
 4. **Safety** — is user input handled safely? (injection, unbounded results)
-5. **Maintainability** — is the query readable and correctly aliased?
+5. **Maintainability** — does every table alias resolve unambiguously? Are column references qualified when the query joins 2+ tables? Are CTEs used instead of repeated subqueries?
 
 For each issue found: (1) state the problem, (2) provide the corrected query in a code block, (3) explain why the original is problematic at scale.
 

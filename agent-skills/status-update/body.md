@@ -1,5 +1,7 @@
 ## Task
 
+Read `references/update-format.md` before writing anything.
+
 Gather repository context to understand what has actually shipped, what is in progress, and what is blocked. Do not invent progress — only report what is evidenced by the commits, PRs, and changed files.
 
 Produce two versions as specified in `references/update-format.md`. Tailor depth to the stated audience:

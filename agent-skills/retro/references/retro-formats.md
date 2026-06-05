@@ -122,6 +122,31 @@ Five zones: **Keep**, **Less of**, **More of**, **Start**, **Stop**
 
 ---
 
+## Mad / Sad / Glad
+
+**When:** Emotional temperature check after a difficult sprint, release, or incident. Useful when morale or team health needs explicit attention before moving to process improvements.
+
+**Agenda (45 min)**
+
+| Time | Activity |
+|------|---------|
+| 0–5 min | Warm-up + set the stage (psychological safety note is especially important here) |
+| 5–15 min | Silent brainstorm — one sticky per feeling per column |
+| 15–25 min | Share and cluster |
+| 25–38 min | Discuss top 2–3 clusters; shift from feelings to what caused them |
+| 38–43 min | Agree on 1–2 action items (keep it small — the goal is acknowledgment first) |
+| 43–45 min | Retro on the retro |
+
+**Prompts**
+
+*Mad* — What frustrated you this sprint? What felt broken, unfair, or outside your control?
+*Sad* — What disappointed you? What didn't go the way you hoped?
+*Glad* — What are you happy about? What went well or felt good?
+
+**Note:** After surfacing feelings, guide the team to identify the underlying cause: "What about the *process* or *system* led to this?" This keeps the retro actionable rather than a venting session.
+
+---
+
 ## Warm-up activities (choose one, 2–3 min)
 
 **One word:** Each person shares one word that describes how they feel about the sprint.

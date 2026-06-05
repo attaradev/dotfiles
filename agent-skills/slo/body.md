@@ -1,8 +1,8 @@
 ## Task
 
-Read the service description. Think about what reliability means to the users of this service — what failures would they notice and how quickly.
+Read `references/slo-framework.md` before writing anything. Then read the service description. Think about what reliability means to the users of this service — what failures would they notice and how quickly.
 
-Produce a complete SLO document following the framework in `references/slo-framework.md`:
+Produce a complete SLO document following the framework in `references/slo-framework.md`. Use the document template in that file as the output structure:
 
 1. **SLIs** — the raw measurements that indicate health (latency, availability, error rate, throughput)
 2. **SLOs** — the targets those measurements must meet over a rolling window
@@ -18,7 +18,7 @@ Before setting targets, ask: "What would customers consider unacceptable?" Rever
 ## Quality bar
 
 - SLIs must be measurable today — if you cannot collect the metric, it is not an SLI yet
-- SLOs must be aspirational but achievable — setting a target you have never hit sets the team up to fail
+- SLOs must be achievable — set the target at or just above current measured reliability; a target you have never hit creates a permanently depleted error budget
 - Error budget burn rate alerts must distinguish fast burn (page now) from slow burn (ticket)
 - The SLA must be weaker than the SLO — the internal target is always stricter than the external commitment
 - Document the measurement window explicitly: 28-day rolling is more stable than calendar month
