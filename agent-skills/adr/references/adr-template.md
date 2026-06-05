@@ -35,31 +35,40 @@ decision at all?" Do not mention the decision itself here. 2–5 paragraphs.]
 
 ## Options considered
 
-### Option 1: [Name]
+### Before state
 
-[Brief description. Trade-offs — what you get and what you give up. 3–6 bullet points.]
+[Describe the current architecture, process, or tool being replaced or extended. Explain specifically why the status quo is insufficient — what problem does it cause or block? This anchors all options against a concrete starting point.]
 
-**Pros:**
-- ...
+### Options
 
-**Cons:**
-- ...
+#### Option 1: [Name]
 
-### Option 2: [Name]
+[One-paragraph description. What does this option change relative to the before state?]
+
+#### Option 2: [Name]
 
 [Same format]
 
-### Option N: [Name]
+#### Option N: [Name]
 
 [Add as many options as were meaningfully evaluated. Do not list options that were not
 actually considered — this is a record, not a brainstorm.]
 
+### Comparison
+
+| Decision driver | Option 1 | Option 2 | Option N |
+|-----------------|----------|----------|----------|
+| [Driver 1]      | ✅ note  | ⚠️ note | ❌ note  |
+| [Driver 2]      | …        | …        | …        |
+| [Driver N]      | …        | …        | …        |
+
+Use ✅ (satisfies), ⚠️ (partial / with caveats), ❌ (does not satisfy). Add a brief inline note for any non-obvious rating.
+
 ## Decision
 
-We will [chosen option and brief justification].
+We will [chosen option].
 
-[One or two sentences on why this option was chosen over the alternatives. Reference specific
-constraints from Context that made this the right call. Be direct — avoid hedging language.]
+[Explain why this option was chosen, citing specific drivers from the comparison table where it outperformed alternatives. Then explain why each rejected option fell short — one sentence per rejected option. Use decisive language: "We will" not "We should consider".]
 
 ## Consequences
 
@@ -147,33 +156,35 @@ of DynamoDB (capacity planning, GSI maintenance) has caused two incidents in the
 
 ## Options considered
 
-### Option 1: Postgres
-Battle-tested relational database. Team is fluent in SQL. Managed offering (RDS/Cloud SQL)
-reduces operational overhead. Supports the join patterns needed for reporting.
+#### Option 1: Postgres
+Migrate to RDS Postgres as the single primary data store. The team is fluent in SQL. Managed
+offering reduces operational overhead. Supports the join patterns needed for reporting.
 
-**Pros:** SQL fluency, strong ecosystem, ACID guarantees, joins, full-text search
-**Cons:** Requires migration from DynamoDB, connection pooling adds complexity at scale
+#### Option 2: Continue with DynamoDB
+No migration required; retain current schema and application patterns.
 
-### Option 2: Continue with DynamoDB
-No migration required.
+#### Option 3: Add a separate analytics database
+Keep DynamoDB for operational data, add Postgres (or Redshift) for reporting queries only.
 
-**Pros:** No migration cost, team has institutional knowledge of current schema
-**Cons:** Cannot support required query patterns without application-level joins, ongoing
-operational incidents, growing maintenance burden
+### Comparison
 
-### Option 3: Add a separate analytics database
-Keep DynamoDB for operational data, add Postgres (or Redshift) for reporting only.
-
-**Pros:** No migration of operational data
-**Cons:** Dual-write complexity, data consistency risk, higher operational overhead
+| Decision driver              | Option 1: Postgres | Option 2: DynamoDB | Option 3: Dual-store |
+|------------------------------|--------------------|--------------------|----------------------|
+| Supports reporting joins      | ✅                 | ❌ requires app-level joins | ✅ for analytics queries |
+| Team can operate confidently  | ✅ strong SQL skills | ⚠️ limited DynamoDB expertise | ⚠️ requires DynamoDB + Postgres skills |
+| Reduces operational incidents | ✅ eliminates capacity/GSI toil | ❌ same failure modes remain | ⚠️ adds dual-write complexity |
+| Migration cost                | ⚠️ ~2 sprints      | ✅ none            | ⚠️ ongoing sync cost |
+| Single source of truth        | ✅                 | ✅                 | ❌ dual-write consistency risk |
 
 ## Decision
 
 We will migrate to Postgres as the single primary data store.
 
-Option 3 was ruled out because dual-write complexity exceeds the migration cost of Option 1.
-Option 2 is not viable given the roadmap requirements. Postgres is the right fit for the
-team's skills and the query patterns we need to support.
+The comparison table makes this clear: Option 2 cannot satisfy the reporting join requirement
+and perpetuates the operational incidents that are already costing the team time. Option 3
+avoids migration cost but introduces dual-write complexity that exceeds the one-time migration
+effort of Option 1 and creates a persistent data consistency risk. Postgres satisfies all
+drivers except migration cost, which is bounded and one-time.
 
 ## Consequences
 
