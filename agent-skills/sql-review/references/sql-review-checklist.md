@@ -96,7 +96,22 @@ Never hold a transaction open across a network call.
 
 ---
 
-## 5. Explain plan interpretation (PostgreSQL)
+## 5. Maintainability
+
+**Aliases and qualification**
+- Every table in a multi-table query must have an alias; every column reference must use that alias (e.g., `u.id`, not bare `id`)
+- Unqualified column names in JOINs are ambiguous and will break if a column is added to either table
+
+**Repeated subqueries**
+- If the same subquery appears more than once, extract it as a CTE (`WITH x AS (...)`)
+- CTEs improve readability and prevent the planner from executing the same work twice (in databases that materialise CTEs)
+
+**Implicit assumptions**
+- Note any assumption embedded in the query (e.g., "assumes `status` is never NULL") so reviewers can verify it against the schema
+
+---
+
+## 6. Explain plan interpretation (PostgreSQL)
 
 Run: `EXPLAIN (ANALYZE, BUFFERS) <query>`
 
@@ -112,6 +127,11 @@ High estimated rows vs actual rows → stale statistics → run `ANALYZE table_n
 ---
 
 ## Review output format
+
+Severity assignment:
+- **High** — correctness bug (wrong results), SQL injection, or unbounded query that could OOM/lock a table
+- **Medium** — performance issue that manifests at production scale (typically 100k+ rows), missing index on a hot path
+- **Low** — maintainability concern, missing alias qualification, repeated subquery that could be a CTE
 
 For each issue found:
 

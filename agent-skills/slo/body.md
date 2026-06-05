@@ -24,6 +24,14 @@ Before setting targets, ask: "What would customers consider unacceptable?" Rever
 - Document the measurement window explicitly: 28-day rolling is more stable than calendar month
 - Every SLO must name the specific metric being measured, the measurement window, and the alerting threshold (the alerting threshold must differ from the SLO target)
 
+## Anti-patterns
+
+- **SLA = SLO**: If the external commitment equals the internal target, any SLO breach triggers a contractual penalty. The SLA must always be weaker.
+- **Immeasurable SLI**: If the metric cannot be collected today with the current stack, it is a future goal, not a current SLI — label it as such or drop it.
+- **No baseline**: Setting a target without first measuring current reliability produces an arbitrary number. State the baseline that informed each target.
+- **p50 latency SLO**: p50 hides tail latency. Only SLO on p95 or p99.
+- **No error budget policy**: An SLO without a defined response (what happens when the budget is gone) is decorative.
+
 ## Additional resources
 
-- **`references/slo-framework.md`** — SLI types, SLO target guidance, error budget calculation, burn rate alerting, and common pitfalls.
+- **`references/slo-framework.md`** — SLI types, SLO target guidance, error budget calculation, burn rate alerting, document template, and common pitfalls.

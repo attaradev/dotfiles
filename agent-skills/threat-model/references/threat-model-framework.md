@@ -9,7 +9,7 @@
 | **R**epudiation | Can an actor deny having taken an action? | Missing audit log, unsigned API calls |
 | **I**nformation Disclosure | Can sensitive data be accessed by an unauthorised party? | IDOR, verbose error messages, unencrypted storage |
 | **D**enial of Service | Can an attacker degrade or stop the service? | Unbounded queries, missing rate limits, memory exhaustion |
-| **E**levation of Privilege | Can an attacker gain capabilities beyond what they were granted? | IDOR to admin resources, privilege escalation via parameter tampering |
+| **E**levation of Privilege | Can an attacker gain capabilities beyond what they were granted? | Privilege escalation via `role=admin` parameter tampering, path traversal to execute restricted actions |
 
 ---
 

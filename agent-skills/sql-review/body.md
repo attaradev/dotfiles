@@ -20,6 +20,16 @@ For each issue found: (1) state the problem, (2) provide the corrected query in 
 - If the query is inside a loop (N+1), show how to rewrite it as a single query or batched fetch
 - Flag if a query lacks a `LIMIT` and could return unbounded rows
 
+## Anti-patterns
+
+Avoid these in your review output:
+
+- **Flagging without fixing** — every issue must include the corrected SQL, not just a description
+- **Vague severity** — do not mark everything High; use High only for correctness bugs or injection risks, Medium for performance issues at scale, Low for style/maintainability
+- **"Consider adding an index"** — write the exact `CREATE INDEX CONCURRENTLY` statement or don't mention it
+- **Scale-free performance claims** — "this is slow" is not actionable; state the table size or row count at which the problem manifests (e.g., "at 1M+ rows, a Seq Scan here will take >10s")
+- **Ignoring NULL semantics** — if fixing a WHERE clause, verify the fix handles NULL rows correctly and say so
+
 ## Additional resources
 
 - **`references/sql-review-checklist.md`** — Correctness patterns, performance anti-patterns, index analysis, N+1 detection, injection prevention, and explain plan interpretation.

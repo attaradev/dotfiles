@@ -113,9 +113,9 @@ Best if: [The condition under which this option becomes the clear winner]
 
 | Pitfall | Fix |
 |---------|-----|
-| Evaluating against hypothetical requirements | Score against actual, confirmed requirements |
+| Evaluating against hypothetical requirements | If a requirement is unconfirmed, mark it as assumed in the Decision Framing section and flag how the score would change if the assumption is wrong |
 | Ignoring operational cost | A free tier product with high toil costs more than a paid managed service |
 | Missing the exit cost | How much does it cost to switch away? Include this in TCO |
 | Recency bias toward familiar tools | Weight criteria by importance to the problem, not familiarity |
-| Analysis paralysis | Time-box the evaluation; a good-enough decision made quickly beats a perfect decision too late |
+| Analysis paralysis | Cap the evaluation at 3–5 options maximum; if uncertainty remains after scoring, call it out explicitly and recommend a time-boxed proof of concept (1–2 weeks) rather than extending the analysis |
 | Not including "do nothing" | Status quo must be an explicit option with explicit costs |

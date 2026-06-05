@@ -8,6 +8,21 @@ What makes a good test, what to avoid, and how to scope test cases.
 
 **Tests behavior, not implementation.** A good test calls public interfaces and asserts observable outcomes — return values, state changes, errors, side effects. A bad test calls private methods or asserts that an internal variable was set.
 
+```python
+# Bad — asserts implementation detail
+def test_process_order():
+    order = Order(items=[...])
+    order.process()
+    assert order._internal_cache == {...}   # breaks on any refactor
+
+# Good — asserts observable outcome
+def test_process_order():
+    order = Order(items=[{"sku": "A", "qty": 2}])
+    result = order.process()
+    assert result.total == Decimal("19.98")
+    assert result.status == "confirmed"
+```
+
 **Fails for one reason.** If a test can fail because of A or B, it is two tests. Isolate each assertion to a single code path.
 
 **Reads like a specification.** The test name and body should make the expected behavior obvious without reading the implementation. `TestGetUser_ReturnsNotFoundError_WhenUserDoesNotExist` is better than `TestGetUser2`.

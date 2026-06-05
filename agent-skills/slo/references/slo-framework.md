@@ -145,6 +145,8 @@ For a 99.9% SLO:
 |-------|-----------|--------|
 | SLO fast burn — availability | Burn rate > 14.4× over 1 hour | Page on-call |
 | SLO slow burn — availability | Burn rate > 3× over 3 days | Create P2 ticket |
+| SLO fast burn — latency p99 | Burn rate > 14.4× over 1 hour | Page on-call |
+| SLO slow burn — latency p99 | Burn rate > 3× over 3 days | Create P2 ticket |
 
 ### SLA (external commitment)
 

@@ -1,8 +1,10 @@
 ## Task
 
+Read `references/tech-eval-framework.md` before writing anything.
+
 Before evaluating, gather the non-functional requirements that constrain the decision: latency SLA, throughput targets, data volume, team size, hiring velocity, and existing operational expertise. State which inputs are known vs. assumed.
 
-Read the decision context carefully. Think like an architect who has made and lived with technology choices for years — the goal is to make the right long-term decision, not to validate a preference.
+Read the decision context. If the user appears to favour a specific option, evaluate it without privileging it — the recommendation must be determined by the weighted scores, not by what was implied as preferred.
 
 Produce a structured evaluation following `references/tech-eval-framework.md`:
 
@@ -22,6 +24,14 @@ Do not omit the "do nothing" or "build in-house" option even if the user seems t
 - The recommendation must name the winner AND the second-best option to use if the primary fails
 - Flag any criteria where you lack sufficient information to score accurately
 - TCO must include: licensing + infrastructure + engineering time (implementation + learning curve) + ongoing support + switching cost if migration becomes necessary — not just licensing cost
+
+## Anti-patterns
+
+- Scoring a cell without a justification sentence — "4" alone is not a score
+- Recommending the option the user mentioned first without evaluating alternatives
+- Using generic criteria ("scalable", "reliable", "performant") that apply equally to every option
+- TCO that only lists licensing cost and omits migration, training, and ongoing operational toil
+- A recommendation that names only one option and omits the fallback and the conditions that would change the decision
 
 ## Additional resources
 

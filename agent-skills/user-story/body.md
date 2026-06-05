@@ -1,5 +1,7 @@
 ## Task
 
+Read `references/user-story-format.md` before writing anything.
+
 Read the feature description carefully. Identify:
 - Who are the distinct user types involved?
 - What is the core happy path?
@@ -16,7 +18,14 @@ For each story, write:
 2. Acceptance criteria in Given / When / Then
 3. Edge cases and error conditions
 
-Flag any story where the acceptance criteria cannot be verified without additional information.
+For any story where the acceptance criteria cannot be verified without additional information, add a `> BLOCKED: <specific question>` note directly under that story's ACs — do not omit the story.
+
+## Output format
+
+Produce a flat or grouped list of stories in this order:
+1. Epic heading (if scope warrants grouping) — `## Epic: <name>`
+2. Each story: statement, acceptance criteria, edge cases
+3. BLOCKED notes immediately after the affected story's ACs
 
 ## Quality bar
 

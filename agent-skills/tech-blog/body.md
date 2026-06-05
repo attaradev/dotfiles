@@ -1,8 +1,10 @@
 ## Task
 
-Before writing, determine the publication target: company engineering blog, external dev publication (e.g. dev.to, Substack), or conference writeup. Tailor length, jargon level, and tone to the target audience accordingly.
+**Read first:** `references/tech-blog-guide.md` — then any topic description, code, or docs the user provides — before writing anything.
 
-Read the topic description and any relevant code or docs carefully. Write a complete, publication-ready technical blog post following `references/tech-blog-guide.md`.
+Determine the publication target: company engineering blog, external dev publication (e.g. dev.to, Substack), or conference writeup. Tailor length, jargon level, and tone to the target audience accordingly.
+
+Write a complete, publication-ready technical blog post following `references/tech-blog-guide.md`.
 
 Produce:
 1. **Title** — specific, outcome-focused, search-friendly
@@ -18,7 +20,7 @@ Produce:
 - Every claim of improvement must be backed by a number: "40% faster" not "significantly faster"
 - Code snippets must be 5–20 lines, include context (function signature, key imports), and highlight the specific innovation being explained — not a dump of the full implementation
 - Avoid internal jargon and team-specific acronyms without explanation
-- Tone: direct and conversational, not academic; write like a senior engineer explaining to a peer
+- Tone: use contractions ("we didn't", "it wasn't"), active voice, and specific claims — no passive voice, no hedging ("might possibly", "in some cases"), no conference-presenter register
 
 ## Additional resources
 

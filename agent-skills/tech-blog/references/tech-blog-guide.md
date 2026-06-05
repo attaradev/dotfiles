@@ -142,12 +142,11 @@ since launch, no one has asked to go back to the old system. That's probably sig
 
 ## Lessons learned
 
-Be honest. The most memorable posts are the ones that say "we were wrong about this":
+Include at least one admission of being wrong or surprised — "we assumed X; it turned out to be Y" — not just what you'd do differently. Posts that read as unbroken success stories are less credible and less useful.
 
-- What was harder than you expected?
-- What assumption turned out to be incorrect?
-- What would you do differently if starting over?
-- What surprised you (positively or negatively)?
+- Name the specific assumption that failed, not just "it was harder than expected"
+- State what you'd do differently and why — not "we'd plan better" but "we'd profile before optimising, not after"
+- If something worked out better than expected, say so — negative surprises only read as post-hoc rationalization
 
 ```
 What we got wrong: we assumed the bottleneck was CPU. Three hours of profiling

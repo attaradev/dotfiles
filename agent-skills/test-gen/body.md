@@ -47,9 +47,17 @@ Then write the test file. After writing:
 
 - Tests must match the project's existing patterns exactly — do not introduce a new framework or style
 - Each test must be independent and not rely on execution order
-- Assert observable behavior and outputs, not implementation details
-- Coverage summary must be honest about gaps — name what is not covered and why
+- Assert return values, error types, and observable state — not that an internal variable was set or that a private function was called
+- Coverage summary must list every exported function or method that is not tested and every skipped code path, with a one-line reason for each omission
 - If no existing tests are found in the project, follow the testing framework's official style guide for the detected language
+
+## Anti-patterns
+
+- **Stub without assertion** — writing `t.Run("case", func(t *testing.T) {})` or `pass` as a body; every test must assert at least one outcome
+- **Duplicating existing tests** — always check existing test files in Step 1; do not re-test what is already covered
+- **Importing a new test framework** — if the project uses `testify`, do not add `gomega`; if it uses `pytest`, do not add `unittest`; match what exists
+- **Testing only the happy path** — if the target function has error returns or branches, they must appear in the test plan or be explicitly called out as out-of-scope
+- **Asserting implementation details** — do not assert that a specific internal method was called; assert the returned value or the observable state change
 
 ## Additional resources
 
