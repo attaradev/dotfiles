@@ -70,7 +70,7 @@ Questions:
 - Tell me more about that.
 - Why was that important to you?
 - What did you do next?
-- How did that make you feel?
+- What was the cost or consequence of that?
 - What would have made that easier?
 
 ### Concept reaction (optional, evaluative research only)
@@ -115,4 +115,4 @@ After each interview, capture:
 - **Patterns:** [Themes that appeared across multiple answers]
 - **Behaviours observed:** [What they actually do, not what they say they do]
 - **Open questions:** [What you still need to learn]
-- **Hypothesis update:** [Did this session strengthen or weaken your hypothesis?]
+- **Hypothesis update:** State the original hypothesis, then write one sentence: "This session [supports / refutes / is neutral on] the hypothesis because [specific evidence from this interview]."

@@ -169,4 +169,4 @@ Add a partial index to exclude deleted rows from normal queries:
 CREATE INDEX idx_orders_user_id ON orders(user_id) WHERE deleted_at IS NULL;
 ```
 
-Ensure all application queries include `WHERE deleted_at IS NULL` — missing this is a common bug.
+Every query on a soft-delete table must include `WHERE deleted_at IS NULL`. The partial index above enforces this implicitly for indexed access — a query that omits the predicate will not use the partial index, which is a detectable query-plan signal that the predicate is missing.

@@ -4,7 +4,7 @@ Find the existing ADRs directory and numbering convention from the live context.
 
 Read any existing ADRs to match the established style before writing.
 
-Draft the ADR using the template in `references/adr-template.md`. Fill every section — do not leave placeholders. If information for a section is genuinely unknown, say so explicitly rather than omitting the section.
+Draft the ADR using the template in `references/adr-template.md`. Fill every section — do not leave placeholders. If information for a section is genuinely unknown, write a concrete statement of what is unknown and why, e.g. "Deciders: unknown — this decision predates recorded history in this repo" rather than leaving the field blank or writing "TBD".
 
 Write the file to the correct location and number.
 

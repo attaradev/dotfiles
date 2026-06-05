@@ -56,7 +56,7 @@ For each direct competitor, one paragraph each:
 **Competitor A**
 - Strongest at: [What they genuinely do better than anyone]
 - Weakest at: [Where users consistently complain or switch away]
-- Evidence: [Review quotes, job postings, public roadmap signals]
+- Evidence: At least one concrete signal per bullet — a review quote with source, a job posting theme, a public roadmap item, or a documented limitation. Do not leave evidence as a placeholder.
 
 ### 5. Gaps and opportunities
 
@@ -65,6 +65,13 @@ Identify where demand is underserved across the landscape — high importance to
 | Gap | Who has it | Evidence | Opportunity size |
 |-----|-----------|---------|-----------------|
 | [Unmet need] | [Which players address it, how well] | [Review data, support tickets, user quotes] | H/M/L |
+
+Opportunity size definitions:
+- **H** — Affects the majority of target users; multiple independent sources confirm it; switching or purchasing decisions hinge on it
+- **M** — Affects a meaningful minority; mentioned consistently but not a dominant complaint or driver
+- **L** — Niche or edge-case need; only occasional mentions; unlikely to drive purchasing decisions alone
+
+Drop gaps with no supporting evidence. "Users probably want X" is not evidence.
 
 ### 6. Differentiation angle
 

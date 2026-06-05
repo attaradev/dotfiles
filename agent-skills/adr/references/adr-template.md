@@ -156,6 +156,16 @@ of DynamoDB (capacity planning, GSI maintenance) has caused two incidents in the
 
 ## Options considered
 
+### Before state
+
+The service uses DynamoDB for all persistence. As query complexity has grown, we are writing
+increasingly complex filter expressions and performing multiple round-trips to reconstruct
+relational data. Two roadmap features require joins that DynamoDB cannot express efficiently.
+Two operational incidents in the past quarter stemmed from DynamoDB capacity planning and GSI
+maintenance — areas where the team has limited expertise.
+
+### Options
+
 #### Option 1: Postgres
 Migrate to RDS Postgres as the single primary data store. The team is fluent in SQL. Managed
 offering reduces operational overhead. Supports the join patterns needed for reporting.

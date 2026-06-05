@@ -42,6 +42,14 @@ Anything the fix does not address, or related areas that may have the same probl
 - Verification step must be concrete and runnable, not "test it locally"
 - If the root cause cannot be determined, say so and list what information is missing
 
+## Anti-patterns
+
+- **Symptom fix without root cause:** patching the crash site (e.g., adding a nil guard) without identifying why the nil value was produced — leaves the underlying bug intact
+- **Vague hypothesis:** "it might be a race condition" or "something with the cache" — a hypothesis must name the specific variable, code path, or condition; if you can't state it precisely, you haven't formed one yet
+- **Over-scoped fix:** refactoring or restructuring surrounding code as part of the fix — if the diff touches more than the minimal change needed to prevent the failure, it is too large
+- **Unverified fix:** declaring the bug fixed without running the specific failing test or reproducing the original failure — "the logic looks right" is not verification
+- **Skipping reproduction:** jumping to a fix when the failure has not been reproduced — if you cannot trigger the bug, you cannot confirm the fix works
+
 ## Additional resources
 
 - **`references/debug-playbook.md`** — Systematic investigation steps, common failure patterns, and techniques for isolating root cause.

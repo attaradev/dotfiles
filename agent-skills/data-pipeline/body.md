@@ -1,6 +1,6 @@
 ## Task
 
-Read the pipeline description carefully. Design a complete, production-ready pipeline following `references/data-pipeline-guide.md`.
+Read `references/data-pipeline-guide.md` before writing anything. Then read the pipeline description carefully. Design a complete, production-ready pipeline following the guide.
 
 Produce:
 1. **Architecture** — source, transform, sink, orchestration, and trigger mechanism
@@ -16,7 +16,7 @@ Choose the orchestration tool based on: (1) batch vs. stream, (2) scheduling req
 
 - Every pipeline must be idempotent: re-running the same job must not produce duplicate or incorrect output — batch jobs use checkpoint + resume; streaming jobs track consumer offsets or use per-message deduplication keys
 - Define the error boundary: what happens when a record fails — skip, retry, DLQ, or halt?
-- Schema changes must be handled explicitly — never silently drop unknown fields
+- Schema changes must be handled explicitly — unknown fields must be routed to DLQ or raise a schema-mismatch error; never silently dropped
 - Observability is not optional: row count, error count, and latency must be measurable
 - Batch jobs must checkpoint progress; streaming jobs must track consumer offsets
 

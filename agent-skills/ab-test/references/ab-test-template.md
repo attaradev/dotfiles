@@ -100,7 +100,7 @@ Pre-commit these before the experiment runs.
 |--------|-----------|---------|
 | Ship | Primary metric improvement ≥ MDE with p < 0.05; no guardrail breached | Ship to 100% |
 | Do not ship | Primary metric improvement < MDE or p ≥ 0.05 | Do not ship; document learning |
-| Inconclusive | Effect direction inconsistent with hypothesis but not statistically significant | Extend run time by [N] days; do not adjust MDE |
+| Inconclusive | Effect direction inconsistent with hypothesis but not statistically significant | Extend run time by [N] days (max one extension); do not adjust MDE. If still inconclusive after extension, treat as null — do not ship |
 | Escalate | Any guardrail metric breached | Stop experiment; investigate before deciding |
 
 ---

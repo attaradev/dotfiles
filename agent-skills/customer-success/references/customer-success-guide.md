@@ -154,12 +154,20 @@ Current NRR:           102%
 Target NRR:            112%
 
 Gap:                    10 percentage points on $X ARR base
-= additional $X × 10% = $Y MRR retained or expanded per year
+= additional $X × 10% = $Y ARR retained or expanded per year
 
 CS headcount to close gap:
   Average CSM manages $2M–$3M ARR
   Improvement target: 10pp NRR on $X ARR
   Required headcount: X / $2.5M CSMs
 ```
+
+**Worked example** (replace with actual numbers):
+- ARR base: $5M
+- Current NRR: 102%, target: 110% — gap: 8pp
+- Value of closing gap: $5M × 8% = $400K additional ARR/year
+- CS capacity: 1 CSM per $2.5M ARR → 2 CSMs needed
+- CSM fully-loaded cost: ~$120K/year × 2 = $240K
+- Payback: $400K retained/expanded ÷ $240K cost = 1.7× ROI in year 1
 
 Frame CS hiring as an NRR investment, not a cost centre. A CSM who improves NRR by 5pp on a $3M book pays for themselves in < 6 months.

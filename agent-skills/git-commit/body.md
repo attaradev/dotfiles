@@ -40,6 +40,14 @@ Do not use `--no-verify`. Do not amend unless explicitly asked.
 - If the diff mixes unrelated concerns, flag it rather than forcing a single subject
 - Never use `--no-verify` or `--amend` unless explicitly requested
 
+## Anti-patterns
+
+- **Auto-staging files** — never run `git add -A` or `git add .`; only stage what was already staged or what the user explicitly requests
+- **Copying prior commit messages** — the diff is the source of truth; recent commits are style reference only
+- **Amending silently** — `--amend` rewrites history; only use it when the user explicitly asks
+- **Forcing a single type on a mixed diff** — if the staged changes clearly span two unrelated concerns, flag it and ask the user to split before committing
+- **Defaulting to `feat`** — use the type that matches the dominant change; `chore`, `fix`, and `refactor` are each more specific than `feat` for most diffs
+
 ## Additional resources
 
 - **`references/conventions.md`** — Commit message format, type vocabulary, length rules, and anti-patterns.

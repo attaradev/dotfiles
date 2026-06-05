@@ -54,12 +54,12 @@ Keep diagrams to ≤ 80 chars wide and ≤ 20 lines tall. Label every arrow.
 
 ## Calibrating explanation depth
 
-| Target | Depth |
-|--------|-------|
-| Single function (< 30 lines) | Line-by-line walkthrough, focus on non-obvious parts |
-| Single file (< 200 lines) | Section-by-section, one diagram |
-| Module or package | Entry points + data flow, skip implementation details |
-| Subsystem / architecture | Component map + one end-to-end trace, delegate file details |
+| Target size | Depth |
+|-------------|-------|
+| < 30 lines | Line-by-line walkthrough; focus on non-obvious parts only |
+| 30–200 lines | Section-by-section with one diagram |
+| 200+ lines (module/package) | Entry points + data flow; delegate implementation details to "What to read next" |
+| Subsystem / architecture | Component map + one end-to-end trace; skip per-file implementation details |
 
 ---
 

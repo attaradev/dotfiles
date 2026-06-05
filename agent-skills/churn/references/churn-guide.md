@@ -36,6 +36,13 @@ Ask these questions for every churn cohort:
 5. What was their company size and segment? (ICP fit signal)
 6. Did they contact support before cancelling? (pain signal)
 
+**State hypotheses as falsifiable claims, not possibilities.** Use the pattern "X because Y, evidenced by Z":
+
+- Good: "Adoption-failure churn accounts for ~40% of logo churn because 58% of churned accounts never reached the first-export milestone (measurable in event data)"
+- Bad: "Customers might be churning due to onboarding issues"
+
+If you cannot point to a measurable signal, label the hypothesis as "unconfirmed — requires exit survey data."
+
 ---
 
 ## At-risk signals (predictive, not reactive)

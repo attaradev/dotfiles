@@ -1,8 +1,8 @@
 ## Task
 
-Read the full target before forming any findings. If the target is a directory with more than 50 files, focus on the highest-risk categories (auth, crypto, injection points) and note the scope limit explicitly.
+Read `references/security-checklist.md` first, then read the full target before forming any findings. If the target is a directory with more than 50 files, focus on the highest-risk categories (auth, crypto, injection points) and note the scope limit explicitly.
 
-Work through every category in `references/security-checklist.md`. Be thorough on categories relevant to what the code does — an auth change needs deeper scrutiny on authn/authz than a CLI tool does.
+Work through every category in `references/security-checklist.md`. Weight depth by relevance — an auth change warrants full coverage of sections 2, 3, and 8; a CLI tool with no network exposure can skip section 7 entirely.
 
 Only surface findings that are traceable to the code. Do not invent theoretical risks without evidence. Do cite uncertainty when the risk depends on context you cannot see.
 
@@ -46,6 +46,14 @@ Prioritized list of what to fix, in order. Include a one-line rationale for each
 - Critical and High findings must include a concrete fix, not just a description of the problem — "parameterize the query at line 42" not "avoid SQL injection"
 - Omit an entire severity section rather than writing "None found" — empty sections create noise
 - Stay security-focused — do not conflate security findings with general code quality
+
+## Anti-patterns
+
+- **Generic advisories without code evidence** — "this endpoint could be vulnerable to CSRF" with no token check shown in the code. Every finding must cite a specific line.
+- **Duplicate escalation** — listing the same issue at both Critical and High because it has two related components. Pick the highest applicable severity and mention the related component in the fix.
+- **Code quality disguised as security** — flagging missing comments, poor naming, or test coverage in a security review. These are not security findings.
+- **Fix descriptions that restate the problem** — "fix by not doing SQL injection" is not a fix. The fix must name the precise change: which line, which API or pattern to use instead.
+- **Invented severity inflation** — raising a Low finding to Critical because the consequence sounds bad hypothetically. Severity must reflect actual exploitability given the code as written.
 
 ## Additional resources
 

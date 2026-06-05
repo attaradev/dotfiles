@@ -75,12 +75,18 @@ Choose one with a one-sentence rationale:
 
 ---
 
-After presenting the review, offer to post it to GitHub using one of:
-```
-gh pr review <N> --comment --body "<summary>"
-gh pr review <N> --request-changes --body "<summary>"
-gh pr review <N> --approve --body "<summary>"
-```
+After presenting the review, emit the **single correct command** that matches your approval recommendation — do not list all variants:
+
+| Recommendation | Command |
+|---|---|
+| Approve | `gh pr review <N> --approve --body "<one-sentence rationale>"` |
+| Approve with comments | `gh pr review <N> --comment --body "<one-sentence rationale>"` |
+| Request changes | `gh pr review <N> --request-changes --body "<one-sentence rationale>"` |
+| Cannot fully assess | `gh pr review <N> --comment --body "<one-sentence explanation of gap>"` |
+
+Ask the user explicitly whether to run the command. **Do not run it without confirmation.** Only execute once the user says yes.
+
+If there are inline comments to post, offer to post each one via `gh pr review <N> --comment --body "<comment>"`, one at a time, waiting for user confirmation on each.
 
 ## Quality bar
 

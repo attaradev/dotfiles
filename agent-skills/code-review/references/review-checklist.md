@@ -1,6 +1,6 @@
 # Review Checklist
 
-Work through each category. Only surface findings traceable to the diff or strongly implied system context. Cite uncertainty explicitly ("I cannot verify this without seeing the callers").
+Work through each category. Only surface findings traceable to the diff or strongly implied system context. When context is missing, state the exact gap: "I cannot verify X without seeing Y" — not "this might be a problem".
 
 ---
 

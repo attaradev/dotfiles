@@ -115,7 +115,7 @@ implementations and makes the rule enforceable in tests.
 
 | Bad | Better |
 |-----|--------|
-| `fix: fixes` | `fix(cart): prevent double-charge on retry` |
+| `fix: fix bug` | `fix(cart): prevent double-charge on retry` |
 | `feat: update stuff` | `feat(api): add pagination to /users endpoint` |
 | `chore: misc changes` | `chore(lint): enable exhaustive enum checks` |
 | `fix: wip` | (finish the work first) |

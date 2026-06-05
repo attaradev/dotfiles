@@ -37,10 +37,18 @@ Three to five files or functions most useful for deepening understanding. Format
 
 ## Quality bar
 
-- Anchor every claim in the actual code, not generic patterns.
-- Favor clarity over completeness — one clear explanation beats five partial ones.
-- Scale depth to the target: ≤50 lines → one short paragraph per section; 50–300 lines → step-by-step walkthrough with inline callouts; 300+ lines → include ASCII flow diagrams.
+- Anchor every claim in the actual code: cite the file and line range, not a generic pattern name.
+- Each explanation section must add information the code itself doesn't state — if the section only restates what is already visible, cut it.
+- Scale depth to the target: <30 lines → line-by-line walkthrough, focus on non-obvious parts; 30–200 lines → section-by-section with one diagram; 200+ lines → entry points + data flow, delegate implementation details to "What to read next".
 - If the target is unclear or not found, say so and ask for clarification rather than guessing.
+
+## Anti-patterns
+
+- **Paraphrase without insight**: restating what the code does line-by-line without explaining *why* — e.g., "line 14 calls authenticate(), line 15 checks the result" with no explanation of the design intent.
+- **Generic analogy**: using an analogy that fits any code ("it's like a pipeline", "it's like a manager") rather than the specific behavior of this code.
+- **Diagram without labels**: an ASCII diagram with unlabeled arrows or actors — every arrow and box must say what it represents.
+- **Floating gotcha**: a "gotcha" that isn't anchored to a specific line or behavior in the actual target — e.g., "be careful with concurrency" when the code has no goroutines.
+- **Shallow "what to read next"**: listing files without a one-line reason and a prerequisite/follow-up label.
 
 ## Additional resources
 

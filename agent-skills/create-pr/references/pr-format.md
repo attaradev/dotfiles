@@ -74,16 +74,19 @@ If there are genuinely no risks, write "None" — don't omit the section, as its
 
 ### Validation
 
-Every item should be something a reviewer can verify or reproduce. Vague entries erode trust.
+Validation items are **pre-merge checks only** — things a reviewer can verify or reproduce before approving. Do not include post-deploy monitoring steps, runtime observations, or "watch the dashboards after merge."
+
+Every item should be specific enough that someone else can reproduce it. Vague entries erode trust.
 
 **Good:**
 - [ ] `go test ./billing/...` passes
-- [ ] Manually tested expired coupon at checkout — returns 422 with `coupon_expired` error
-- [ ] Tested valid coupon still applies correctly
+- [ ] `curl -X POST /checkout -d '{"coupon":"EXPIRED10"}' -H "Authorization: Bearer $TOKEN"` returns 422 with `{"error":"coupon_expired"}`
+- [ ] Valid coupon `SAVE10` still applies correctly — final price reduced as expected
 
 **Bad:**
 - [ ] Tested
 - [ ] Looks good
+- [ ] Monitor error rate after deploy (post-deploy, not pre-merge)
 
 ---
 

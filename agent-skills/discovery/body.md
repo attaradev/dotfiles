@@ -1,5 +1,7 @@
 ## Task
 
+Read `references/discovery-guide-template.md` before writing anything.
+
 Read the research goal carefully. Determine:
 - Is this **exploratory** (we do not know the problem yet) or **evaluative** (we are testing a specific assumption)?
 - Who is the right participant to talk to?
@@ -19,7 +21,15 @@ Suggest saving the output to `docs/discovery-guide-<slug>.md`.
 - "Would you use a feature that..." is banned — replace with "Tell me about the last time you..."
 - The guide must have a clear through-line: every question connects back to the research goal
 - Include at least three "5 whys" follow-up probes to go deeper than surface answers
-- Flag any questions that are leading or that assume the problem exists
+- Flag any questions that are leading or that assume the problem exists — mark them inline with `[LEADING — rephrase]` so the reviewer can fix them before the interview
+
+## Anti-patterns
+
+- **Hypothetical-feature guide:** every question asks "would you want X?" instead of probing past behaviour — the guide produces preference data, not evidence
+- **Single-assumption tunnel:** all questions funnel toward one hypothesis; exploratory mode requires questions that could surface a completely different problem
+- **Missing participant profile:** guide has no screener criteria, so interviews recruit the wrong people and produce unusable data
+- **Solution leak:** interviewer reveals the product idea mid-session ("we're building a tool that does Y — would that help you?"), anchoring all subsequent answers
+- **No follow-up probes:** guide lists primary questions only with no probing techniques; shallow answers go unexamined
 
 ## Additional resources
 

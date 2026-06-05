@@ -1,9 +1,9 @@
 ## Task
 
-Read the product and customer description carefully. Define a tight ICP following `references/icp-guide.md`.
+Read `references/icp-guide.md` before writing anything. Then read the product and customer description carefully and define a tight ICP.
 
 Produce:
-1. **ICP statement** — one sentence: who they are, what they're trying to do, and why they buy from you
+1. **ICP statement** — use the three-line template from the guide (`For [X] that [trigger], [Product] is the [category] they use to [outcome], unlike [alternative] which [shortcoming]`)
 2. **Firmographic attributes** — company size, industry, stage, geography, tech stack (B2B) or demographics (B2C)
 3. **Behavioral attributes** — what they do that signals they are a fit (actions, patterns, triggers)
 4. **Situational triggers** — the event that makes them start looking for a solution now

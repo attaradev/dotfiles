@@ -81,7 +81,7 @@ For engineering managers, tech leads, architects, or staff-level peers. Include 
 
 For managers, PMs, HR, executives, or investors. No jargon. Translate everything to business outcomes: speed, money, risk, and customer experience.
 
-**Tone:** Plain language, present-tense impact, numbers where available. If a number isn't known, give a directional qualifier ("significantly", "eliminating", "from days to minutes").
+**Tone:** Plain language, present-tense impact, numbers where available. If a number isn't known, use a concrete directional qualifier ("from days to minutes", "no longer requires an engineer", "eliminating manual steps") — not vague intensifiers like "significantly".
 
 ```markdown
 ## What I Delivered — [Period]

@@ -46,6 +46,17 @@ Choose one with a one-sentence rationale:
 - Do not flag naming unless it meaningfully impairs understanding — do not flag `x` in a 3-line lambda; do flag `x` in a 50-line algorithm where its role is ambiguous
 - If a section has no findings, omit the heading entirely — do not write "None found"
 - Approval recommendation must be explicit — do not hedge with "it depends"
+- When context is incomplete, state what you cannot verify and why: "I cannot assess auth bypass risk without seeing the middleware stack"
+
+## Anti-patterns
+
+Avoid these failure modes:
+
+- **Inventing findings**: flagging issues with no line in the diff — e.g., "this might have a race condition" with no shared state in the diff
+- **Duplicate-flagging**: listing the same root cause in both Blockers and Major concerns
+- **Vague blockers**: "this could cause data loss" with no specific fix — every blocker must state what to change
+- **Cosmetic noise**: flagging import order, blank lines, or variable names that don't affect readability — these belong in a linter, not a review
+- **Hedged approval**: writing "looks mostly good but there are some concerns" instead of choosing one of the four explicit recommendation options
 
 ## Additional resources
 

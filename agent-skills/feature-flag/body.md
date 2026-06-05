@@ -1,6 +1,6 @@
 ## Task
 
-Read the feature description carefully. Design a complete feature flag implementation following `references/feature-flag-guide.md`.
+Read `references/feature-flag-guide.md` before writing anything. Then read the feature description and design a complete feature flag implementation following the guide.
 
 Produce:
 1. **Flag definition** — name, type, targeting rules, and default value
@@ -14,12 +14,12 @@ If the request is to clean up an existing flag: identify all call sites, produce
 ## Quality bar
 
 - Every flag must have a defined lifetime — flags are technical debt from day one
-- Targeting rules must be specific: user ID, org ID, percentage, or attribute — not "admins"
+- Targeting rules must be specific and use an explicit predicate — `user.role == "admin"` not just `"admins"`; percentage rollout must hash on a stable identifier (user ID, not session ID)
 - The cleanup date must be set before the flag ships
 - Flag evaluation must be in one place — scattered `if flag_enabled` calls across many layers is an anti-pattern
 - Test both flag states: do not only test the "enabled" path
 - Flags that cannot be removed without a code change are a liability — the cleanup plan must include a target date or trigger condition
 
-## Additional resources
+## Reference
 
-- **`references/feature-flag-guide.md`** — Flag types, naming conventions, evaluation patterns, rollout strategies, targeting rules, and cleanup checklist.
+`references/feature-flag-guide.md` — flag types, naming conventions, evaluation patterns, rollout strategies, targeting rules, lifetime targets, and cleanup checklist.

@@ -1,6 +1,8 @@
 ## Task
 
-Read the target file completely. Identify all exported/public functions, methods, types, and constants that lack documentation comments. Do not touch already-documented symbols.
+Read `references/docstring-conventions.md` first, then read the target file completely before writing anything.
+
+Identify all exported/public functions, methods, types, and constants that lack documentation comments. Do not touch already-documented symbols.
 
 Match the documentation style and convention from `references/docstring-conventions.md` for the detected language. If the file already has some doc comments, match their style exactly — do not introduce a different format.
 
@@ -12,7 +14,7 @@ Write documentation comments that explain:
 - **Errors** — what errors can be returned and what they mean
 - **Caveats** — thread safety, ownership, side effects, performance notes
 
-Generate the docstring content and show it alongside each function. Do not write to the file directly — let the user apply the changes. Do not add comments that merely restate the function name ("GetUser returns the user") — add them only when there is something meaningful to say.
+Generate the docstring content and show it alongside each function. Do not write to the file directly — let the user apply the changes. Do not add comments that merely restate the function name ("GetUser returns the user") — add a docstring only when it adds information that is not already in the name, types, or surrounding code.
 
 ## Quality bar
 
@@ -21,6 +23,14 @@ Generate the docstring content and show it alongside each function. Do not write
 - Doc the *why* and *caveats*, not the *what* when the name is already self-explanatory
 - For complex functions, a single sentence of context is worth more than three lines of parameter descriptions
 - A function is self-documenting if: (1) the name clearly states what it does, (2) parameters are typed and clearly named, (3) return values are obvious — only add a docstring if there are non-obvious caveats, side effects, or thread-safety constraints
+
+## Anti-patterns
+
+- **Restatement**: `// GetUser returns the user` on `func GetUser(id string) (*User, error)` — says nothing the signature doesn't already say; omit the docstring entirely instead
+- **Describing implementation, not behaviour**: `// loops over items and calls save()` — document what the caller needs to know, not how the body is written
+- **Invented errors**: listing error conditions that are not actually returned by the function
+- **Style drift**: mixing JSDoc `/** */` with `//` comments in the same file, or switching from Google-style to NumPy-style mid-file
+- **Cargo-culting every symbol**: documenting obvious helpers like `func min(a, b int) int` just to hit 100% coverage
 
 ## Additional resources
 

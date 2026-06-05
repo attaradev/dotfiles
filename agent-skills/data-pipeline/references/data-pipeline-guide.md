@@ -85,7 +85,7 @@ Never remove or rename without auditing downstream consumers first.
 
 | Error type | Example | Strategy |
 |-----------|---------|---------|
-| **Transient** | Network timeout, rate limit | Retry with exponential backoff (max 3–5 retries) |
+| **Transient** | Network timeout, rate limit | Retry with exponential backoff (max 4 retries, then DLQ) |
 | **Data quality** | Null in required field, type mismatch | Route to DLQ; alert; do not halt pipeline |
 | **Schema mismatch** | Unknown field, version incompatibility | Route to DLQ; alert on-call; investigate |
 | **Infrastructure** | DB unreachable, out of disk | Halt pipeline; page on-call |

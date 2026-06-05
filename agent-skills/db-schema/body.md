@@ -1,6 +1,6 @@
 ## Task
 
-Read the domain description and any existing schema carefully. Design the data model following the principles in `references/schema-design-guide.md`.
+Read `references/schema-design-guide.md` in full before writing anything. Then read the domain description and any existing schema carefully. Design the data model following the principles in that guide.
 
 Produce:
 1. **Entity model** — the entities, their attributes, and cardinality of relationships
@@ -17,8 +17,18 @@ For each design choice, state the trade-off. A JSONB column is not always wrong;
 - Every table must have a primary key — state the trade-off: surrogate keys (simpler, auto-indexed) vs. natural keys (data-level uniqueness guarantee); justify the choice
 - Foreign key constraints must be explicit — never rely on application-level enforcement alone
 - Index every foreign key column unless you have a measured reason not to
-- Avoid nullable columns where possible — a separate join table expresses optionality more cleanly
+- Prefer a separate join table over a nullable FK column — a nullable FK means "sometimes this relationship exists," which is better modelled as an optional association table
 - If adding columns to an existing table with millions of rows, note the migration risk and safe strategy
+
+## Anti-patterns
+
+Avoid these in the output:
+
+- **JSONB to skip a migration** — adding a `details JSONB` catch-all instead of defining columns; future queries will need `->>`/`#>>` everywhere and lose type safety
+- **Missing FK indexes** — Postgres does not auto-create indexes on FK columns; omitting them silently makes join queries do sequential scans
+- **`NOT NULL` column with no default on a large table** — causes a full table rewrite; always show the safe add-nullable → backfill → constrain sequence instead
+- **Storing money as `FLOAT` or `DECIMAL`** — use integer cents (`BIGINT`) to avoid floating-point rounding
+- **Undocumented denormalisation** — if a column duplicates data that lives in another table, the schema must include a comment explaining why and how consistency is maintained
 
 ## Additional resources
 

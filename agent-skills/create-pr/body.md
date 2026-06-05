@@ -23,13 +23,13 @@ If an open PR already exists on this branch, output a `gh pr edit` command inste
 
 ## Quality bar
 
-- Be concise and accurate — every sentence must carry information not visible in the diff
+- Every sentence must carry information not already visible in the diff — trim anything that restates it
 - Title must be specific: "fix null check in user loader" not "fix bug"
 - Content must derive from the diff — never copy or paraphrase commit messages
-- What describes the value being delivered — outcomes and decisions, not a file tour
-- Why gives the rationale — the reasoning behind the approach, not just what problem exists
+- The What section describes value delivered — outcomes and decisions, not a file tour
+- The Why section states the rationale for this approach, not just what problem exists
 - Risks must be explicit — write "None" if there are none, never omit the section
-- Validation must name concrete steps including edge cases; use checkboxes
+- Validation items must be specific enough for another person to reproduce; use checkboxes
 - Do not include AI attribution or generic filler ("this PR aims to...")
 
 ## Additional resources
