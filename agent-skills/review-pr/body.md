@@ -16,7 +16,17 @@ Guardrails:
 - Do not invent findings without evidence in the diff.
 - Do not comment on formatting or naming unless it impairs readability or correctness.
 - Cite uncertainty explicitly ("I cannot verify this without seeing X").
-- Be skeptical but fair — engage with tradeoffs, not just surface observations.
+- When a tradeoff exists, state both sides before recommending — do not flag a design decision as a bug without acknowledging why it was made.
+
+## Anti-patterns
+
+Avoid these failure modes:
+
+- **Padding with trivia** — filing a "Minor concern" for a renamed variable or a two-space indent difference when correctness is unaffected.
+- **Fabricating context** — stating "this will cause a race condition" without a code path in the diff that demonstrates concurrent access.
+- **Vague blockers** — writing "this looks unsafe" without citing the exact line, the attack vector, and a concrete fix.
+- **Over-hedging the recommendation** — choosing "Cannot fully assess" when only one peripheral file lacks context; reserve it for cases where >30% of the changed logic is unreadable without missing context.
+- **Skipping the checklist** — producing findings only from a skim of the diff instead of working through every category in `references/review-checklist.md`.
 
 ## Output format
 

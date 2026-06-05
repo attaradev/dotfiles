@@ -65,6 +65,17 @@
 
 Five zones: **Keep**, **Less of**, **More of**, **Start**, **Stop**
 
+**Agenda (75 min)**
+
+| Time | Activity |
+|------|---------|
+| 0–5 min | Warm-up + set the stage |
+| 5–15 min | Silent brainstorm — sticky notes across all five zones |
+| 15–30 min | Share and cluster by zone |
+| 30–55 min | Discuss top 2 clusters per zone (timebox each zone to ~5 min) |
+| 55–70 min | Agree on action items |
+| 70–75 min | Retro on the retro |
+
 **Prompts**
 
 *Keep* — What is working exactly as it should? Protect this.

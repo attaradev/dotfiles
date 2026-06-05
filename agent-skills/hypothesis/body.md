@@ -23,6 +23,14 @@ Suggest saving the output to `docs/hypothesis-<slug>.md`.
 - Success criteria must be falsifiable, not aspirational — "we hope to see 40% engagement" is not a criterion; "we will ship if engagement ≥ 30%; we will stop if ≤ 15%" is
 - Separate learning goals from business goals: state both explicitly — "We want to learn whether X" is different from "We want to achieve Y"; conflating them produces success criteria that measure the wrong thing
 
+## Anti-patterns
+
+- **Hypothesis without a mechanism** — "We believe users will like feature X" has no "because Y" clause; it cannot be falsified or acted on when it fails
+- **Success criteria set after the fact** — defining what "good" looks like only after seeing results is HARKing (Hypothesising After Results are Known); flag if the idea owner is doing this
+- **Testing the wrong assumption** — defaulting to an A/B test of the full feature when the riskiest assumption is desirability, not impact at scale; always match the test type to the riskiest assumption, not to what's easiest to build
+- **Compound experiments** — testing two changes at once and treating a positive result as evidence for both; each experiment must isolate one variable
+- **Vanity metrics as primary metrics** — "page views increased" or "users spent more time on the page" without a clear link to the outcome stated in the hypothesis; the primary metric must directly measure the belief being tested
+
 ## Additional resources
 
 - **`references/hypothesis-template.md`** — Hypothesis format, assumption mapping, experiment types, and worked examples.

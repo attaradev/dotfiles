@@ -188,6 +188,12 @@ This runbook should be updated:
 
 ## Writing guidance
 
+### Never invent operational values
+
+Do not guess alert thresholds, SLO targets, dashboard URLs, on-call contacts, or PagerDuty escalation policies. These must come from the team. Use `[TODO: fill in]` for any value you cannot derive from code or config.
+
+A runbook with plausible-but-wrong thresholds or fake escalation contacts is actively dangerous — the on-call engineer will act on bad data.
+
 ### Commands must work
 
 Every command in a runbook must be tested and correct. A runbook with broken commands is worse than no runbook — it wastes time and erodes trust.

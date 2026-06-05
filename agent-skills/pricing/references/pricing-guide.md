@@ -114,9 +114,9 @@ Enterprise  ←  removes limits, adds security/compliance, unlocks sales convers
 
 Before committing to price points:
 
-1. **Van Westendorp price sensitivity meter** — ask 4 questions: too cheap / cheap / expensive / too expensive; find the acceptable range
-2. **A/B test landing page price** — two cohorts, different price points, measure conversion rate difference
-3. **Willingness-to-pay interview** — ask 10 current customers "at what monthly price would you cancel?" — answers cluster into natural tiers
-4. **Competitor analysis** — map competitor price points vs features; find the gap you can own
+1. **Van Westendorp price sensitivity meter** — ask 4 questions: too cheap / cheap / expensive / too expensive; find the acceptable range; minimum n=50 responses for signal
+2. **A/B test landing page price** — two cohorts, different price points, measure conversion rate difference; need ≥ 200 visitors per variant for 80% power
+3. **Willingness-to-pay interview** — ask 10–15 current customers "at what monthly price would you cancel?" — answers cluster into natural tiers
+4. **Competitor analysis** — map competitor price points vs features; find the gap you can own; must cover ≥ 3 direct competitors
 
 Test annually, especially after product-market fit shifts. Most SaaS products are underpriced at the $10–$49/mo range.

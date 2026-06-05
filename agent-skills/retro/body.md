@@ -1,6 +1,6 @@
 ## Task
 
-Read the context. Select the most appropriate retrospective format from `references/retro-formats.md` based on the situation (or use the format specified in the user request).
+Read `references/retro-formats.md` completely before producing any output. Select the most appropriate retrospective format based on the situation (or use the format specified in the user request).
 
 Produce:
 1. **Facilitation guide** — agenda, timing, and instructions for the facilitator
@@ -19,7 +19,15 @@ If prior retro notes exist, surface incomplete action items at the start of the 
 - Action items: one owner, one concrete action, one due date
 - Prompts must be open-ended — not "was the sprint good?" but "what made progress feel easy or hard?"
 - The facilitator guide must include a timeboxing schedule — retros without time limits run long
-- Include a psychological safety note: the facilitator should state that the retro is blameless
+- Include a psychological safety note: the facilitator guide must include the exact opening line "This is a safe space. We're here to improve the system, not evaluate individuals." — not a paraphrase
+
+## Anti-patterns
+
+- Generating more than 3 action items — the reference caps it at 3; enforce this
+- Action items without a named owner ("the team will…") — rewrite to a single person
+- Producing prompts that can be answered yes/no ("Did standups help?") — rephrase as open-ended
+- Omitting the timeboxing schedule from the facilitation guide
+- Selecting the Timeline format for a regular sprint retro — it is for projects/quarters/incidents only
 
 ## Additional resources
 

@@ -14,11 +14,19 @@ Produce:
 
 ## Quality bar
 
-- State every assumption explicitly — a model is only as useful as its assumptions are transparent
-- Show the waterfall, not just the net number — the composition of MRR growth tells the real story
-- NRR above 100% is a compounding asset; below 90% is a structural problem — call it out
-- CAC payback period over 18 months is a warning sign at seed/Series A; note the benchmark
-- Scenarios must use different input assumptions, not arbitrary revenue multipliers
+- Every assumption must be labeled as either "actual" or "assumed (reason)" — unlabeled numbers are not acceptable
+- Show all five waterfall components (new, expansion, contraction, churn, net new) — a single net MRR number is an incomplete output
+- If NRR < 90%, state: "NRR of X% is below the 90% floor — churn must be addressed before scaling acquisition"; if NRR > 120%, note it as best-in-class
+- If CAC payback > 18 months, state: "Payback of X months exceeds the 18-month seed/Series A benchmark — capital efficiency is a risk"
+- Scenarios must vary input assumptions (growth rate, churn rate); multiplying the base ARR by a factor is not a scenario
+
+## Anti-patterns
+
+- **Net-only MRR**: reporting "$5K net new MRR" without waterfall components — hides whether growth is driven by new logos, expansion, or churn masking
+- **Blended CAC only**: computing a single blended CAC without channel breakdown — obscures which acquisition channels are efficient or underwater
+- **Assumption-free scenarios**: labeling "upside" and "downside" without changing input assumptions — produces meaningless scenario bands
+- **Silent assumptions**: using numbers from context without explicitly flagging them as actuals or estimates
+- **Rule of 40 below $10M ARR**: applying Rule of 40 as a primary health signal for sub-$10M ARR businesses — it is not relevant at that stage (growth rate dominates)
 
 ## Additional resources
 

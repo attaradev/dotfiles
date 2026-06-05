@@ -12,10 +12,18 @@ Produce:
 
 ## Quality bar
 
-- Be specific enough to be useful: "B2B SaaS companies with 10–200 employees" is better than "small businesses"
-- The situational trigger is the most important attribute — it explains why they buy now, not someday
-- The anti-ICP is not optional — it prevents wasted cycles on bad-fit customers who churn early
-- If you cannot name 3 real customers who fit the ICP, it is too abstract
+- Every attribute must be specific enough to disqualify: "B2B SaaS companies with 10–200 employees" qualifies/disqualifies; "small businesses" does not
+- The situational trigger must name a concrete event: "passed $1M ARR" or "hired 5th salesperson" — not "growing fast" or "feeling pain"
+- The anti-ICP is not optional — list at least 2 entries with the column format from the guide (why they look similar, why they churn)
+- If you cannot name 3 real customers who fit the ICP, it is too abstract — narrow it further
+
+## Anti-patterns
+
+- **ICP too broad**: a scoring rubric that qualifies most companies is not an ICP — if the description fits 80% of the market, it has no targeting power
+- **Missing or vague trigger**: "they need a solution" is not a trigger; a trigger is a named, observable event that creates urgency now
+- **Anti-ICP skipped or trivial**: listing "Fortune 500 companies" as anti-ICP when you are a startup is obvious; the anti-ICP should name near-miss segments that actually enter your pipeline
+- **ICP statement as elevator pitch**: the ICP statement must name the alternative and its shortcoming — without a contrast, it is positioning copy, not an ICP
+- **Scoring rubric with no disqualifier**: if the rubric has no negative score or anti-ICP flag, it cannot eliminate bad fits
 
 ## Additional resources
 

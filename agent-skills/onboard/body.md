@@ -1,6 +1,14 @@
 ## Task
 
-Gather repository context fully before writing anything. Read key source files as needed to understand the architecture before describing it. Do not summarize the README — synthesize from the actual code.
+Gather repository context fully before writing anything. Follow this reading order before producing any output:
+
+1. Root manifest (`package.json`, `go.mod`, `pyproject.toml`) — identify dependencies and language
+2. `README` and `Makefile` — understand how to run and test the project
+3. Entry point(s) (`cmd/`, `main.go`, `index.ts`, `app.py`) — trace the first request or command
+4. Core domain / business logic — the code with the fewest dependencies
+5. Infrastructure layer (DB, queues, external clients) — last, once you understand what it serves
+
+Do not summarize the README — synthesize from the actual code. See `references/onboard-guide.md` for deeper reading strategies and ASCII diagram conventions.
 
 If the user request names a focus area, anchor the explanation there while covering enough context to make it comprehensible.
 
@@ -50,8 +58,16 @@ Recommended first PR or first exploration task for someone new to this codebase.
 
 - Read the actual code before describing it — do not summarize the README alone.
 - Every structural claim must be grounded in the file tree or source, not assumed.
-- Gotchas must be specific and non-obvious — skip anything derivable from reading one file.
-- If the user request names a focus area, stay anchored to it rather than producing a generic overview.
+- Gotchas must be specific and not derivable from reading one file — skip obvious things like "read the README" or "the project uses TypeScript".
+- If the user request names a focus area, every section must connect back to that area; omit unrelated subsystems rather than padding with a generic overview.
+
+## Anti-patterns
+
+- **README-paraphrase**: Copying the README's own description into "What this is" — synthesize from actual code structure instead.
+- **Invented structure**: Listing directories or layers that don't exist in the file tree (e.g., describing a `services/` layer when none exists).
+- **Vague gotchas**: "The codebase can be complex in places" or "make sure to read the docs" — every gotcha must name a specific file, function, or behavior.
+- **Generic entry points**: Listing `README.md` or `package.json` as key entry points — reserve for the 3–5 files a contributor must read to understand control flow.
+- **Depth mismatch**: Giving a full file-by-file walkthrough for a 100k-line monorepo, or a two-sentence overview for a 300-line script.
 
 ## Additional resources
 

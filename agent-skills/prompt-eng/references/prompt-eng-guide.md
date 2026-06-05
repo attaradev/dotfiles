@@ -26,7 +26,7 @@ A well-structured prompt has these components (include only what is needed):
 | Contradictory instructions | Model picks one and ignores the other | Audit for contradictions; order instructions by priority |
 | Too many instructions | Model follows some, ignores others | Reduce to the 3–5 most critical; move the rest to examples |
 | No examples | Model interprets the task differently each run | Add 1–3 few-shot examples that demonstrate the exact output shape |
-| Role that adds nothing | "You are a helpful assistant" | Use a specific role when it genuinely shifts output: "You are a senior database engineer reviewing a migration plan for correctness and safety risks" |
+| Role that adds nothing | "You are a helpful assistant" produces the same output as no role | Replace with a scoped role only when it changes behaviour: "You are a senior database engineer reviewing a migration plan for correctness and safety risks — do not comment on style" |
 
 ---
 

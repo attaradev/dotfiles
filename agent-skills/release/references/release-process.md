@@ -92,6 +92,17 @@ Map commit types to sections, but rewrite for clarity:
 
 Group by impact, not by commit order. Merge multiple small commits into a single meaningful entry.
 
+### Comparison links (required)
+
+When adding a new version, update the comparison link block at the bottom of CHANGELOG.md. The `[Unreleased]` link must always point from the new version to HEAD:
+
+```
+[Unreleased]: https://github.com/user/repo/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/user/repo/compare/v2.4.0...v2.4.1
+```
+
+Every new version entry must have a corresponding comparison link. Missing links break the clickable diff in GitHub.
+
 ---
 
 ## Release commit and tag

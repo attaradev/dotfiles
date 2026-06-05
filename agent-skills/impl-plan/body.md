@@ -1,6 +1,6 @@
 ## Task
 
-Gather repository context and understand the existing codebase before planning. Then build the plan using the framework in `references/planning-framework.md`.
+Read `references/planning-framework.md` before writing anything. Then gather repository context and understand the existing codebase. Then build the plan using the framework.
 
 ## Output format
 
@@ -47,9 +47,17 @@ Decisions that block progress or materially change the plan. Flag assumptions th
 ## Quality bar
 
 - Recommended approach must be a direct recommendation with a one-sentence rationale — not "it depends"
-- Phase exit criteria must be specific and verifiable, not vague milestones
+- Phase exit criteria must be observable, not aspirational. Bad: "caching layer is working". Good: "cache hit rate ≥ 80% under load test at 100 rps"
 - Risks must be ranked and each must have a concrete mitigation or contingency
 - Open questions must actually block progress — do not list things that do not need resolution before starting
+
+## Anti-patterns
+
+- **Fake recommendation**: "Option 1 or Option 2 are both good choices depending on your needs" — pick one and justify it
+- **Untestable exit criteria**: "Phase complete when the feature feels stable" — every exit criterion must be observable without human judgment
+- **Orphan risks**: listing a risk with no mitigation ("risk: third-party API could change") — every risk entry needs a contingency that doesn't rely on luck
+- **Single mega-phase**: packing all work into one phase with 10+ steps — if a phase cannot be validated in isolation, split it
+- **Placeholder open questions**: "we need to think more about the architecture" is not an open question — only list questions specific enough to be answered with a decision
 
 ## Additional resources
 

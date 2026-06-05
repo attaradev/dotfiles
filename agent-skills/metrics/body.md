@@ -1,5 +1,7 @@
 ## Task
 
+Read `references/metrics-framework.md` before writing anything.
+
 Read the topic carefully. Think about what the feature or product area is ultimately trying to achieve for users and for the business.
 
 Produce a complete measurement plan following the framework in `references/metrics-framework.md`:
@@ -11,7 +13,7 @@ Produce a complete measurement plan following the framework in `references/metri
 5. **Anti-metrics** — what you explicitly will not optimise for, and why
 6. **Measurement plan** — how each metric will be collected and reported
 
-Challenge the obvious metrics. "Number of users" is not a north star; it does not tell you whether users got value. "Active users who completed [core action] at least once per week" is closer.
+Challenge the obvious metrics. "Number of users" is not a north star; it does not tell you whether users got value. "Active users who completed [core action] at least once per week" is closer. Test every candidate north star: if it can rise through manipulation (spam, dark patterns, inflated counts) without the business becoming healthier, reject it.
 
 ## Quality bar
 
@@ -21,6 +23,8 @@ Challenge the obvious metrics. "Number of users" is not a north star; it does no
 - Every metric must have a defined measurement method — if you cannot measure it, it is not a metric
 - Avoid vanity metrics: total sign-ups, total page views, total features shipped
 - Anti-metrics must be listed: metrics that would look good but would be gamed or would decay the north star if optimised directly
+- Every metric must include a baseline: without a baseline reading, you cannot determine whether the metric moved
+- Define metrics before the feature ships — post-hoc metric selection is p-hacking
 
 ## Additional resources
 

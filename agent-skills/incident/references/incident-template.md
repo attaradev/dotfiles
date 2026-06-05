@@ -112,8 +112,7 @@ Each action item must have a type, owner, and target date.
 
 ## What went well
 
-[Honest acknowledgement of things that worked — fast detection, clear communication, good
-runbook coverage. This section matters: it reinforces good practices.]
+[Things that limited impact or sped up resolution — e.g., "Alert fired within 90 seconds of first user impact", "Runbook covered this failure mode exactly", "On-call had rollback deployed within 8 minutes". Skip this section if nothing notable applies.]
 
 - [Item]
 - [Item]

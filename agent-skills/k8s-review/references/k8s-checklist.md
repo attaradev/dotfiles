@@ -212,7 +212,7 @@ automountServiceAccountToken: false  # disable if not needed
 |-------|----------|-------|
 | No `app` or `version` labels | Medium | Cannot filter metrics/logs by app version |
 | No annotations for Prometheus scraping | Low | Metrics not collected |
-| No structured logging configuration | Low | Log aggregation may fail |
+| No `LOG_FORMAT` or equivalent env var set to `json` | Low | Log aggregation pipeline expects JSON; unstructured output breaks parsing |
 
 Standard labels:
 ```yaml

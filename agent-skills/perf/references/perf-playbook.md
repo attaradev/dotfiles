@@ -49,6 +49,21 @@ node --prof-process isolate-*.log > processed.txt
 # Or: clinic.js flame -- node app.js
 ```
 
+**Rust**
+```sh
+# CPU profile with flamegraph (cargo-flamegraph)
+cargo flamegraph --bin my_bin
+
+# Benchmarks (criterion)
+cargo bench                       # runs all criterion benchmarks
+# Results written to target/criterion/
+
+# Allocation profiling (heaptrack or DHAT via valgrind)
+cargo build --release
+heaptrack ./target/release/my_bin
+heaptrack_gui heaptrack.my_bin.*.zst
+```
+
 **Database queries**
 ```sql
 EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT) SELECT ...;

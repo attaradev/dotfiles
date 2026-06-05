@@ -87,15 +87,15 @@ Getting started
 
 Trigger emails on behaviour, not just time. If the user completes the step, suppress the nudge.
 
-| Email | Timing | Goal | Subject line pattern |
-|-------|--------|------|---------------------|
-| Welcome | Immediately on signup | Set expectations; link to first action | "One thing to do in [Product] right now" |
-| Activation nudge | Day 1 if not activated | Drive to activation milestone | "You're one step away from [outcome]" |
-| Social proof | Day 2 | Reduce doubt with a customer story | "How [similar company] did X with [Product]" |
-| Feature spotlight | Day 4 if activated | Expand usage beyond activation | "[Feature] saves [ICP role] 2 hours a week" |
-| Trial expiry warning | Day 10 (for 14-day trial) | Convert; remove objections | "Your trial ends in 4 days — here's what you get" |
-| Hard expiry | Day 14 | Final conversion push | "Your trial has ended — keep your [data/work]" |
-| Win-back | Day 21 (no conversion) | Re-engage with new hook | "We added X since you tried [Product]" |
+| Email | Timing | Goal | Subject line pattern | Suppress if |
+|-------|--------|------|---------------------|-------------|
+| Welcome | Immediately on signup | Set expectations; link to first action | "One thing to do in [Product] right now" | — |
+| Activation nudge | Day 1 if not activated | Drive to activation milestone | "You're one step away from [outcome]" | User hit activation milestone |
+| Social proof | Day 2 | Reduce doubt with a customer story | "How [similar company] did X with [Product]" | — |
+| Feature spotlight | Day 4 if activated | Expand usage beyond activation | "[Feature] saves [ICP role] 2 hours a week" | User has not yet activated |
+| Trial expiry warning | Day 10 (for 14-day trial) | Convert; remove objections | "Your trial ends in 4 days — here's what you get" | User already upgraded |
+| Hard expiry | Day 14 | Final conversion push | "Your trial has ended — keep your [data/work]" | User already upgraded |
+| Win-back | Day 21 (no conversion) | Re-engage with new hook | "We added X since you tried [Product]" | User converted or re-activated |
 
 ### Email writing rules
 - Subject lines: specific outcome, not product announcement

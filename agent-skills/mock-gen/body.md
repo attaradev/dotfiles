@@ -1,6 +1,6 @@
 ## Task
 
-Read the target interface or service carefully. Generate the appropriate test double for the detected language and framework.
+Read the target interface or service file completely before writing anything. Generate the appropriate test double for the detected language and framework.
 
 Follow the patterns in `references/mock-gen-guide.md`:
 
@@ -17,6 +17,20 @@ Follow the patterns in `references/mock-gen-guide.md`:
 - Fakes have working logic (e.g. in-memory store); use them only when stub complexity grows unwieldy
 - Never put business logic in a mock — that belongs in the real implementation
 
+## Anti-patterns
+
+- **Mock without an assertion** — a mock that never calls `AssertExpectations` / `assert_called_*` is just a stub; name it correctly or add the assertion
+- **`mock.Anything` / `ANY` for every argument** — the test then proves nothing about what was passed; use specific matchers for at least the meaningful arguments
+- **Business logic inside the double** — if the mock is branching on input to decide what to return, that logic belongs in a fake or the real implementation
+- **Re-using a mock that already recorded calls** — always create a fresh double per test; shared mocks accumulate state across tests and produce false passes
+
+## Output format
+
+Produce three blocks in order:
+1. The mock/stub/fake struct or class (complete, with all interface methods)
+2. A test snippet showing the happy path and at least one error/failure case
+3. A one-sentence boundary note: what this double owns and what it must never do
+
 ## Additional resources
 
-- **`references/mock-gen-guide.md`** — Double taxonomy, patterns by language (Go/TypeScript/Python/Ruby), spy vs mock decision guide, and common pitfalls.
+- **`references/mock-gen-guide.md`** — Double taxonomy, patterns by language (Go/TypeScript/Python), spy vs mock decision guide, and common pitfalls.

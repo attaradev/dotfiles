@@ -1,6 +1,6 @@
 ## Task
 
-Read the integration scope carefully. Understand what data flows between systems, the latency requirements, and the failure consequences.
+Read `references/integration-framework.md` before writing anything. Then read the integration scope carefully. Understand what data flows between systems, the latency requirements, and the failure consequences.
 
 Produce an integration design following the framework in `references/integration-framework.md`:
 
@@ -22,6 +22,14 @@ The failure mode analysis is the most important section. A good integration desi
 - Schema must include a version field or equivalent mechanism for evolution
 - Dead-letter queue / poison message handling must be explicit
 - Every integration point must specify its failure mode and the system's behavior when that dependency is unavailable
+
+## Anti-patterns
+
+- **Skipping idempotency for "simple" operations** — if a message can be delivered more than once (at-least-once queues, webhook retries), every consumer must handle duplicates. "This will only fire once" is not a design.
+- **Synchronous call to a slow or unreliable dependency** — if the callee has P99 latency > 200ms or a monthly error rate > 0.1%, a synchronous call will drag the caller's SLA down. Switch to async or add a circuit breaker with a defined fallback.
+- **Failure mode listed as "N/A" or "should not happen"** — every component in the integration path must have an explicit failure scenario and recovery path. Omitting one means the on-call engineer has no runbook when it does happen.
+- **Implicit schema contract** — consumers that parse raw fields without a version field will break silently on any producer change. Every schema must include `version` and consumers must handle unknown fields without crashing.
+- **Dead-letter queue without an alert** — a DLQ with no alerting is a black hole. Poison messages accumulate unnoticed; the integration appears healthy until data loss is discovered.
 
 ## Additional resources
 

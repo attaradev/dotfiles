@@ -117,7 +117,7 @@ Link to supporting materials: research findings, data analysis, competitive tear
 
 | Feature size | TL;DR | Problem | Goals | Stories | Constraints | Metrics |
 |-------------|-------|---------|-------|---------|------------|---------|
-| Small tweak | Required | 1 para | 1–2 | 1–2 | As needed | 1–2 |
+| Small tweak | Required | 1 para | 1–2 | 1–2 | Include if non-obvious | 1–2 |
 | Medium feature | Required | 2 paras | 2–3 | 3–5 | Required | 2–3 |
 | Large feature | Required | Full | Full | Full set | Required | Full |
 | Platform / API | Required | Full | Full | Full + edge cases | Extensive | Full |

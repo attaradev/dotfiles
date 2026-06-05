@@ -1,6 +1,6 @@
 ## Task
 
-Read the feature description carefully. Before writing, consider:
+Read `references/prd-template.md` before writing anything. Then read the feature description carefully. Before writing, consider:
 - Who is this for and what job does it help them do?
 - What does success look like in six months?
 - What is explicitly out of scope?
@@ -15,7 +15,7 @@ Suggest saving the output to `docs/prd-<slug>.md`.
 
 - Every goal must have a metric and a target value — "improve onboarding" is not a goal; "increase day-7 activation rate from 40% to 60% by Q3" is
 - Non-goals are as important as goals — they prevent scope creep
-- User stories must cover the happy path, error states, and edge cases
+- Every user story must have Given/When/Then acceptance criteria for at least the happy path, one error state, and one edge case
 - Every constraint must have a reason — "must support IE11 because 18% of our enterprise users are on it"
 - Open questions must be assigned to an owner and have a resolution date
 

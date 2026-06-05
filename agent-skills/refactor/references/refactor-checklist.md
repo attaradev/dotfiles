@@ -80,6 +80,6 @@ After completing the refactor:
 
 1. Run the specific test suite for the changed module
 2. Run the full project test suite if feasible
-3. Check that no existing tests were modified as part of the refactor (a test change that makes a refactor "pass" is a red flag)
+3. Check that no existing test assertions were modified as part of the refactor — if tests go red after a structural-only change, restore the behavior rather than adjusting expectations
 4. Do a final diff review — read it as a reviewer would. Does every change make sense? Is anything unexpected?
 5. If the refactor touches a public interface, verify that dependent packages or services still build

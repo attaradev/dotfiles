@@ -77,9 +77,9 @@ Choose the cheapest method that can produce a falsifiable result:
 ## Interpretation guide
 
 ### If the result is positive
-- Does it confirm the specific assumption, or could another explanation account for it?
-- Is the sample representative enough to generalise?
-- What is the next experiment to run before committing to build?
+- Name at least one alternative explanation that could account for the result without the hypothesis being true; if none can be ruled out, the result is not yet confirmatory
+- State whether the sample matches the target segment — a positive result from the wrong population does not validate the hypothesis
+- Define the next experiment to run before committing to build; a single positive result is a signal to continue testing, not a build decision
 
 ### If the result is negative
 - Does this kill the idea, or just this approach?

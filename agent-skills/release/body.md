@@ -19,9 +19,17 @@ Do not push or publish — present the final `git push` and `gh release create` 
 - Semantic version must follow semver.org strictly — do not invent version schemes
 - CHANGELOG format must follow Keep a Changelog (keepachangelog.com)
 - The release commit must only contain version bump and CHANGELOG — no other changes
-- Release notes must be readable by a non-engineer: group by impact, not by commit type
+- CHANGELOG entries must describe user-visible impact, not commit internals: "Prevent double-charge on retry" not "fix(payments): idempotency key check"
 - Flag any commits that suggest a breaking change that was not tagged as `feat!` or `BREAKING CHANGE`
 - For monorepos, confirm the authoritative version file before bumping — do not update multiple version files without explicit confirmation
+
+## Anti-patterns
+
+- **Sneaking in fixes**: do not include any code changes in the release commit — only version file(s) and CHANGELOG
+- **Raw commit messages in CHANGELOG**: never copy `feat(scope): message` verbatim; always rewrite as human-readable impact
+- **Silent CHANGELOG link omission**: every new version section requires a comparison link at the bottom (e.g. `[2.4.1]: https://github.com/...`)
+- **Pushing without user confirmation**: always present `git push` and `gh release create` as commands for the user to run — never execute them
+- **Guessing the version**: if commit history is ambiguous (no conventional commits, or mixed signals), state the ambiguity and ask before bumping
 
 ## Additional resources
 

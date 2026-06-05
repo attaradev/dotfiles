@@ -1,5 +1,7 @@
 ## Task
 
+Read `references/prioritization-frameworks.md` before writing anything — it defines the available frameworks, their selection criteria, and scoring tables.
+
 Read the items carefully. Before scoring, determine:
 - What framework fits best? (See `references/prioritization-frameworks.md` for guidance on choosing)
 - What is the strategic context — if OKRs are available, use them to weight impact scores; if not, default to MoSCoW. State which framework is being used and why.
@@ -17,10 +19,10 @@ After scoring, produce:
 ## Quality bar
 
 - State the framework chosen and why it fits this context
-- Flag assumptions made when data is missing — do not fabricate confidence values
-- Surface at least one non-obvious insight: a finding that contradicts initial intuition, reveals a hidden dependency, or exposes a sequencing constraint that changes the priority order
-- If two items are clearly equivalent, say so rather than forcing an artificial rank
-- A good prioritization output drives a decision — it should end with a clear recommendation
+- When data is missing, state the assumption explicitly (e.g., "Reach assumed at 500 users/quarter — adjust if analytics show otherwise") rather than silently filling in a value
+- Surface at least one finding that contradicts the initial order or reveals a hidden constraint — if the ranked output matches the order items were submitted, state why the input order was correct rather than skipping this check
+- If two items score within 10% of each other under RICE/ICE, call them equivalent — do not force a rank between them
+- End with a single clear recommendation sentence: what to do first and why
 
 ## Additional resources
 

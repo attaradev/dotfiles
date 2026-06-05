@@ -15,6 +15,13 @@ Populate sections from code and config where possible. Leave explicit `[TODO: ..
 - Escalation paths must name roles or teams, not just say "escalate if needed"
 - Runbooks go stale fast — flag assumptions that require periodic review
 
+## Anti-patterns
+
+- **Invented values** — Do not fabricate alert thresholds, dashboard URLs, SLO targets, or escalation contacts. Use `[TODO: ...]` placeholders and flag them clearly.
+- **Generic steps** — "Check the logs" or "restart the service" without specifying the command, expected output, or decision branch is not a troubleshooting step.
+- **Missing decision branches** — Each diagnostic step must tell the engineer what to do based on what they find (e.g. "if you see X, do Y; otherwise do Z"), not just what to look at.
+- **Undated runbook** — Always populate `Last reviewed` with today's date and set a concrete `Review cadence`. A runbook with no review date will silently go stale.
+
 ## Additional resources
 
 - **`references/runbook-template.md`** — Full runbook template with section guidance.

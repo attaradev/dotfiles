@@ -105,5 +105,5 @@ Name what you will NOT optimise for, and state why.
 | Measuring too many things | If everything is a north star, nothing is; pick one |
 | Input metrics that cannot be moved | "Brand awareness" cannot be directly influenced by a product team |
 | Guardrails without owners | Guardrail metrics without someone responsible for acting on them are decoration |
-| No baseline | Without a baseline, you cannot know if you moved the metric |
+| No baseline | Without a baseline, you cannot know if you moved the metric — state the current measured value or, if unavailable, the first measurement date and owner |
 | Measuring after the fact | Define metrics before the feature ships; post-hoc metric selection is p-hacking |

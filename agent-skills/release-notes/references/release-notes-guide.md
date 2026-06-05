@@ -145,6 +145,8 @@ When generating from git history:
 
 Read the PR description or commit body for context — the subject line alone is rarely enough to write a user-facing entry.
 
+If commits lack conventional prefixes, classify by intent: does it add capability (→ What's new), fix broken behavior (→ Bug fixes), or improve something existing (→ Improvements)? When intent is genuinely ambiguous, omit rather than guess.
+
 ---
 
 ## Tone and style

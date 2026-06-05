@@ -76,9 +76,13 @@ Pre-commit these before launch. Do not adjust after seeing the data.
 
 ## Rollback plan
 
-[What happens if a P0 is discovered post-launch? Who makes the call to roll back? What is the communication plan?]
+State: (1) the trigger condition that initiates a rollback, (2) who has authority to pull the trigger, (3) the mechanical step (disable flag, revert deploy, run migration reversal), and (4) the user-facing message if behaviour changes for existing users.
+
+Example: "If error rate on the provisioning endpoint exceeds 5% for 10 consecutive minutes, [On-call eng] disables the `bulk-provisioning` flag. PM sends in-app banner: 'Bulk provisioning is temporarily unavailable. Users can still be added individually. We expect to restore this within 2 hours.'"
 
 ## Open questions
+
+List only blockers or decisions that must be resolved before the next phase. Do not list nice-to-haves.
 
 | Question | Owner | Due |
 |---------|-------|-----|

@@ -1,6 +1,8 @@
 ## Task
 
-Read the commit history and any provided feature descriptions. Write clear, user-focused release notes following `references/release-notes-guide.md`.
+Read `references/release-notes-guide.md` before writing anything.
+
+Gather commits since the last release tag with `git log <prev-tag>..HEAD --oneline` (or `git log --oneline -50` if no tag is known). Read each commit body, not just the subject line, for user-facing context. Then write clear, user-focused release notes following the guide.
 
 Produce:
 1. **Version header** — version number and release date
@@ -20,6 +22,16 @@ Produce:
 - Omit internal refactors, test changes, CI fixes, and dependency bumps unless they affect behavior
 - Group related items under subheadings rather than a flat list of 20+ bullet points
 - If the release has no user-visible changes, warn the user and ask whether to publish a 'reliability improvements' note or delay the release
+
+## Anti-patterns
+
+Reject or rewrite any entry that matches these patterns:
+
+- **Developer voice**: "Refactored auth module to use JWT" — rewrite as what the user gains, or omit entirely.
+- **Vague quantification**: "Improved performance" or "significantly faster" — require a number ("3× faster", "reduced from 800ms to 250ms") or omit.
+- **Breaking change without migration**: Listing what changed without a before/after example and an exact migration step — the reference format requires all three.
+- **Noise items**: CI fixes, test changes, linting, code style, and dependency bumps (unless a CVE fix) must be omitted — do not include them under any section header.
+- **Hedged omission**: Do not include an item "just in case" — if a non-engineer would ask "so what does this mean for me?" and the answer is "nothing visible," leave it out.
 
 ## Additional resources
 

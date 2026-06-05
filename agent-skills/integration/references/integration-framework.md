@@ -168,6 +168,15 @@ Every integration must instrument:
 |---------|-----------|---------|
 | [Component] fails | [How detected] | [Recovery path] |
 
+**Example (order-service → fulfillment-service via SQS):**
+
+| Failure | Detection | Recovery |
+|---------|-----------|---------|
+| order-service crashes before enqueue | DB transaction rolls back; no event written | Transactional outbox: event row only committed with order row; background publisher retries |
+| SQS unavailable | Publish error rate alert (> 1% over 5 min) | Circuit breaker opens; orders still saved locally; publisher retries with exponential backoff up to 30 min |
+| fulfillment-service crashes mid-processing | Message visibility timeout expires | SQS redelivers; idempotency key on `order_id` prevents double-fulfillment |
+| Poison message (schema mismatch) | 3 consecutive failures on same message ID | Routed to `fulfillment-dlq`; PagerDuty alert fires if DLQ depth > 0 |
+
 ### Idempotency
 
 [How duplicate messages are handled]
@@ -176,7 +185,7 @@ Every integration must instrument:
 
 [Whether ordering matters; how it is achieved or relaxed]
 
-### Operational runbook
+### Operational concerns
 
 - Dead-letter queue: [Location and alerting threshold]
 - Consumer lag alert: [Threshold and escalation]

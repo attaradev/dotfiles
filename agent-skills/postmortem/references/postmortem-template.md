@@ -35,7 +35,7 @@ One paragraph: What happened, what was the impact, and how was it resolved?
 
 ### Timeline
 
-All times in UTC. Be precise — "around 14:30" is not a timeline entry.
+All times in UTC. Use confirmed timestamps from logs, metrics, or alerts. If an entry is based on human recollection rather than a system record, prefix it with `~` and add a note (e.g., `~14:30 (recollection)`). Do not omit events because the exact timestamp is uncertain — an approximate entry is better than a gap.
 
 | Time (UTC) | Event |
 |------------|-------|
