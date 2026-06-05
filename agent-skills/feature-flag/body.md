@@ -20,6 +20,6 @@ If the request is to clean up an existing flag: identify all call sites, produce
 - Test both flag states: do not only test the "enabled" path
 - Flags that cannot be removed without a code change are a liability — the cleanup plan must include a target date or trigger condition
 
-## Reference
+## Additional resources
 
-`references/feature-flag-guide.md` — flag types, naming conventions, evaluation patterns, rollout strategies, targeting rules, lifetime targets, and cleanup checklist.
+- **`references/feature-flag-guide.md`** — Flag types, naming conventions, evaluation patterns, rollout strategies, targeting rules, lifetime targets, and cleanup checklist.

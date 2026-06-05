@@ -63,4 +63,5 @@ Omit internal chores entirely unless they affect users (e.g., a dependency upgra
 
 ## Additional resources
 
+- **`references/changelog-format.md`** — Keep a Changelog format spec, commit-type→category mapping, semver bump rules, and phrasing rules.
 - **`scripts/collect-changes.sh`** — Collects commits since last tag with full metadata for classification.
