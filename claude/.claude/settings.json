@@ -43,9 +43,10 @@
     ]
   },
   "model": "sonnet",
-  "skipAutoPermissionPrompt": true,
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "modern-go-guidelines@goland-claude-marketplace": true
-  }
+  },
+  "skipAutoPermissionPrompt": true,
+  "skipWorkflowUsageWarning": true
 }
