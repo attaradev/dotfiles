@@ -35,7 +35,9 @@
       "Bash(pwd)",
       "Bash(date *)",
       "Bash(awk *)",
-      "Bash(sort *)"
+      "Bash(sort *)",
+      "Bash(echo *)",
+      "Bash(printf *)"
     ],
     "additionalDirectories": [
       "~/.dotfiles",

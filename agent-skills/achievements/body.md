@@ -4,13 +4,7 @@ Read `references/output-formats.md` before writing any output — the chosen for
 
 Interpret the user request as a time period and translate it to a `since` date that git understands (e.g. "last month" → "1 month ago", "Q1 2026" → "2026-01-01" with until "2026-03-31", "past 6 weeks" → "6 weeks ago"). When no period is given, default to "3 months ago".
 
-Run the collector script with the resolved since date (and optional until date) with Bash before proceeding:
-
-```
-bash "scripts/collect-achievements.sh" "<since>" "<until>" 2>&1
-```
-
-The script scans all git repos found under `~/code`, `~/projects`, `~/src`, `~/dev`, and `~/work` (up to 3 levels deep), plus the current repo. Set `GIT_SEARCH_ROOTS` (colon-separated paths) to override. PRs and issues are fetched cross-org via `gh search`.
+Run the collector script shown in Live context with the resolved since date (and optional until date) via the Bash tool before proceeding. The script scans all git repos found under `~/code`, `~/projects`, `~/src`, `~/dev`, and `~/work` (up to 3 levels deep), plus the current repo. Set `GIT_SEARCH_ROOTS` (colon-separated paths) to override. PRs and issues are fetched cross-org via `gh search`.
 
 ## Task
 

@@ -2,13 +2,7 @@
 
 **Before writing anything:** read the existing CHANGELOG.md (or CHANGES.md) to match its format exactly. If none exists, use the Keep a Changelog format (see example below).
 
-Run `scripts/collect-changes.sh` to get full structured change data with Bash:
-
-```
-bash "scripts/collect-changes.sh" 2>&1
-```
-
-If the script fails or is unavailable, fall back to: `git log --oneline $(git describe --tags --abbrev=0 2>/dev/null)..HEAD 2>/dev/null || git log --oneline -20` and classify each commit manually using the rules below.
+Run the collector script shown in Live context to get full structured change data with Bash. If the script fails or is unavailable, fall back to: `git log --oneline $(git describe --tags --abbrev=0 2>/dev/null)..HEAD 2>/dev/null || git log --oneline -20` and classify each commit manually using the rules below.
 
 Classify each commit into the appropriate category. If the user provides a version number, use it; otherwise infer from conventional commit types (any `feat!` or `BREAKING CHANGE` → major bump, `feat` → minor, `fix`/`perf` → patch).
 
