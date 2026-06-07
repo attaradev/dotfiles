@@ -19,6 +19,7 @@
 # Homebrew Taps
 # ============================================
 tap "hashicorp/tap"
+tap "akuity/tap"
 
 def optional_enabled?(key)
   ENV["HOMEBREW_BUNDLE_INSTALL_#{key}"].to_s == "1"
@@ -30,6 +31,7 @@ end
 
 brew "gh"                           # GitHub CLI - Official GitHub command-line tool
 brew "act"                          # Run GitHub Actions locally
+brew "pre-commit"                   # Git hook manager for enforcing code quality checks
 
 # ============================================
 # Security & Encryption
@@ -73,6 +75,9 @@ brew "minikube"                     # Run Kubernetes clusters locally
 brew "kind"                         # Kubernetes IN Docker - local clusters for testing
 brew "k3d"                          # Create and manage k3s clusters in Docker
 brew "tilt"                         # Local development environment orchestration tool
+brew "argocd"                       # Argo CD CLI - GitOps continuous delivery tool for Kubernetes
+brew "akuity/tap/kargo"             # Kargo CLI - GitOps-based multi-stage deployment orchestration
+brew "kubeconform"                  # Kubernetes manifest validator against versioned schemas
 
 # ============================================
 # Databases & Data Tools
@@ -99,6 +104,7 @@ brew "fzf"                          # Command-line fuzzy finder (Ctrl+R for hist
 # Data Processing & Documentation
 brew "jq"                           # Lightweight JSON processor
 brew "tlrc"                         # Maintained TLDR client (tldr deprecated upstream)
+brew "yamllint"                     # YAML file linter
 
 # Presentation
 brew "slides"                       # Terminal-based presentations using Markdown
