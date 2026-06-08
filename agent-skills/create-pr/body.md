@@ -8,7 +8,7 @@ If a Jira ticket was detected from the branch name, append `[PROJ-123]` to the P
 
 After drafting the body, execute each validation item that can be verified locally — run test commands, check symlinks, check file existence, verify flags, etc. Mark `[x]` for items that pass and leave `[ ]` for items that fail, adding a brief inline note on failures. Leave items unchecked without a note only when they genuinely cannot be verified locally (manual UI steps, production-only checks, reviewer judgement calls).
 
-Then output a ready-to-run command with the checkboxes already reflecting the results:
+Then output a ready-to-run command with the checkboxes already reflecting the results. Do not execute it — present it for the user to review and run:
 
 ```sh
 gh pr create \
