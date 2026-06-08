@@ -188,19 +188,54 @@ def _is_inside_repo(path: Path) -> bool:
         return False
 
 
+def _migrate_stow_dir_symlink(symlink_dir: Path) -> None:
+    """Replace a directory symlink into the repo with a real directory.
+
+    Recreates symlinks for every item in the old repo target except skills/,
+    which is removed (it was generated output that this PR moves out of the repo).
+    Runtime files that Claude wrote into the repo-backed directory are preserved
+    as symlinks pointing back to their current location so nothing is lost.
+    """
+    repo_target = symlink_dir.resolve()
+    print(f"  Migrating {symlink_dir}: replacing stow directory symlink with real directory")
+    symlink_dir.unlink()
+    symlink_dir.mkdir(parents=True, exist_ok=True)
+    for item in sorted(repo_target.iterdir()):
+        if item.name == "skills":
+            shutil.rmtree(item, ignore_errors=True)
+            continue
+        link = symlink_dir / item.name
+        if not link.exists() and not link.is_symlink():
+            link.symlink_to(item)
+
+
 def reset_output_dir(output_dir: Path) -> None:
-    # Resolve before touching anything — catches both a direct symlink on output_dir
-    # and the legacy case where a parent directory (e.g. ~/.claude/) is the stow
-    # directory symlink, making output_dir resolve into the repo without itself
-    # being a symlink.
-    resolved = output_dir.resolve()
-    if _is_inside_repo(resolved):
-        fail(
-            f"{output_dir} resolves inside the repo at {resolved}. "
-            "Run 'make stow' to update the stow layout before running 'make generate'."
-        )
+    output_dir = output_dir.expanduser()
+
+    # Handle a direct symlink on output_dir (e.g. from an older layout where
+    # ~/.claude/skills itself was symlinked into the repo).
     if output_dir.is_symlink():
+        old_target = output_dir.resolve()
         output_dir.unlink()
+        if _is_inside_repo(old_target):
+            shutil.rmtree(old_target, ignore_errors=True)
+
+    # Check whether the resolved path still lands inside the repo — this catches
+    # the legacy stow-folding case where a parent (e.g. ~/.claude/) is the directory
+    # symlink into the repo, not output_dir itself.
+    if _is_inside_repo(output_dir.resolve()):
+        ancestor = output_dir.parent
+        while ancestor != ancestor.parent:
+            if ancestor.is_symlink():
+                _migrate_stow_dir_symlink(ancestor)
+                break
+            ancestor = ancestor.parent
+        else:
+            fail(
+                f"{output_dir} resolves inside the repo. "
+                "Run 'make stow' to update the stow layout."
+            )
+
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -306,9 +341,12 @@ def check(source_dir: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
-    parser.add_argument("--claude-out", type=Path, default=DEFAULT_CLAUDE_OUT)
-    parser.add_argument("--codex-out", type=Path, default=DEFAULT_CODEX_OUT)
+    def path_arg(s: str) -> Path:
+        return Path(s).expanduser()
+
+    parser.add_argument("--source", type=path_arg, default=DEFAULT_SOURCE)
+    parser.add_argument("--claude-out", type=path_arg, default=DEFAULT_CLAUDE_OUT)
+    parser.add_argument("--codex-out", type=path_arg, default=DEFAULT_CODEX_OUT)
     parser.add_argument("--check", action="store_true", help="Validate by generating into a temporary directory")
     args = parser.parse_args()
 
