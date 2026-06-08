@@ -188,27 +188,6 @@ def _is_inside_repo(path: Path) -> bool:
         return False
 
 
-def _migrate_stow_dir_symlink(symlink_dir: Path) -> None:
-    """Replace a directory symlink into the repo with a real directory.
-
-    Recreates symlinks for every item in the old repo target except skills/,
-    which is removed (it was generated output that this PR moves out of the repo).
-    Runtime files that Claude wrote into the repo-backed directory are preserved
-    as symlinks pointing back to their current location so nothing is lost.
-    """
-    repo_target = symlink_dir.resolve()
-    print(f"  Migrating {symlink_dir}: replacing stow directory symlink with real directory")
-    symlink_dir.unlink()
-    symlink_dir.mkdir(parents=True, exist_ok=True)
-    for item in sorted(repo_target.iterdir()):
-        if item.name == "skills":
-            shutil.rmtree(item, ignore_errors=True)
-            continue
-        link = symlink_dir / item.name
-        if not link.exists() and not link.is_symlink():
-            link.symlink_to(item)
-
-
 def reset_output_dir(output_dir: Path) -> None:
     output_dir = output_dir.expanduser()
 
@@ -220,21 +199,15 @@ def reset_output_dir(output_dir: Path) -> None:
         if _is_inside_repo(old_target):
             shutil.rmtree(old_target, ignore_errors=True)
 
-    # Check whether the resolved path still lands inside the repo — this catches
-    # the legacy stow-folding case where a parent (e.g. ~/.claude/) is the directory
-    # symlink into the repo, not output_dir itself.
+    # Fail if the resolved path still lands inside the repo — catches the legacy
+    # stow-folding case where a parent directory (e.g. ~/.claude/) is the directory
+    # symlink into the repo. setup.sh runs stow before generate, so this should
+    # not occur in normal use; it indicates stow has not been run yet.
     if _is_inside_repo(output_dir.resolve()):
-        ancestor = output_dir.parent
-        while ancestor != ancestor.parent:
-            if ancestor.is_symlink():
-                _migrate_stow_dir_symlink(ancestor)
-                break
-            ancestor = ancestor.parent
-        else:
-            fail(
-                f"{output_dir} resolves inside the repo. "
-                "Run 'make stow' to update the stow layout."
-            )
+        fail(
+            f"{output_dir} resolves inside the repo. "
+            "Run 'make stow' first to update the stow layout."
+        )
 
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)

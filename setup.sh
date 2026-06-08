@@ -431,27 +431,27 @@ configure_git_identity() {
 configure_git_identity
 
 # ============================================
-# Step 5: Generate Agent Skills
+# Step 5: Setup dotfiles with GNU Stow
 # ============================================
 
-print_header "Step 5: Generating Agent Skills"
-
-if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
-  bash "$DOTFILES_DIR/scripts/tools.sh" agent-skills
-else
-  print_warning "scripts/tools.sh not found, skipping agent skill generation..."
-fi
-
-# ============================================
-# Step 6: Setup dotfiles with GNU Stow
-# ============================================
-
-print_header "Step 6: Setting up Dotfiles with GNU Stow"
+print_header "Step 5: Setting up Dotfiles with GNU Stow"
 
 if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
   bash "$DOTFILES_DIR/scripts/tools.sh" stow
 else
   print_warning "scripts/tools.sh not found, skipping..."
+fi
+
+# ============================================
+# Step 6: Generate Agent Skills
+# ============================================
+
+print_header "Step 6: Generating Agent Skills"
+
+if [[ -f "$DOTFILES_DIR/scripts/tools.sh" ]]; then
+  bash "$DOTFILES_DIR/scripts/tools.sh" agent-skills
+else
+  print_warning "scripts/tools.sh not found, skipping agent skill generation..."
 fi
 
 verify_obsidian_setup() {
