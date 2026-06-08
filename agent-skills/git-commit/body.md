@@ -37,6 +37,7 @@ Do not use `--no-verify`. Do not amend unless explicitly asked.
 - Type must match the actual nature of the change — do not default to `feat`
 - Content must come from the staged diff — never paraphrase or copy prior commit messages
 - Subject must reflect what the diff actually changes, not a summary of a summary
+- Subject and body must describe the change itself — never reference the prompt, review tool, or reviewer (e.g. no "address Copilot feedback", "fix review comment", "per PR review")
 - If the diff mixes unrelated concerns, flag it rather than forcing a single subject
 - Never use `--no-verify` or `--amend` unless explicitly requested
 
@@ -47,6 +48,7 @@ Do not use `--no-verify`. Do not amend unless explicitly asked.
 - **Amending silently** — `--amend` rewrites history; only use it when the user explicitly asks
 - **Forcing a single type on a mixed diff** — if the staged changes clearly span two unrelated concerns, flag it and ask the user to split before committing
 - **Defaulting to `feat`** — use the type that matches the dominant change; `chore`, `fix`, and `refactor` are each more specific than `feat` for most diffs
+- **Referencing the prompt or review tool** — "address Copilot review", "fix PR feedback", "per review comment" are process noise; describe what changed and why, derived from the diff
 
 ## Additional resources
 
