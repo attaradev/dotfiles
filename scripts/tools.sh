@@ -341,10 +341,14 @@ cmd_stow() {
     echo "✓ $joined"
   fi
 
-  # Remove dangling skills symlinks left from the old directory-folded stow layout.
-  # Skills are now written directly to ~/.claude/skills and ~/.codex/skills by make generate.
-  for _skills_link in "$HOME/.claude/skills" "$HOME/.codex/skills"; do
-    [[ -L "$_skills_link" ]] && rm "$_skills_link"
+  # Remove any skills symlinks when stowing claude/codex packages — skills are now
+  # written directly to these paths by make generate, not managed by stow.
+  local _pkg
+  for _pkg in "${packages[@]}"; do
+    case "$_pkg" in
+      claude) [[ -L "$HOME/.claude/skills" ]] && rm "$HOME/.claude/skills" ;;
+      codex)  [[ -L "$HOME/.codex/skills"  ]] && rm "$HOME/.codex/skills"  ;;
+    esac
   done
 
   _codex_ensure_local_config

@@ -182,7 +182,11 @@ def load_skills(source_dir: Path) -> list[Skill]:
 
 def reset_output_dir(output_dir: Path) -> None:
     if output_dir.is_symlink():
+        old_target = output_dir.resolve()
         output_dir.unlink()
+        # Clean up legacy generated artifacts if the symlink pointed back into the repo.
+        if old_target.is_relative_to(ROOT):
+            shutil.rmtree(old_target, ignore_errors=True)
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
