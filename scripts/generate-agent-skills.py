@@ -22,8 +22,8 @@ except ModuleNotFoundError:  # macOS system Python can be older than 3.11.
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "agent-skills"
-DEFAULT_CLAUDE_OUT = ROOT / "claude" / ".claude" / "skills"
-DEFAULT_CODEX_OUT = ROOT / "codex" / ".codex" / "skills"
+DEFAULT_CLAUDE_OUT = Path.home() / ".claude" / "skills"
+DEFAULT_CODEX_OUT = Path.home() / ".codex" / "skills"
 RESOURCE_DIRS = {"references", "scripts", "assets"}
 SKILL_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
 CLAUDE_ONLY_PATTERNS = (
@@ -181,6 +181,8 @@ def load_skills(source_dir: Path) -> list[Skill]:
 
 
 def reset_output_dir(output_dir: Path) -> None:
+    if output_dir.is_symlink():
+        output_dir.unlink()
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 

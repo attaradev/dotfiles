@@ -37,11 +37,15 @@
       "Bash(awk *)",
       "Bash(sort *)",
       "Bash(echo *)",
-      "Bash(printf *)"
+      "Bash(printf *)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:docs.docker.com)"
     ],
     "additionalDirectories": [
       "~/.dotfiles",
-      "~/.claude/skills"
+      "~/.claude"
     ]
   },
   "model": "sonnet",
@@ -49,6 +53,6 @@
     "gopls-lsp@claude-plugins-official": true,
     "modern-go-guidelines@goland-claude-marketplace": true
   },
-  "skipAutoPermissionPrompt": true,
-  "skipWorkflowUsageWarning": true
+  "skipWorkflowUsageWarning": true,
+  "skipAutoPermissionPrompt": true
 }
