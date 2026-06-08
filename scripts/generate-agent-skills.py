@@ -22,8 +22,8 @@ except ModuleNotFoundError:  # macOS system Python can be older than 3.11.
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "agent-skills"
-DEFAULT_CLAUDE_OUT = ROOT / "claude" / ".claude" / "skills"
-DEFAULT_CODEX_OUT = ROOT / "codex" / ".codex" / "skills"
+DEFAULT_CLAUDE_OUT = Path.home() / ".claude" / "skills"
+DEFAULT_CODEX_OUT = Path.home() / ".codex" / "skills"
 RESOURCE_DIRS = {"references", "scripts", "assets"}
 SKILL_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
 CLAUDE_ONLY_PATTERNS = (
@@ -180,7 +180,35 @@ def load_skills(source_dir: Path) -> list[Skill]:
     return skills
 
 
+def _is_inside_repo(path: Path) -> bool:
+    try:
+        path.relative_to(ROOT)
+        return True
+    except ValueError:
+        return False
+
+
 def reset_output_dir(output_dir: Path) -> None:
+    output_dir = output_dir.expanduser()
+
+    # Handle a direct symlink on output_dir (e.g. from an older layout where
+    # ~/.claude/skills itself was symlinked into the repo).
+    if output_dir.is_symlink():
+        old_target = output_dir.resolve()
+        output_dir.unlink()
+        if _is_inside_repo(old_target):
+            shutil.rmtree(old_target, ignore_errors=True)
+
+    # Fail if the resolved path still lands inside the repo — catches the legacy
+    # stow-folding case where a parent directory (e.g. ~/.claude/) is the directory
+    # symlink into the repo. setup.sh runs stow before generate, so this should
+    # not occur in normal use; it indicates stow has not been run yet.
+    if _is_inside_repo(output_dir.resolve()):
+        fail(
+            f"{output_dir} resolves inside the repo. "
+            "Run 'make stow' first to update the stow layout."
+        )
+
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -286,9 +314,12 @@ def check(source_dir: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
-    parser.add_argument("--claude-out", type=Path, default=DEFAULT_CLAUDE_OUT)
-    parser.add_argument("--codex-out", type=Path, default=DEFAULT_CODEX_OUT)
+    def path_arg(s: str) -> Path:
+        return Path(s).expanduser()
+
+    parser.add_argument("--source", type=path_arg, default=DEFAULT_SOURCE)
+    parser.add_argument("--claude-out", type=path_arg, default=DEFAULT_CLAUDE_OUT)
+    parser.add_argument("--codex-out", type=path_arg, default=DEFAULT_CODEX_OUT)
     parser.add_argument("--check", action="store_true", help="Validate by generating into a temporary directory")
     args = parser.parse_args()
 

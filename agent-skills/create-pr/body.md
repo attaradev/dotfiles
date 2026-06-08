@@ -6,7 +6,9 @@ Follow the template in `references/pr-format.md`. Write the description to match
 
 If a Jira ticket was detected from the branch name, append `[PROJ-123]` to the PR title (e.g. "fix null check in user loader [PROJ-123]") and include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit if no ticket was found.
 
-After generating the body, output a ready-to-run command:
+After drafting the body, execute each validation item that can be verified locally — run test commands, check symlinks, check file existence, verify flags, etc. Mark `[x]` for items that pass and leave `[ ]` for items that fail, adding a brief inline note on failures. Leave items unchecked without a note only when they genuinely cannot be verified locally (manual UI steps, production-only checks, reviewer judgement calls).
+
+Then output a ready-to-run command with the checkboxes already reflecting the results. Do not execute it — present it for the user to review and run:
 
 ```sh
 gh pr create \
@@ -16,8 +18,6 @@ gh pr create \
 EOF
 )"
 ```
-
-Do not run the command — present it for the user to review and execute.
 
 If an open PR already exists on this branch, output a `gh pr edit` command instead.
 
@@ -30,6 +30,7 @@ If an open PR already exists on this branch, output a `gh pr edit` command inste
 - The Why section states the rationale for this approach, not just what problem exists
 - Risks must be explicit — write "None" if there are none, never omit the section
 - Validation items must be specific enough for another person to reproduce; use checkboxes
+- Run every locally-verifiable validation item and mark its checkbox before outputting the command
 - Do not include AI attribution or generic filler ("this PR aims to...")
 
 ## Additional resources

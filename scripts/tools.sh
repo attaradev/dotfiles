@@ -326,7 +326,8 @@ cmd_stow() {
     if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
       local stow_args=(--target="$HOME" --restow)
       [[ "$pkg" == "obsidian" ]] && stow_args+=(--no-folding)
-      [[ "$pkg" == "codex" ]] && stow_args+=(--ignore='config\.toml')
+      [[ "$pkg" == "claude" ]] && stow_args+=(--no-folding --ignore='skills')
+      [[ "$pkg" == "codex" ]] && stow_args+=(--no-folding --ignore='config\.toml' --ignore='skills')
       stow "$pkg" "${stow_args[@]}" 2>&1 | grep -v "^LINK:\|^UNLINK:" || true
       stowed+=("$pkg")
     else
@@ -339,6 +340,16 @@ cmd_stow() {
     local joined; joined=$(printf '%s · ' "${stowed[@]}"); joined="${joined% · }"
     echo "✓ $joined"
   fi
+
+  # Remove any skills symlinks when stowing claude/codex packages — skills are now
+  # written directly to these paths by make generate, not managed by stow.
+  local _pkg
+  for _pkg in "${packages[@]}"; do
+    case "$_pkg" in
+      claude) [[ -L "$HOME/.claude/skills" ]] && rm "$HOME/.claude/skills" ;;
+      codex)  [[ -L "$HOME/.codex/skills"  ]] && rm "$HOME/.codex/skills"  ;;
+    esac
+  done
 
   _codex_ensure_local_config
 }

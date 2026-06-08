@@ -68,11 +68,6 @@ Brewfile.lock.json
 .#*
 .gitconfig.local
 
-# Generated agent skill catalogs. Edit agent-skills/skills/ instead.
-claude/.claude/skills/**
-!claude/.claude/skills/
-codex/.codex/skills/**
-!codex/.codex/skills/
 # Local machine settings — never commit
 claude/.claude/settings.local.json
 
@@ -144,3 +139,6 @@ gpg/.gnupg/openpgp-revocs.d/
 # Stow
 # ============================================
 # Don't ignore .stow-local-ignore as it's part of config
+
+/.claude/
+/.agent/
