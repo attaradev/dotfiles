@@ -180,13 +180,27 @@ def load_skills(source_dir: Path) -> list[Skill]:
     return skills
 
 
+def _is_inside_repo(path: Path) -> bool:
+    try:
+        path.relative_to(ROOT)
+        return True
+    except ValueError:
+        return False
+
+
 def reset_output_dir(output_dir: Path) -> None:
+    # Resolve before touching anything — catches both a direct symlink on output_dir
+    # and the legacy case where a parent directory (e.g. ~/.claude/) is the stow
+    # directory symlink, making output_dir resolve into the repo without itself
+    # being a symlink.
+    resolved = output_dir.resolve()
+    if _is_inside_repo(resolved):
+        fail(
+            f"{output_dir} resolves inside the repo at {resolved}. "
+            "Run 'make stow' to update the stow layout before running 'make generate'."
+        )
     if output_dir.is_symlink():
-        old_target = output_dir.resolve()
         output_dir.unlink()
-        # Clean up legacy generated artifacts if the symlink pointed back into the repo.
-        if old_target.is_relative_to(ROOT):
-            shutil.rmtree(old_target, ignore_errors=True)
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
