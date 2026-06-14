@@ -1,0 +1,14 @@
+name = "use-modern-go"
+title = "Modern Go Guidelines"
+
+[claude]
+description = "Apply modern Go syntax guidelines based on project's Go version. Use when user ask for modern Go code guidelines."
+argument_hint = "[target-version]"
+
+[codex]
+description = "Apply modern Go syntax guidelines based on the project's Go version"
+
+[codex.interface]
+display_name = "Use Modern Go"
+short_description = "Apply idiomatic Go patterns up to the project's Go version"
+default_prompt = "Apply modern Go guidelines to this code"

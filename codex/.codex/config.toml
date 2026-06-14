@@ -11,3 +11,6 @@ multi_agent = true
 
 [plugins."canva@openai-curated"]
 enabled = true
+
+[plugins."ponytail@ponytail"]
+enabled = true

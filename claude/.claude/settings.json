@@ -51,7 +51,11 @@
   "model": "sonnet",
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
-    "modern-go-guidelines@goland-claude-marketplace": true
+    "modern-go-guidelines@goland-claude-marketplace": true,
+    "ponytail@ponytail": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "context7@claude-plugins-official": true
   },
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true

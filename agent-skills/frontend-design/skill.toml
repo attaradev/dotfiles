@@ -1,0 +1,15 @@
+name = "frontend-design"
+title = "Frontend Design"
+
+[claude]
+description = "This skill should be used when the user asks to build a UI, create a frontend interface, design a component, or write HTML/CSS/JSX/Svelte/Vue. Forces a deliberate design declaration before writing any UI code to avoid generic AI output."
+argument_hint = "[component, page, or UI element to design]"
+argument_label = "Target"
+
+[codex]
+description = "Apply a structured design framework before writing any frontend UI code. Forces a deliberate design direction declaration across typography, color, motion, composition, and atmosphere to avoid generic AI-default output."
+
+[codex.interface]
+display_name = "Frontend Design"
+short_description = "Design with intention before writing any UI code"
+default_prompt = "Use $frontend-design to create a thoughtfully designed UI component."
