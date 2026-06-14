@@ -97,7 +97,7 @@ This repo keeps personal fallback Git defaults in `setup.sh`; if you reuse/fork 
 - **Obsidian** — knowledge vault scaffold, pinned community plugins with SHA-256 verification, and `~/Knowledge` alias
 - **GPG** — `gpg-agent.conf` and `gpg.conf` with `pinentry-mac`, non-destructive (preserves existing local values)
 - **VSCode** — extensions installed when the `code` CLI is present (skippable)
-- **Claude Code** — global context and settings at `~/.claude/CLAUDE.md`, `~/.claude/settings.json`, with generated skills under `~/.claude/skills`
+- **Claude Code** — global context at `~/.claude/CLAUDE.md`; settings and enabled plugins at `~/.claude/settings.json`; generated skills under `~/.claude/skills`
 - **Codex CLI** — base config bootstrapped from `codex/.codex/config.toml` template into a local-only `~/.codex/config.toml`; instructions symlinked from `codex/.codex/AGENTS.md`; generated skills under `~/.codex/skills`
 
 ## Managed Runtime and Tooling Tracks

@@ -130,6 +130,26 @@ make agents
 
 Edit agent skills in `agent-skills/<skill>/`: put shared instructions in `body.md`, metadata in `skill.toml`, Claude-only live context in `claude-live.md`, and shared resources in `references/` or `scripts/`.
 
+### Claude Code Plugins
+
+Claude Code plugins extend the editor with LSP servers, MCP tools, and lifecycle hooks. Enabled plugins are tracked in `claude/.claude/settings.json` under `enabledPlugins`. To add a plugin:
+
+1. Find the plugin key — format is `<slug>@<marketplace>` (e.g. `context7@claude-plugins-official`, `ponytail@ponytail`)
+2. Add it to `enabledPlugins` in `claude/.claude/settings.json` with value `true`
+3. Commit the change so it is tracked for all machines
+4. Run `/plugin install <name>` in a Claude Code session to activate on the current machine
+
+To disable a plugin, remove its key or set it to `false`. The file is stowed, so changes apply immediately to `~/.claude/settings.json` after `make stow`.
+
+### Codex Plugins
+
+Codex plugins are declared in `codex/.codex/config.toml` under `[plugins."<name>@<marketplace>"]`. Because this file is not symlinked (it is a materialized local copy), adding a plugin requires two steps:
+
+1. Add the plugin entry to `codex/.codex/config.toml` in the repo (so new machines pick it up on bootstrap)
+2. Also add it manually to your local `~/.codex/config.toml`
+
+To remove a plugin, delete the entry from both files.
+
 ## Obsidian Knowledge Vault
 
 Scaffold files (`hub.md`, plugin note, templates) are tracked in `obsidian/.knowledge/` and seeded into `~/.knowledge` on setup. Personal vault content stays local and is not tracked in git.
