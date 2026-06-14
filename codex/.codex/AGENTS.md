@@ -77,7 +77,7 @@
 - Never use destructive git commands (`git reset --hard`, `git checkout --`) unless explicitly requested.
 - Never revert unrelated local changes.
 - Do not amend commits unless explicitly requested.
-- Use Conventional Commits with concise, descriptive subjects (<= 72 chars; avoid `update`, `fixes`, `misc`, `changes`); add body/footer when needed. When a Jira ticket is available (e.g. from the branch name), use it as the scope: `feat(PROJ-123): short description`.
+- Use Conventional Commits with concise, descriptive subjects (<= 72 chars; avoid `update`, `fixes`, `misc`, `changes`); add body/footer when needed. Scope is optional and free-form (`feat(auth): description`); when a Jira ticket is available from the branch name, it fills the scope: `feat(PROJ-123): description`. When a Jira ticket is available (e.g. from the branch name), use it as the scope: `feat(PROJ-123): short description`.
 - PR descriptions should clearly cover: what changed, why it was needed, risks, and validation evidence.
 - Do not include AI attribution signatures in commits or PRs.
 

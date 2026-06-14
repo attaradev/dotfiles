@@ -12,7 +12,7 @@ Follow the conventions in `references/conventions.md` to compose the commit mess
 
 When a commit mixes types (e.g. a fix plus a refactor), use the type that represents the dominant or most important change.
 
-If a Jira ticket was detected from the branch name, include it in the footer as `Refs: PROJ-123`. Omit if none was found.
+Scope is optional and can be used freely for any module, package, or area (`feat(auth)`, `fix(checkout)`). When a Jira ticket is detected from the branch name, use it as the scope: `feat(PROJ-123): description`. Omit scope entirely when the change is genuinely cross-cutting and no ticket is present.
 
 If nothing is staged, report that and suggest specific `git add` commands based on `git status`. Do not auto-stage. Do not proceed.
 

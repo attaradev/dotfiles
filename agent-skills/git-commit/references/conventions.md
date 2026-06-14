@@ -53,9 +53,9 @@ Use `!` after the type for breaking changes: `feat!: remove legacy auth endpoint
 
 ## Scope
 
-Optional. Use the module, package, or area affected: `feat(auth)`, `fix(checkout)`, `chore(deps)`.
+Optional. Use the module, package, or area affected: `feat(auth)`, `fix(checkout)`, `chore(deps)`. When a Jira ticket is available from the branch name, it fills the scope position: `feat(PROJ-123): description`.
 
-Keep it lowercase and short. Omit if the change is genuinely cross-cutting.
+Keep it lowercase and short. Omit if the change is genuinely cross-cutting and no ticket is present.
 
 ---
 
@@ -75,8 +75,6 @@ Wrap at 80 characters. Separate from subject with a blank line. Explain the *why
 Use for:
 - `BREAKING CHANGE: <description>` — mandatory for breaking changes alongside `!`
 - `Closes #N`, `Fixes #N` — link to GitHub issues
-- `Refs: PROJ-123` — link to a Jira ticket (include when branch name contains a ticket key)
-
 Do not include AI attribution lines or co-author lines.
 
 ---
@@ -99,6 +97,10 @@ fix(cache): prevent stale read after concurrent write invalidation
 
 ```
 chore(deps): bump golang.org/x/net to v0.23.0
+```
+
+```
+feat(PROJ-42): add rate limiting to public API endpoints
 ```
 
 ```

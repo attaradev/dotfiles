@@ -4,7 +4,7 @@ Read the full diff before writing anything. The diff is the authoritative source
 
 Follow the template in `references/pr-format.md`. Write the description to match the scope of the change — a one-commit fix needs less than a multi-day feature.
 
-If a Jira ticket was detected from the branch name, use it as the scope in the PR title: `type(PROJ-123): short description` (e.g. "feat(PROJ-123): add payment integration"). Include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit if no ticket was found.
+Title follows Conventional Commits: `type(scope): short description`. Scope is optional — use it freely for any module or area (`fix(auth): prevent token reuse`). When a Jira ticket was detected from the branch name, use it as the scope: `feat(PROJ-123): add payment integration`. Include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit the Jira link if no ticket was found.
 
 Write validation items that specifically test whether this change works correctly before merge — e.g. the relevant test suite passes, the affected feature behaves as expected, edge cases are covered. Do not include per-machine setup steps, post-deploy monitoring, or checks unrelated to this change. Then execute each item that can be verified locally: run the test commands, exercise the affected paths. Mark `[x]` for items that pass and `[ ]` for items that fail, with a brief inline note on failures. Leave items unchecked only when they genuinely require a deployed environment or reviewer judgement.
 
