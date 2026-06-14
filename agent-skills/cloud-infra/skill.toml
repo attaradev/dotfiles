@@ -1,0 +1,15 @@
+name = "cloud-infra"
+title = "Cloud Infrastructure Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"design the infrastructure\", \"set up Terraform\", \"cloud architecture\", \"multi-region design\", \"disaster recovery\", \"cost optimisation\", \"GitOps design\", \"ArgoCD app-of-apps\", or \"kubernetes cluster design\". Designs cloud infrastructure, IaC, and GitOps architecture from requirements to implementation."
+argument_hint = "[scope — e.g. Terraform module layout, Kubernetes cluster design, multi-region DR plan]"
+argument_label = "Scope"
+
+[codex]
+description = "Design cloud infrastructure across AWS/GCP/Azure, Terraform IaC, Kubernetes cluster architecture, GitOps with ArgoCD/Kargo, cost optimization, and DR planning. Use when designing infrastructure from scratch, not reviewing existing manifests."
+
+[codex.interface]
+display_name = "Cloud Infrastructure Design"
+short_description = "Design cloud infrastructure and IaC"
+default_prompt = "Use $cloud-infra to design the cloud infrastructure for this service."

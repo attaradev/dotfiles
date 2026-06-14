@@ -1,0 +1,15 @@
+name = "payment-integration"
+title = "Payment Integration"
+
+[claude]
+description = "This skill should be used when the user asks to \"integrate Stripe\", \"add payments\", \"set up billing\", \"implement checkout\", \"webhook handler\", \"subscription plan\", \"PCI compliance\", \"integrate Paystack\", \"integrate Flutterwave\", \"M-Pesa integration\", or \"mobile money\". Designs secure payment integrations covering global and African payment providers."
+argument_hint = "[provider or feature to integrate — e.g. Stripe subscriptions, Paystack webhooks, M-Pesa STK push]"
+argument_label = "Target"
+
+[codex]
+description = "Design secure payment integrations for global and African payment providers (Stripe, Paystack, Flutterwave, M-Pesa, PayPal). Covers checkout flows, subscriptions, webhooks, PCI compliance, and idempotency. Use when integrating payments, billing, or mobile money."
+
+[codex.interface]
+display_name = "Payment Integration"
+short_description = "Integrate payments with global and African providers"
+default_prompt = "Use $payment-integration to design a secure payment integration."

@@ -4,9 +4,9 @@ Read the full diff before writing anything. The diff is the authoritative source
 
 Follow the template in `references/pr-format.md`. Write the description to match the scope of the change — a one-commit fix needs less than a multi-day feature.
 
-If a Jira ticket was detected from the branch name, append `[PROJ-123]` to the PR title (e.g. "fix null check in user loader [PROJ-123]") and include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit if no ticket was found.
+If a Jira ticket was detected from the branch name, use it as the scope in the PR title: `type(PROJ-123): short description` (e.g. "feat(PROJ-123): add payment integration"). Include a `**Jira:** PROJ-123` link in the body (place it below the Why heading). Omit if no ticket was found.
 
-After drafting the body, execute each validation item that can be verified locally — run test commands, check symlinks, check file existence, verify flags, etc. Mark `[x]` for items that pass and leave `[ ]` for items that fail, adding a brief inline note on failures. Leave items unchecked without a note only when they genuinely cannot be verified locally (manual UI steps, production-only checks, reviewer judgement calls).
+Write validation items that specifically test whether this change works correctly before merge — e.g. the relevant test suite passes, the affected feature behaves as expected, edge cases are covered. Do not include per-machine setup steps, post-deploy monitoring, or checks unrelated to this change. Then execute each item that can be verified locally: run the test commands, exercise the affected paths. Mark `[x]` for items that pass and `[ ]` for items that fail, with a brief inline note on failures. Leave items unchecked only when they genuinely require a deployed environment or reviewer judgement.
 
 Then output a ready-to-run command with the checkboxes already reflecting the results. Do not execute it — present it for the user to review and run:
 
@@ -30,7 +30,7 @@ If an open PR already exists on this branch, output a `gh pr edit` command inste
 - The Why section states the rationale for this approach, not just what problem exists
 - Risks must be explicit — write "None" if there are none, never omit the section
 - Validation items must be specific enough for another person to reproduce; use checkboxes
-- Run every locally-verifiable validation item and mark its checkbox before outputting the command
+- Validation items must specifically test this change — not general setup steps or post-deploy monitoring; run them and mark the checkboxes before outputting the command
 - Do not include AI attribution or generic filler ("this PR aims to...")
 
 ## Additional resources

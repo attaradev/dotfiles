@@ -1,0 +1,15 @@
+name = "ci-cd"
+title = "CI/CD Design"
+
+[claude]
+description = "This skill should be used when the user asks to \"set up CI/CD\", \"write a pipeline\", \"GitHub Actions workflow\", \"write a Dockerfile\", \"blue-green deploy\", \"canary release\", \"GitOps\", \"ArgoCD setup\", \"deployment strategy\", or \"environment promotion\". Designs CI/CD pipelines, container builds, and deployment strategies from scratch."
+argument_hint = "[what to design — e.g. GitHub Actions pipeline, Docker multi-stage build, ArgoCD GitOps workflow]"
+argument_label = "Target"
+
+[codex]
+description = "Design CI/CD pipelines, Docker multi-stage builds, and deployment strategies (blue-green, canary, GitOps with ArgoCD/Kargo). Use when building a pipeline from scratch, writing a Dockerfile, or designing an environment promotion strategy."
+
+[codex.interface]
+display_name = "CI/CD Design"
+short_description = "Design CI/CD pipelines and deployment strategies"
+default_prompt = "Use $ci-cd to design a deployment strategy for this service."
