@@ -70,6 +70,7 @@ brew "hashicorp/tap/terraform"      # Infrastructure as Code tool
 brew "kubectl"                      # Kubernetes command-line tool
 brew "kubectx"                      # Faster context/namespace switching for kubectl
 brew "helm"                         # Kubernetes package manager
+brew "kustomize"                    # Kubernetes native configuration management
 brew "eksctl"                       # CLI for creating Kubernetes clusters on AWS
 brew "minikube"                     # Run Kubernetes clusters locally
 brew "kind"                         # Kubernetes IN Docker - local clusters for testing
