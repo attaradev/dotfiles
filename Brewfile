@@ -63,8 +63,9 @@ brew "mise"                         # Unified version manager for Node.js, Pytho
 # AWS
 brew "awscli"                       # AWS Command Line Interface
 
-# Terraform
-brew "hashicorp/tap/terraform"      # Infrastructure as Code tool
+# Infrastructure as Code
+brew "hashicorp/tap/terraform"      # Infrastructure as Code tool by HashiCorp
+brew "opentofu"                     # Open-source Terraform fork (Infrastructure as Code)
 
 # Kubernetes
 brew "kubectl"                      # Kubernetes command-line tool
