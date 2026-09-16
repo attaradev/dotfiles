@@ -5,6 +5,7 @@ title = "Post-Incident Postmortem"
 description = "This skill should be used when the user asks to \"write a postmortem\", \"5-whys this incident\", \"post-incident review\", \"incident retrospective\", \"blameless postmortem\", \"RCA for this\", or \"root cause analysis\". Produces a structured blameless post-incident postmortem with timeline, root cause analysis, contributing factors, and action items."
 argument_hint = "[incident description, or reference to an existing incident doc or Jira ticket]"
 argument_label = "Incident"
+model = "opus"
 
 [codex]
 description = "Write a blameless post-incident postmortem. Use when the user asks for an incident report, RCA, postmortem, or retrospective."

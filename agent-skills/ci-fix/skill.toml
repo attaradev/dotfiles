@@ -5,6 +5,7 @@ title = "CI Fix"
 description = "This skill should be used when the user asks to \"CI is failing\", \"fix the pipeline\", \"these checks are red\", \"fix failing CI\", \"why is the build failing\", \"fix the GitHub Actions workflow\", or \"CI is broken\". Fetches failing CI run logs, diagnoses the root cause, and applies a fix."
 argument_hint = "[optional: PR number, run ID, or workflow name]"
 argument_label = "Target"
+model = "opus"
 
 [codex]
 description = "Diagnose failing CI runs, read the actual logs, identify the root cause, and fix the workflow, dependency, or code issue behind red checks."

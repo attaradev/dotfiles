@@ -5,6 +5,7 @@ title = "Performance Investigation"
 description = "This skill should be used when the user asks to \"why is this slow\", \"profile this\", \"performance analysis\", \"find the bottleneck\", \"this is too slow\", \"optimise the performance\", \"latency investigation\", or \"throughput analysis\". Systematically investigates performance problems through measurement, bottleneck identification, and targeted fixes."
 argument_hint = "[the slow code path, endpoint, or operation to investigate]"
 argument_label = "Target"
+model = "opus"
 
 [codex]
 description = "Investigate performance problems through measurement, profiling, and targeted fixes. Use when the user asks why something is slow, for profiling help, or for throughput and latency analysis."

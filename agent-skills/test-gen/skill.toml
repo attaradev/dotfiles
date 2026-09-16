@@ -5,6 +5,7 @@ title = "Test Generation"
 description = "This skill should be used when the user asks to \"write tests for\", \"generate tests\", \"add tests to\", \"test this function\", \"cover this with tests\", \"add unit tests\", \"add integration tests\", or \"this needs tests\". Generates tests for a file or function by reading the target, finding existing test patterns in the project, and producing tests that match the project's conventions."
 argument_hint = "[file path or function name to test]"
 argument_label = "Target"
+model = "opus"
 
 [codex]
 description = "Generate tests for a file or function when the user asks to add coverage, write tests, or cover a behavior with unit, integration, or regression tests. Use when the user asks to add tests, generate unit or integration tests, or cover a behavior with matching project conventions."

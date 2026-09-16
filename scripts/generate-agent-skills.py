@@ -26,6 +26,7 @@ DEFAULT_CLAUDE_OUT = Path.home() / ".claude" / "skills"
 DEFAULT_CODEX_OUT = Path.home() / ".codex" / "skills"
 RESOURCE_DIRS = {"references", "scripts", "assets"}
 SKILL_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
+CLAUDE_MODEL_ALIASES = {"fable", "opus", "sonnet", "haiku", "inherit"}
 CLAUDE_ONLY_PATTERNS = (
     "$ARGUMENTS",
     "$HOME/.claude",
@@ -43,6 +44,7 @@ class Skill:
     claude_description: str
     claude_argument_hint: str
     claude_argument_label: str
+    claude_model: str
     claude_live: str
     codex_description: str
     openai_display_name: str
@@ -125,6 +127,13 @@ def _parse_metadata(
     return name, title, claude, codex, interface
 
 
+def _claude_model(claude: dict[str, Any], context: str) -> str:
+    model = require_string(claude, "model", context)
+    if model not in CLAUDE_MODEL_ALIASES and not model.startswith("claude-"):
+        fail(f"{context}: unknown model `{model}` (use {sorted(CLAUDE_MODEL_ALIASES)} or a claude-* id)")
+    return model
+
+
 def _read_body(body_path: Path) -> str:
     try:
         body = body_path.read_text(encoding="utf-8").strip()
@@ -157,6 +166,7 @@ def load_skill(skill_dir: Path) -> Skill:
         claude_description=require_string(claude, "description", str(metadata_path)),
         claude_argument_hint=require_string(claude, "argument_hint", str(metadata_path)),
         claude_argument_label=(claude.get("argument_label") or "").strip(),
+        claude_model=_claude_model(claude, str(metadata_path)),
         claude_live=claude_live,
         codex_description=require_string(codex, "description", str(metadata_path)),
         openai_display_name=require_string(interface, "display_name", str(metadata_path)),
@@ -229,6 +239,7 @@ def write_claude_skill(skill: Skill, output_root: Path) -> None:
         f"name: {yaml_string(skill.name)}",
         f"description: {yaml_string(skill.claude_description)}",
         f"argument-hint: {yaml_string(skill.claude_argument_hint)}",
+        f"model: {yaml_string(skill.claude_model)}",
         "---",
         "",
         f"# {skill.title}",

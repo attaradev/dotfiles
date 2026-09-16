@@ -128,7 +128,7 @@ To regenerate skills and reapply stow symlinks for both Claude and Codex:
 make agents
 ```
 
-Edit agent skills in `agent-skills/<skill>/`: put shared instructions in `body.md`, metadata in `skill.toml`, Claude-only live context in `claude-live.md`, and shared resources in `references/` or `scripts/`.
+Edit agent skills in `agent-skills/<skill>/`: put shared instructions in `body.md`, metadata in `skill.toml`, Claude-only live context in `claude-live.md`, and shared resources in `references/` or `scripts/`. Every `skill.toml` `[claude]` table must set `model` (`fable`, `opus`, `sonnet`, `haiku`, `inherit`, or a `claude-*` id); it is emitted as `model:` frontmatter for Claude only, since Codex has no equivalent field.
 
 ### Claude Code Plugins
 

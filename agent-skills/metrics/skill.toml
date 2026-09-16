@@ -5,6 +5,7 @@ title = "Metrics & Measurement Plan"
 description = "This skill should be used when the user asks to \"define success metrics\", \"what KPIs should we track\", \"north star for this\", \"metrics for this feature\", \"how do we measure success\", \"OKR metrics\", or \"measurement plan\". Defines a north star metric, input metrics, guardrail metrics, and a measurement plan for a feature or product area."
 argument_hint = "[feature, product area, or goal to define metrics for]"
 argument_label = "Topic"
+model = "opus"
 
 [codex]
 description = "Define a measurement plan for a feature or product area. Use when the user asks for success metrics, KPIs, a north star metric, guardrails, or a measurement plan."

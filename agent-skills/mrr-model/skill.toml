@@ -5,6 +5,7 @@ title = "SaaS MRR / Financial Model"
 description = "This skill should be used when the user asks to \"model our MRR\", \"ARR forecast\", \"MRR waterfall\", \"CAC LTV ratio\", \"SaaS financial model\", \"payback period\", \"rule of 40\", \"net revenue retention\", \"expansion MRR\", or \"build a SaaS metrics model\". Builds a SaaS financial model covering MRR waterfall, unit economics, and growth forecasting."
 argument_hint = "[current MRR, churn rate, growth rate, and any specific financial question to answer]"
 argument_label = "Context"
+model = "opus"
 
 [codex]
 description = "Build a SaaS financial model covering MRR waterfall, unit economics, NRR, ARR forecasting, and Rule of 40. Use when the user asks to model MRR, ARR, churn, payback, or other SaaS economics."

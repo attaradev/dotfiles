@@ -5,6 +5,7 @@ title = "Customer Success Playbook"
 description = "This skill should be used when the user asks to \"design a CS playbook\", \"customer health score\", \"QBR template\", \"expansion playbook\", \"upsell triggers\", \"at-risk customer intervention\", \"customer success strategy\", \"CS-to-sales handoff\", or \"how to scale customer success\". Produces a complete CS playbook covering health scoring, expansion plays, and at-risk intervention."
 argument_hint = "[your product, customer segments, and current CS challenges or goals]"
 argument_label = "Context"
+model = "opus"
 
 [codex]
 description = "Design customer success playbooks, health scoring, expansion motions, and CS-to-sales handoffs. Use when the user asks about customer success strategy, QBRs, health scores, or retention and expansion plays."
