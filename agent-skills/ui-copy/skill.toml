@@ -1,0 +1,16 @@
+name = "ui-copy"
+title = "UI Copywriting"
+
+[claude]
+description = "This skill should be used when the user asks to \"rewrite this microcopy\", \"this CTA is unclear\", \"write the button label\", \"empty state copy\", \"error message copy\", \"make this copy clearer\", \"onboarding copy\", \"tooltip text\", \"rewrite this prompt\", or \"what should this say\". Writes or rewrites interface copy so it names the benefit, uses a specific verb, says what happens next, and passes the Copy Swap Test."
+argument_hint = "[the copy, screen, or component to write or rewrite]"
+argument_label = "Copy target"
+model = "opus"
+
+[codex]
+description = "Write or rewrite interface microcopy (headlines, CTAs, empty states, errors, prompts, tooltips) so it names the benefit, uses a specific verb, says what happens next, and could not be pasted onto a competitor's product. Use when the user asks for clearer UI copy, a button label, or a rewrite of an unclear message."
+
+[codex.interface]
+display_name = "UI Copy"
+short_description = "Rewrite microcopy so people know why to care and what to do"
+default_prompt = "Use $ui-copy to rewrite this message so it is clear and specific."

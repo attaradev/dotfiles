@@ -5,6 +5,7 @@ title = "Mock Generation"
 description = "This skill should be used when the user asks to \"generate a mock\", \"create a test double\", \"stub this interface\", \"mock this dependency\", \"fake this service\", \"generate mocks for this\", or \"set up test doubles\". Generates idiomatic mocks, stubs, fakes, and spies for the detected language and framework."
 argument_hint = "[the interface, type, or service to mock]"
 argument_label = "Target"
+model = "opus"
 
 [codex]
 description = "Generate mocks, stubs, fakes, or spies that match the project’s language and test framework when the user asks for a test double."

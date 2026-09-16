@@ -5,6 +5,7 @@ title = "Discovery Interview Guide"
 description = "This skill should be used when the user asks to \"write discovery questions\", \"create an interview guide\", \"user research questions for this\", \"what should I ask users\", \"prepare for user interviews\", \"discovery interview script\", or \"research guide\". Generates a structured user research interview guide with screener, core questions, and follow-up probes calibrated to the research goal."
 argument_hint = "[the assumption or hypothesis you are trying to test, or the problem area to explore]"
 argument_label = "Research goal"
+model = "opus"
 
 [codex]
 description = "Draft user research interview guides and discovery questions. Use when the user asks for interview scripts, user research questions, discovery guides, or how to interview users."

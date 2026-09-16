@@ -1,0 +1,16 @@
+name = "ui-audit"
+title = "UI Audit (C.L.E.A.R.)"
+
+[claude]
+description = "This skill should be used when the user asks to \"audit this UI\", \"score this screen\", \"review this interface\", \"C.L.E.A.R. score\", \"why does this screen feel off\", \"improve this UI\", \"visual hierarchy review\", \"is this screen clear\", or shares a screenshot or component for design feedback. Scores a screen 0-5 on Copywriting, Layout, Emphasis, Accessibility, and Reward, cites on-screen evidence, and returns a prioritised iteration plan."
+argument_hint = "[screenshot path, URL, component file, or description of the screen]"
+argument_label = "Target"
+model = "opus"
+
+[codex]
+description = "Audit a UI screen or component with the C.L.E.A.R. framework (Copywriting, Layout, Emphasis, Accessibility, Reward). Score each pillar 0-5 with evidence, then give a prioritised iteration plan. Use when the user asks to review, score, or improve an interface or shares a screenshot for design feedback."
+
+[codex.interface]
+display_name = "UI Audit"
+short_description = "Score and diagnose a screen with C.L.E.A.R."
+default_prompt = "Use $ui-audit to score this screen and tell me what to fix first."

@@ -5,6 +5,7 @@ title = "Incident Report"
 description = "This skill should be used when the user asks to \"write an incident report\", \"draft a postmortem\", \"write a post-incident review\", \"document this incident\", \"create an RCA\", \"write up what happened\", or \"help me do the postmortem\". Produces a structured incident report with timeline, impact, root cause analysis, and action items from a description of symptoms and logs."
 argument_hint = "[incident description, symptoms, or service affected]"
 argument_label = "Incident"
+model = "opus"
 
 [codex]
 description = "Draft a blameless incident report or postmortem from symptoms, logs, and context. Use when the user asks to write an incident report, RCA, or post-incident review."

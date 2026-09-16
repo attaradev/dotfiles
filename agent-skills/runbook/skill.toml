@@ -5,6 +5,7 @@ title = "Runbook"
 description = "This skill should be used when the user asks to \"write a runbook\", \"create a runbook for\", \"document how to operate\", \"write the ops guide for\", \"document the on-call procedure for\", or \"create operational documentation for\". Produces a structured operational runbook for a service or process — capturing procedures, troubleshooting steps, and escalation paths so on-call engineers can act without needing the original author."
 argument_hint = "[service, process, or operation to document]"
 argument_label = "Service / process"
+model = "opus"
 
 [codex]
 description = "Draft an operational runbook for a service or process. Use when the user asks for an ops guide, on-call procedure, troubleshooting playbook, or other operational documentation."

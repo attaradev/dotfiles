@@ -4,6 +4,7 @@ title = "Modern Go Guidelines"
 [claude]
 description = "Apply modern Go syntax guidelines based on project's Go version. Use when user ask for modern Go code guidelines."
 argument_hint = "[target-version]"
+model = "opus"
 
 [codex]
 description = "Apply modern Go syntax guidelines based on the project's Go version"

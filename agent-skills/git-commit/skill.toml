@@ -5,6 +5,7 @@ title = "Commit"
 description = "This skill should be used when the user asks to \"git commit\", \"make a commit\", \"write a commit message\", \"stage and commit\", \"commit my changes\", \"create a git commit\", or \"commit this with a proper message\". Generates a Conventional Commit message from the staged diff and creates the commit."
 argument_hint = "[optional hint about scope or intent]"
 argument_label = "Hint"
+model = "haiku"
 
 [codex]
 description = "Write a Conventional Commit message from the staged diff and create the commit. Use when the user asks to commit staged changes or write a commit message."

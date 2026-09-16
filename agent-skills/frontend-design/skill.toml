@@ -5,6 +5,7 @@ title = "Frontend Design"
 description = "This skill should be used when the user asks to build a UI, create a frontend interface, design a component, or write HTML/CSS/JSX/Svelte/Vue. Forces a deliberate design declaration before writing any UI code to avoid generic AI output."
 argument_hint = "[component, page, or UI element to design]"
 argument_label = "Target"
+model = "opus"
 
 [codex]
 description = "Apply a structured design framework before writing any frontend UI code. Forces a deliberate design direction declaration across typography, color, motion, composition, and atmosphere to avoid generic AI-default output."

@@ -5,9 +5,7 @@
   },
   "permissions": {
     "allow": [
-      "Write(~/.dotfiles/)",
       "Edit(~/.dotfiles/)",
-      "Write(~/.claude/skills/)",
       "Edit(~/.claude/skills/)",
       "Bash(git *)",
       "Bash(gh *)",
@@ -16,15 +14,10 @@
       "Bash(mise *)",
       "Bash(stow *)",
       "Bash(npm *)",
-      "Bash(npx *)",
       "Bash(pnpm *)",
       "Bash(pnpx *)",
-      "Bash(node *)",
-      "Bash(python *)",
-      "Bash(python3 *)",
       "Bash(uv *)",
       "Bash(go *)",
-      "Bash(ruby *)",
       "Bash(docker *)",
       "Bash(bash \"$HOME/.claude/skills/:*)",
       "Bash(find *)",
@@ -48,7 +41,7 @@
       "~/.claude/skills"
     ]
   },
-  "model": "sonnet",
+  "model": "opus",
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "modern-go-guidelines@goland-claude-marketplace": true,
@@ -58,5 +51,37 @@
     "context7@claude-plugins-official": true
   },
   "skipWorkflowUsageWarning": true,
-  "skipAutoPermissionPrompt": true
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(server/scripts/audit-admin-credentials.sh:*) in yerboa/tribivo — reads/audits admin credentials, keep confirmable rather than auto-approved",
+      "Bash(make reset:*) and Bash(make dev-down:*) in yerboa/tribivo — tear down/reset local Postgres volume and stack state"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: Private (yerboa/tribivo, confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured — repo uses .env / .env.*.local (gitignored) with a committed .env.example / web/.env.local.example pattern",
+      "**Default / protected branches**: Default branch `main`; no classic branch protection listed and rulesets not queryable here — treat `main` as protected pending confirmation",
+      "**CI/CD deploy targets**: None configured — .github/workflows/ci.yml runs lint/test/build jobs (server, web, scripts) only, no deploy step observed",
+      "**Network posture**: None configured",
+      "**Source control**: The trusted repo (yerboa/tribivo, github.com:yerboa/tribivo.git) and its remote only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: Ory suite services within this repo's dev stack: kratos, hydra, keto, oathkeeper (self-hosted, per server/ory/ and server/AGENTS.md)",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: server/cmd/worker/retention_jobs.go, server/cmd/worker/retention_tripwire_test.go, server/internal/payments/retention_job.go, server/internal/payments/retention_job_test.go, server/scripts/audit-admin-credentials.sh, web/.env.local.example — payments/retention and admin-credential material; share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured — retention_job(s) in server/internal/payments and server/cmd/worker suggest a retention policy exists in code but no explicit declassification rule was found",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment; also server/ory/ (kratos/hydra/keto/oathkeeper config) and server/db/initdb/ as this repo's maintained infra config",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (Go backend + Next.js frontend, Tribivo monorepo)",
+      "**Trusted repo**: $HOME/Research/lumara (yerboa/tribivo, private) and its origin remote github.com:yerboa/tribivo.git — confidential material is fine here; content ported from outside this repo is not this repo's own work",
+      "**Org-specific CLIs**: None configured — project-specific tooling observed: sqlc, golangci-lint, gocyclo, govulncheck, goimports, gofmt, shellcheck (all standard Go/web toolchain, routine under this repo)",
+      "routine under server/ and web/ prefixes: make, npm, npx, sqlc, golangci-lint, gofmt, goimports, govulncheck, shellcheck invocations scoped to this repo's build/lint/test targets"
+    ]
+  }
 }
