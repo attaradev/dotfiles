@@ -161,7 +161,6 @@ cask "docker-desktop"               # Containerization platform (includes Docker
 cask "utm" if optional_enabled?("UTM")                     # Virtual machines for Mac (free, open-source)
 
 # --- Development Utilities ---
-cask "ngrok"                        # Secure tunnels to localhost (general HTTP/HTTPS tunneling)
 cask "jetbrains-toolbox"            # JetBrains Toolbox to manage JetBrains IDEs
 cask "termius"                      # Cross-platform SSH client and terminal manager
 
